@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.google.gson.Gson
-import com.mobitechs.classapp.data.model.User
+import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.utils.Constants
 
 class SharedPrefsManager(
@@ -41,20 +41,21 @@ class SharedPrefsManager(
         sharedPreferences.edit().remove(Constants.PREF_AUTH_TOKEN).apply()
     }
 
-    // User data
-    fun saveUser(user: User) {
+    // Student data
+    fun saveUser(user: Student) {
         val userJson = gson.toJson(user)
         sharedPreferences.edit().putString(Constants.PREF_USER, userJson).apply()
     }
 
-    fun getUser(): User? {
+    fun getUser(): Student? {
         val userJson = sharedPreferences.getString(Constants.PREF_USER, null)
         return if (userJson != null) {
-            gson.fromJson(userJson, User::class.java)
+            gson.fromJson(userJson, Student::class.java)
         } else {
             null
         }
     }
+
 
     fun clearUser() {
         sharedPreferences.edit().remove(Constants.PREF_USER).apply()
@@ -66,7 +67,10 @@ class SharedPrefsManager(
     }
 
     // Clear all data (logout)
-    fun clearAll() {
+    fun logout() {
         sharedPreferences.edit().clear().apply()
     }
+
+
+
 }

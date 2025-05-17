@@ -11,13 +11,13 @@ import com.mobitechs.classapp.data.repository.AuthRepository
 import com.mobitechs.classapp.data.repository.BatchRepository
 import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
+import com.mobitechs.classapp.data.repository.FreeContentRepository
 import com.mobitechs.classapp.data.repository.NotificationRepository
+import com.mobitechs.classapp.data.repository.OfflineDownloadRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.data.repository.UserRepository
-import com.mobitechs.classapp.data.repository.FreeContentRepository
-import com.mobitechs.classapp.data.repository.OfflineDownloadRepository
 import com.razorpay.Checkout
 
 class ClassConnectApp : Application() {
@@ -32,7 +32,7 @@ class ClassConnectApp : Application() {
 
     // Repositories
     val authRepository by lazy { AuthRepository(apiService, sharedPrefsManager) }
-    val userRepository by lazy { UserRepository(apiService) }
+    val userRepository by lazy { UserRepository(apiService, sharedPrefsManager) }
     val courseRepository by lazy { CourseRepository(apiService) }
     val batchRepository by lazy { BatchRepository(apiService) }
     val categoryRepository by lazy { CategoryRepository(apiService) }

@@ -8,12 +8,13 @@ import com.mobitechs.classapp.data.model.OtpVerificationRequest
 import com.mobitechs.classapp.data.model.OtpVerificationResponse
 import com.mobitechs.classapp.data.model.PaymentResponse
 import com.mobitechs.classapp.data.model.StudyMaterial
-import com.mobitechs.classapp.data.model.User
+
 import com.mobitechs.classapp.data.model.response.LoginRequest
 import com.mobitechs.classapp.data.model.response.LoginResponse
 import com.mobitechs.classapp.data.model.response.RefreshTokenRequest
 import com.mobitechs.classapp.data.model.response.RefreshTokenResponse
 import com.mobitechs.classapp.data.model.response.RegisterRequest
+import com.mobitechs.classapp.data.model.response.Student
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -36,12 +37,13 @@ interface ApiService {
     @POST("auth/verify-otp")
     suspend fun verifyOtp(@Body request: OtpVerificationRequest): Response<OtpVerificationResponse>
 
-    // User Profile
-    @GET("user/profile")
-    suspend fun getUserProfile(): Response<User>
+
+    @GET("students/{id}")
+    suspend fun getUserProfile(@Path("id") userId: String): Response<LoginResponse>
+
 
     @POST("user/profile")
-    suspend fun updateUserProfile(@Body user: User): Response<User>
+    suspend fun updateUserProfile(@Body user: Student): Response<Student>
 
     // Courses
     @GET("courses")

@@ -1,6 +1,7 @@
 package com.mobitechs.classapp.screens.home
 
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -54,27 +55,35 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.gson.Gson
+import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.mobitechs.classapp.data.model.Category
 import com.mobitechs.classapp.screens.common.BannerCarousel
 import com.mobitechs.classapp.screens.common.CourseCard
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
+import com.mobitechs.classapp.utils.showToast
 import kotlinx.coroutines.launch
 
 
@@ -88,6 +97,13 @@ fun HomeScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val gson by lazy { Gson() }
+    val sharedPrefsManager by lazy { SharedPrefsManager(context, gson) }
+    val user = sharedPrefsManager.getUser()
+
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -104,7 +120,8 @@ fun HomeScreen(
                         scope.launch {
                             drawerState.close()
                         }
-                    }
+                    },
+                    user = user
                 )
             }
         }

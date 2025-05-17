@@ -1,5 +1,6 @@
 package com.mobitechs.classapp.data.model
 
+import com.mobitechs.classapp.data.model.response.Student
 
 
 //data class RegisterRequest(
@@ -25,5 +26,5 @@ data class OtpVerificationRequest(
 data class OtpVerificationResponse(
     val message: String,
     val token: String,
-    val user: User
+    val user: Student
 )

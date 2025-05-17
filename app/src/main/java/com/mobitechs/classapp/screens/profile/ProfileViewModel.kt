@@ -4,7 +4,7 @@ package com.mobitechs.classapp.screens.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.Course
-import com.mobitechs.classapp.data.model.User
+import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.data.repository.AuthRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.UserRepository
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 data class ProfileUiState(
     val isLoading: Boolean = false,
     val error: String = "",
-    val user: User? = null,
+    val user: Student? = null,
     val purchasedCourses: List<Course> = emptyList(),
     val favoriteCourses: List<Course> = emptyList(),
     val downloadedCourses: List<Course> = emptyList(),
@@ -44,12 +44,13 @@ class ProfileViewModel(
 
         viewModelScope.launch {
             try {
-                val user = userRepository.getUserProfile()
+                val userResponse = userRepository.getUserProfile()
+                val userDetails = userResponse.student
 
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        user = user
+                        user = userDetails
                     )
                 }
             } catch (e: Exception) {
@@ -147,7 +148,7 @@ class ProfileViewModel(
         }
     }
 
-    fun updateUser(user: User) {
+    fun updateUser(user: Student) {
         _uiState.update { it.copy(isLoading = true, error = "") }
 
         viewModelScope.launch {

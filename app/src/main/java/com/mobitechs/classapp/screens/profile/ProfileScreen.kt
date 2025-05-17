@@ -32,7 +32,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,13 +51,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.mobitechs.classapp.data.model.User
+import com.google.gson.Gson
+import com.mobitechs.classapp.data.local.SharedPrefsManager
+import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.screens.common.ProfileMenuItem
-import com.mobitechs.classapp.screens.home.ErrorView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,8 +67,13 @@ fun ProfileScreen(
     navController: NavController,
     viewModel: ProfileViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+
     var showLogoutDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val gson by lazy { Gson() }
+    val sharedPrefsManager by lazy { SharedPrefsManager(context, gson) }
+    val user = sharedPrefsManager.getUser()
 
     Scaffold(
         topBar = {
@@ -81,158 +87,142 @@ fun ProfileScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Loading state
-            if (uiState.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .align(Alignment.Center)
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                // Profile header
+                ProfileHeader(
+                    user = user,
+                    onEditProfileClick = { /* Show edit profile dialog */ }
                 )
-            }
-            // Error state
-            else if (uiState.error.isNotEmpty()) {
-                ErrorView(
-                    message = uiState.error,
-                    onRetry = { /* Reload profile */ }
-                )
-            }
-            // Profile content
-            else {
-                Column(
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Profile menu
+                Card(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(4.dp)
                 ) {
-                    // Profile header
-                    ProfileHeader(
-                        user = uiState.user,
-                        onEditProfileClick = { /* Show edit profile dialog */ }
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Profile menu
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.cardElevation(4.dp)
+                    Column(
+                        modifier = Modifier.padding(vertical = 8.dp)
                     ) {
-                        Column(
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        ) {
-                            ProfileMenuSection(
-                                title = "My Learning",
-                                items = listOf(
-                                    ProfileMenuItemData(
-                                        title = "My Purchased Courses",
-                                        icon = Icons.Default.School,
-                                        route = "purchased_courses"
-                                    ),
-                                    ProfileMenuItemData(
-                                        title = "My Payment History",
-                                        icon = Icons.Default.Payment,
-                                        route = "payment_history"
-                                    ),
-                                    ProfileMenuItemData(
-                                        title = "My Favorite Courses",
-                                        icon = Icons.Default.Favorite,
-                                        route = "favorite_courses"
-                                    ),
-                                    ProfileMenuItemData(
-                                        title = "My Downloaded Courses",
-                                        icon = Icons.Default.Download,
-                                        route = "downloaded_courses"
-                                    ),
-                                    ProfileMenuItemData(
-                                        title = "My Wishlist",
-                                        icon = Icons.Default.Bookmark,
-                                        route = "wishlist",
-                                        showDivider = false
-                                    )
+                        ProfileMenuSection(
+                            title = "My Learning",
+                            items = listOf(
+                                ProfileMenuItemData(
+                                    title = "My Purchased Courses",
+                                    icon = Icons.Default.School,
+                                    route = "purchased_courses"
                                 ),
-                                onItemClick = { route ->
-                                    navController.navigate(route)
-                                }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Additional options
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        ) {
-                            ProfileMenuSection(
-                                title = "App Settings",
-                                items = listOf(
-                                    ProfileMenuItemData(
-                                        title = "Free Content",
-                                        icon = Icons.Default.Star,
-                                        route = "free_content"
-                                    ),
-                                    ProfileMenuItemData(
-                                        title = "Add Feedback",
-                                        icon = Icons.Default.Feedback,
-                                        route = "feedback"
-                                    ),
-                                    ProfileMenuItemData(
-                                        title = "Rate Us",
-                                        icon = Icons.Default.ThumbUp,
-                                        route = "rate"
-                                    ),
-                                    ProfileMenuItemData(
-                                        title = "Privacy Policy",
-                                        icon = Icons.Default.Security,
-                                        route = "privacy_policy"
-                                    ),
-                                    ProfileMenuItemData(
-                                        title = "Terms and Conditions",
-                                        icon = Icons.Default.Description,
-                                        route = "terms",
-                                        showDivider = false
-                                    )
+                                ProfileMenuItemData(
+                                    title = "My Payment History",
+                                    icon = Icons.Default.Payment,
+                                    route = "payment_history"
                                 ),
-                                onItemClick = { route ->
-                                    navController.navigate(route)
-                                }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Logout button
-                    Button(
-                        onClick = { showLogoutDialog = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                ProfileMenuItemData(
+                                    title = "My Favorite Courses",
+                                    icon = Icons.Default.Favorite,
+                                    route = "favorite_courses"
+                                ),
+                                ProfileMenuItemData(
+                                    title = "My Downloaded Courses",
+                                    icon = Icons.Default.Download,
+                                    route = "downloaded_courses"
+                                ),
+                                ProfileMenuItemData(
+                                    title = "My Wishlist",
+                                    icon = Icons.Default.Bookmark,
+                                    route = "wishlist",
+                                    showDivider = false
+                                )
+                            ),
+                            onItemClick = { route ->
+                                navController.navigate(route)
+                            }
                         )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Logout,
-                            contentDescription = null,
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                        Text("Logout")
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Additional options
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        ProfileMenuSection(
+                            title = "App Settings",
+                            items = listOf(
+                                ProfileMenuItemData(
+                                    title = "Free Content",
+                                    icon = Icons.Default.Star,
+                                    route = "free_content"
+                                ),
+                                ProfileMenuItemData(
+                                    title = "Add Feedback",
+                                    icon = Icons.Default.Feedback,
+                                    route = "feedback"
+                                ),
+                                ProfileMenuItemData(
+                                    title = "Rate Us",
+                                    icon = Icons.Default.ThumbUp,
+                                    route = "rate"
+                                ),
+                                ProfileMenuItemData(
+                                    title = "Privacy Policy",
+                                    icon = Icons.Default.Security,
+                                    route = "privacy_policy"
+                                ),
+                                ProfileMenuItemData(
+                                    title = "Terms and Conditions",
+                                    icon = Icons.Default.Description,
+                                    route = "terms",
+                                    showDivider = false
+                                )
+                            ),
+                            onItemClick = { route ->
+                                navController.navigate(route)
+                            }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Logout button
+                Button(
+                    onClick = { showLogoutDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Logout,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text("Logout")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
+
 
             // Logout confirmation dialog
             if (showLogoutDialog) {
@@ -270,7 +260,7 @@ fun ProfileScreen(
 
 @Composable
 fun ProfileHeader(
-    user: User?,
+    user: Student?,
     onEditProfileClick: () -> Unit
 ) {
     Card(
@@ -294,9 +284,9 @@ fun ProfileHeader(
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
-                if (user?.profileImage != null) {
+                if (user?.photo != null) {
                     AsyncImage(
-                        model = user.profileImage,
+                        model = user.photo,
                         contentDescription = "Profile Image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
@@ -314,7 +304,7 @@ fun ProfileHeader(
 
             // Name
             Text(
-                text = user?.name ?: "Guest User",
+                text = user?.name ?: "Guest Student",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )

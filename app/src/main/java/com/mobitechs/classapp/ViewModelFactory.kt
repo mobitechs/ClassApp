@@ -57,7 +57,7 @@ class ViewModelFactory(
             }
 
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
-                HomeViewModel(courseRepository, categoryRepository, notificationRepository) as T
+                HomeViewModel(courseRepository, categoryRepository, notificationRepository,authRepository) as T
             }
 
             modelClass.isAssignableFrom(BatchViewModel::class.java) -> {

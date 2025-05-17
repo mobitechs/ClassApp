@@ -178,6 +178,7 @@ fun LoginScreen(
 
             // Error message
             if (uiState.error.isNotEmpty()) {
+
                 Surface(
                     color = MaterialTheme.colorScheme.errorContainer,
                     shape = RoundedCornerShape(8.dp),

@@ -19,52 +19,7 @@ object SecurityUtils {
     private const val KEY_NAME = "ClassConnectSecretKey"
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
 
-    /**
-     * Check if biometric authentication is available on the device
-     */
-    fun isBiometricAvailable(context: Context): Boolean {
-        val biometricManager = BiometricManager.from(context)
-        return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) ==
-                BiometricManager.BIOMETRIC_SUCCESS
-    }
 
-    /**
-     * Show biometric prompt for authentication
-     */
-    fun showBiometricPrompt(
-        activity: FragmentActivity,
-        title: String,
-        subtitle: String,
-        description: String,
-        onSuccess: () -> Unit,
-        onError: (Int, String) -> Unit
-    ) {
-        val executor: Executor = ContextCompat.getMainExecutor(activity)
-
-        val biometricPrompt = BiometricPrompt(
-            activity, executor,
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
-                    onSuccess()
-                }
-
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    super.onAuthenticationError(errorCode, errString)
-                    onError(errorCode, errString.toString())
-                }
-            })
-
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(title)
-            .setSubtitle(subtitle)
-            .setDescription(description)
-            .setNegativeButtonText("Cancel")
-            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
-            .build()
-
-        biometricPrompt.authenticate(promptInfo)
-    }
 
     /**
      * Generate secret key for encryption

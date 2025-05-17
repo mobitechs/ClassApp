@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.Category
 import com.mobitechs.classapp.data.model.Course
+import com.mobitechs.classapp.data.model.response.Student
+import com.mobitechs.classapp.data.repository.AuthRepository
 import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.NotificationRepository
@@ -29,7 +31,8 @@ data class HomeUiState(
 class HomeViewModel(
     private val courseRepository: CourseRepository,
     private val categoryRepository: CategoryRepository,
-    private val notificationRepository: NotificationRepository
+    private val notificationRepository: NotificationRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState(isLoading = true))
@@ -44,6 +47,7 @@ class HomeViewModel(
 
         viewModelScope.launch {
             try {
+
                 // Load all data
                 val featuredCourses = courseRepository.getFeaturedCourses()
                 val offers = courseRepository.getOfferCourses()
@@ -61,7 +65,8 @@ class HomeViewModel(
                         categories = categories,
                         notificationCount = notificationCount,
                         hasNotifications = notificationCount > 0,
-                        banners = banners
+                        banners = banners,
+//                        user = student
                     )
                 }
             } catch (e: Exception) {

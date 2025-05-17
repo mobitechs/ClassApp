@@ -41,13 +41,14 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.mobitechs.classapp.R
 import com.mobitechs.classapp.Screen
-import com.mobitechs.classapp.data.model.User
+
+import com.mobitechs.classapp.data.model.response.Student
 
 @Composable
 fun SideMenu(
     onMenuItemClick: (String) -> Unit,
     onClose: () -> Unit,
-    user: User? = null
+    user: Student? = null
 ) {
 
     Column(
@@ -72,17 +73,17 @@ fun SideMenu(
             }
         }
 
-        // User profile section
+        // Student profile section
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp, bottom = 24.dp)
         ) {
-            // User image
-            if (user?.profileImage != null) {
+            // Student image
+            if (user?.photo != null) {
                 AsyncImage(
-                    model = user.profileImage,
+                    model = user.photo,
                     contentDescription = "Profile Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -101,14 +102,14 @@ fun SideMenu(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // User name
+            // Student name
             Text(
-                text = user?.name ?: "Guest User",
+                text = user?.name ?: "Guest Student",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
 
-            // User email or phone
+            // Student email or phone
             Text(
                 text = user?.email ?: user?.phone ?: "Sign in to access your account",
                 style = MaterialTheme.typography.bodyMedium,
