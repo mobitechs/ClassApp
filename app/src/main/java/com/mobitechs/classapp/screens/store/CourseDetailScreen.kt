@@ -136,7 +136,9 @@ fun CourseDetailScreen(
                     }
 
                     // Favorite button
-                    IconButton(onClick = { viewModel.toggleFavorite() }) {
+                    IconButton(onClick = {
+//                        viewModel.toggleFavorite()
+                    }) {
                         Icon(
                             imageVector = if (uiState.course?.isFavorite == true)
                                 Icons.Default.Favorite
@@ -151,7 +153,9 @@ fun CourseDetailScreen(
                     }
 
                     // Wishlist button
-                    IconButton(onClick = { viewModel.toggleWishlist() }) {
+                    IconButton(onClick = {
+//                        viewModel.toggleWishlist()
+                    }) {
                         Icon(
                             imageVector = if (uiState.course?.isWishlisted == true)
                                 Icons.Default.Bookmark

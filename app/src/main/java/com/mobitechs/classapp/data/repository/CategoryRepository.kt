@@ -29,8 +29,8 @@ class CategoryRepository(
         }
     }
 
-    suspend fun getCategoryWiseSubCategory(categoryId: String): SubCategoryResponse = withContext(Dispatchers.IO) {
-//        val response = apiService.getCategoryWiseSubCategory(categoryId)
+    suspend fun getSubCategoryByCategory(categoryId: String): SubCategoryResponse = withContext(Dispatchers.IO) {
+//        val response = apiService.getSubCategoryByCategory(categoryId)
         val response = apiService.getAllSubCategories()
         if (response.isSuccessful) {
             return@withContext response.body() ?: throw Exception("Empty response body")
@@ -48,9 +48,9 @@ class CategoryRepository(
         }
     }
 
-    suspend fun getSubjectCategoryWise(categoryId: String): SubjectResponse =
+    suspend fun getSubjectByCategory(categoryId: String): SubjectResponse =
         withContext(Dispatchers.IO) {
-            val response = apiService.getSubjectCategoryWise(categoryId)
+            val response = apiService.getSubjectByCategory(categoryId)
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
@@ -58,9 +58,9 @@ class CategoryRepository(
             }
         }
 
-    suspend fun getSubjectSubCategoryWise(subCategoryId: String): SubjectResponse =
+    suspend fun getSubjectsBySubcategory(subCategoryId: String): SubjectResponse =
         withContext(Dispatchers.IO) {
-            val response = apiService.getSubjectSubCategoryWise(subCategoryId)
+            val response = apiService.getSubjectsBySubcategory(subCategoryId)
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {

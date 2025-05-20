@@ -38,7 +38,7 @@ import coil.compose.AsyncImage
 @Composable
 fun CourseCard(
     title: String,
-    instructor: String,
+    description: String,
     imageUrl: String,
     rating: Float,
     likes: Int,
@@ -106,7 +106,7 @@ fun CourseCard(
 
                 // Instructor
                 Text(
-                    text = "By $instructor",
+                    text = description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     maxLines = 1,
@@ -139,13 +139,6 @@ fun CourseCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = price,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-
                     if (discountedPrice != null) {
                         Spacer(modifier = Modifier.width(8.dp))
 
@@ -156,6 +149,15 @@ fun CourseCard(
                             textDecoration = TextDecoration.LineThrough
                         )
                     }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = price,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+
+
                 }
             }
         }

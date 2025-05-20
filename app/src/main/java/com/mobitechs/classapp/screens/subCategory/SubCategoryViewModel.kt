@@ -58,7 +58,7 @@ class SubCategoryViewModel(
         viewModelScope.launch {
             val categoryId = "1"
             try {
-                val subCategory = categoryRepository.getCategoryWiseSubCategory(categoryId)
+                val subCategory = categoryRepository.getSubCategoryByCategory(categoryId)
                 _uiState.update {
                     it.copy(
                         subcategories = subCategory.subCategories,

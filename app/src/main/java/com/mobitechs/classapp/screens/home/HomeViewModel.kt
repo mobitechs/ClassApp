@@ -144,7 +144,7 @@ class HomeViewModel(
                 val popularCourses = courseRepository.getPopularCourses()
                 _uiState.update {
                     it.copy(
-                        popularCourses = popularCourses,
+                        popularCourses = popularCourses.courses,
                         popularCoursesLoading = false
                     )
                 }
@@ -167,7 +167,7 @@ class HomeViewModel(
                 val featuredCourses = courseRepository.getFeaturedCourses()
                 _uiState.update {
                     it.copy(
-                        featuredCourses = featuredCourses,
+                        featuredCourses = featuredCourses.courses,
                         featuredCoursesLoading = false
                     )
                 }
@@ -224,31 +224,4 @@ class HomeViewModel(
         }
     }
 
-    fun toggleFavorite(courseId: String) {
-        viewModelScope.launch {
-            try {
-                val result = courseRepository.toggleFavorite(courseId)
-
-                // Update the courses in the state
-                _uiState.update { state ->
-                    val updateCourseList = { courses: List<Course> ->
-                        courses.map { course ->
-                            if (course.id == courseId.toInt()) {
-                                course.copy(isFavorite = result)
-                            } else {
-                                course
-                            }
-                        }
-                    }
-
-                    state.copy(
-                        featuredCourses = updateCourseList(state.featuredCourses),
-                        popularCourses = updateCourseList(state.popularCourses)
-                    )
-                }
-            } catch (e: Exception) {
-                // Handle error silently
-            }
-        }
-    }
 }

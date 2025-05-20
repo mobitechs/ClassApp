@@ -70,41 +70,41 @@ class CourseDetailViewModel(
         }
     }
 
-    fun toggleFavorite() {
-        uiState.value.course?.id?.let { courseId ->
-            viewModelScope.launch {
-                try {
-                    val result = courseRepository.toggleFavorite(courseId.toString())
+//    fun toggleFavorite() {
+//        uiState.value.course?.id?.let { courseId ->
+//            viewModelScope.launch {
+//                try {
+//                    val result = courseRepository.toggleFavorite(courseId.toString())
+//
+//                    // Update the course in the state
+//                    _uiState.update { state ->
+//                        val updatedCourse = state.course?.copy(isFavorite = result)
+//                        state.copy(course = updatedCourse)
+//                    }
+//                } catch (e: Exception) {
+//                    // Handle error silently
+//                }
+//            }
+//        }
+//    }
 
-                    // Update the course in the state
-                    _uiState.update { state ->
-                        val updatedCourse = state.course?.copy(isFavorite = result)
-                        state.copy(course = updatedCourse)
-                    }
-                } catch (e: Exception) {
-                    // Handle error silently
-                }
-            }
-        }
-    }
-
-    fun toggleWishlist() {
-        uiState.value.course?.id?.let { courseId ->
-            viewModelScope.launch {
-                try {
-                    val result = courseRepository.toggleWishlist(courseId.toString())
-
-                    // Update the course in the state
-                    _uiState.update { state ->
-                        val updatedCourse = state.course?.copy(isWishlisted = result)
-                        state.copy(course = updatedCourse)
-                    }
-                } catch (e: Exception) {
-                    // Handle error silently
-                }
-            }
-        }
-    }
+//    fun toggleWishlist() {
+//        uiState.value.course?.id?.let { courseId ->
+//            viewModelScope.launch {
+//                try {
+//                    val result = courseRepository.toggleWishlist(courseId.toString())
+//
+//                    // Update the course in the state
+//                    _uiState.update { state ->
+//                        val updatedCourse = state.course?.copy(isWishlisted = result)
+//                        state.copy(course = updatedCourse)
+//                    }
+//                } catch (e: Exception) {
+//                    // Handle error silently
+//                }
+//            }
+//        }
+//    }
 
     fun initiatePayment() {
         uiState.value.course?.id?.let { courseId ->

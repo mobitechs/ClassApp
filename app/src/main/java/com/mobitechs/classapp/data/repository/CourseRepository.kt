@@ -53,7 +53,6 @@ class CourseRepository(
     }
 
     suspend fun getLatestCourses(): CourseResponse = withContext(Dispatchers.IO) {
-        // This is simplified - in a real app, you would have a specific API endpoint for featured courses
         val response = apiService.getLatestCourses()
         if (response.isSuccessful) {
             return@withContext response.body() ?: throw Exception("Empty response body")
@@ -61,29 +60,46 @@ class CourseRepository(
             throw Exception("Failed to get featured courses: ${response.message()}")
         }
     }
-    suspend fun getFeaturedCourses(): List<Course> = withContext(Dispatchers.IO) {
-        // This is simplified - in a real app, you would have a specific API endpoint for featured courses
-        val response = apiService.getCourses(popular = true, limit = 5)
+    suspend fun getFeaturedCourses(): CourseResponse = withContext(Dispatchers.IO) {
+        val response = apiService.getFeaturedCourses()
         if (response.isSuccessful) {
-            return@withContext response.body() ?: emptyList()
+            return@withContext response.body() ?: throw Exception("Empty response body")
         } else {
             throw Exception("Failed to get featured courses: ${response.message()}")
         }
     }
 
-    suspend fun getPopularCourses(): List<Course> = withContext(Dispatchers.IO) {
-        // This is simplified - in a real app, you would have a specific API endpoint for popular courses
-        val response = apiService.getCourses(popular = true, limit = 10)
+    suspend fun getPopularCourses(): CourseResponse = withContext(Dispatchers.IO) {
+        val response = apiService.getPopularCourses()
         if (response.isSuccessful) {
-            return@withContext response.body() ?: emptyList()
+            return@withContext response.body() ?: throw Exception("Empty response body")
         } else {
-            throw Exception("Failed to get popular courses: ${response.message()}")
+            throw Exception("Failed to get featured courses: ${response.message()}")
+        }
+    }
+
+    suspend fun getCoursesByCategory(categoryId: String): CourseResponse = withContext(Dispatchers.IO) {
+//        val response = apiService.getCoursesByCategory(categoryId)
+        val response = apiService.getLatestCourses()
+        if (response.isSuccessful) {
+            return@withContext response.body() ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Failed to get featured courses: ${response.message()}")
+        }
+    }
+
+    suspend fun getCourseByCategorySubCategory(categoryId: String,subCategoryId: String): CourseResponse = withContext(Dispatchers.IO) {
+//        val response = apiService.getCourseByCategorySubCategory(categoryId,subCategoryId)
+        val response = apiService.getLatestCourses()
+        if (response.isSuccessful) {
+            return@withContext response.body() ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Failed to get featured courses: ${response.message()}")
         }
     }
 
 
     suspend fun getOfferBanners(): OfferBannerResponse = withContext(Dispatchers.IO) {
-        // This is simplified - in a real app, you would have a specific API endpoint for courses with offers
         val response = apiService.getOfferBanners()
         if (response.isSuccessful) {
             // Filter courses that have a discounted price
@@ -93,7 +109,6 @@ class CourseRepository(
         }
     }
     suspend fun getNoticeboard(): NoticeBoardResponse = withContext(Dispatchers.IO) {
-        // This is simplified - in a real app, you would have a specific API endpoint for courses with offers
         val response = apiService.getNoticeboard()
         if (response.isSuccessful) {
             // Filter courses that have a discounted price
@@ -104,25 +119,4 @@ class CourseRepository(
     }
 
 
-    // Simplified banner API - in real implementation, this would be a separate endpoint
-    suspend fun getBanners(): List<String> = withContext(Dispatchers.IO) {
-        // Returning hardcoded banner URLs for demonstration
-        return@withContext listOf(
-            "https://example.com/banner1.jpg",
-            "https://example.com/banner2.jpg",
-            "https://example.com/banner3.jpg"
-        )
-    }
-
-    // Simplified toggle favorite function
-    suspend fun toggleFavorite(courseId: String): Boolean {
-        // In a real implementation, this would make an API call
-        return true // Returns new favorite state
-    }
-
-    // Simplified toggle wishlist function
-    suspend fun toggleWishlist(courseId: String): Boolean {
-        // In a real implementation, this would make an API call
-        return true // Returns new wishlist state
-    }
 }

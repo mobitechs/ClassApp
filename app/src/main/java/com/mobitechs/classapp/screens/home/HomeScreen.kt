@@ -204,7 +204,7 @@ fun HomeScreen(
                             navController.navigate("categoryScreen")
                         },
                         onFavoriteClick = { courseId ->
-                            viewModel.toggleFavorite(courseId)
+//                            viewModel.toggleFavorite(courseId)
                         },
                         onSeeAllClick = { section ->
                             when (section) {
@@ -322,7 +322,7 @@ fun HomeContent(
                     items(uiState.popularCourses) { course ->
                         CourseCard(
                             title = course.course_name,
-                            instructor = course.course_description,
+                            description = course.course_description,
                             imageUrl = course.image,
                             rating = 5f,
                             likes = course.course_like,
@@ -426,7 +426,7 @@ fun HomeContent(
                     items(uiState.noticeBoard) { board ->
                         CourseCard(
                             title = board.notice_title,
-                            instructor = "",
+                            description = "",
                             imageUrl = board.url,
                             rating = 5f,
                             likes = board.course.course_like,
@@ -480,7 +480,7 @@ fun HomeContent(
                     items(uiState.featuredCourses) { course ->
                         CourseCard(
                             title = course.course_name,
-                            instructor = course.course_description,
+                            description = course.course_description,
                             imageUrl = course.image,
                             rating = 5f,
                             likes = course.course_like,

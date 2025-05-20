@@ -84,16 +84,16 @@ class StoreViewModel(
      */
     private fun loadInitialData() {
         // Load each data type independently
-        loadCategories()
-        loadAllSubCategories()
-        loadAllSubjects()
-        loadInitialCourses()
+        getCategories()
+        getAllSubCategories()
+        getAllSubject()
+        getLatestCourses()
     }
 
     /**
      * Loads categories independently
      */
-    private fun loadCategories() {
+    private fun getCategories() {
         _uiState.update { it.copy(categoriesLoading = true, categoriesError = "") }
 
         viewModelScope.launch {
@@ -119,7 +119,7 @@ class StoreViewModel(
     /**
      * Loads all subcategories independently
      */
-    private fun loadAllSubCategories() {
+    private fun getAllSubCategories() {
         _uiState.update { it.copy(subCategoriesLoading = true, subCategoriesError = "") }
 
         viewModelScope.launch {
@@ -145,7 +145,7 @@ class StoreViewModel(
     /**
      * Loads all subjects independently
      */
-    private fun loadAllSubjects() {
+    private fun getAllSubject() {
         _uiState.update { it.copy(subjectsLoading = true, subjectsError = "") }
 
         viewModelScope.launch {
@@ -171,7 +171,7 @@ class StoreViewModel(
     /**
      * Loads initial courses (popular courses) independently
      */
-    private fun loadInitialCourses() {
+    private fun getLatestCourses() {
         _uiState.update { it.copy(coursesLoading = true, coursesError = "") }
 
         viewModelScope.launch {
@@ -210,7 +210,7 @@ class StoreViewModel(
                     selectedSubjectId = null
                 )
             }
-            loadPopularCourses()
+            getPopularCourses()
             return
         }
 
@@ -228,21 +228,21 @@ class StoreViewModel(
         }
 
         // Load courses for the selected category
-        loadCoursesByCategory(categoryId)
+        getCoursesByCategory(categoryId)
 
         // Load subcategories for the selected category
-        loadSubCategoriesByCategory(categoryId)
+        getSubCategoryByCategory(categoryId)
     }
 
     /**
      * Loads subcategories for a specific category independently
      */
-    private fun loadSubCategoriesByCategory(categoryId: Int) {
+    private fun getSubCategoryByCategory(categoryId: Int) {
         _uiState.update { it.copy(subCategoriesLoading = true, subCategoriesError = "") }
 
         viewModelScope.launch {
             try {
-                val response = categoryRepository.getCategoryWiseSubCategory(categoryId.toString())
+                val response = categoryRepository.getSubCategoryByCategory(categoryId.toString())
 
                 _uiState.update { state ->
                     state.copy(
@@ -265,7 +265,7 @@ class StoreViewModel(
     /**
      * Loads popular courses independently
      */
-    private fun loadPopularCourses() {
+    private fun getPopularCourses() {
         _uiState.update { it.copy(coursesLoading = true, coursesError = "") }
 
         viewModelScope.launch {
@@ -273,9 +273,9 @@ class StoreViewModel(
                 val coursesResponse = courseRepository.getPopularCourses()
                 _uiState.update { state ->
                     state.copy(
-                        allCourses = coursesResponse,
+                        allCourses = coursesResponse.courses,
                         filteredCourses = applyFilters(
-                            coursesResponse,
+                            coursesResponse.courses,
                             state.selectedSubCategoryId,
                             state.selectedSubjectId,
                             state.selectedPriceRange
@@ -298,17 +298,17 @@ class StoreViewModel(
     /**
      * Loads courses by category independently
      */
-    private fun loadCoursesByCategory(categoryId: Int) {
+    private fun getCoursesByCategory(categoryId: Int) {
         _uiState.update { it.copy(coursesLoading = true, coursesError = "") }
 
         viewModelScope.launch {
             try {
-                val courses = courseRepository.getCourses(categoryId = categoryId.toString())
+                val courses = courseRepository.getCoursesByCategory(categoryId = categoryId.toString())
                 _uiState.update { state ->
                     state.copy(
-                        allCourses = courses,
+                        allCourses = courses.courses,
                         filteredCourses = applyFilters(
-                            courses,
+                            courses.courses,
                             state.selectedSubCategoryId,
                             state.selectedSubjectId,
                             state.selectedPriceRange
@@ -344,18 +344,18 @@ class StoreViewModel(
         applyFiltersAndUpdateState()
 
         // Load subjects for this subcategory
-        loadSubjectsBySubcategory(subCategoryId)
+        getSubjectsBySubcategory(subCategoryId)
     }
 
     /**
      * Loads subjects for a specific subcategory independently
      */
-    private fun loadSubjectsBySubcategory(subCategoryId: String) {
+    private fun getSubjectsBySubcategory(subCategoryId: String) {
         _uiState.update { it.copy(subjectsLoading = true, subjectsError = "") }
 
         viewModelScope.launch {
             try {
-                val response = categoryRepository.getSubjectSubCategoryWise(subCategoryId)
+                val response = categoryRepository.getSubjectsBySubcategory(subCategoryId)
 
                 _uiState.update { state ->
                     state.copy(
@@ -486,30 +486,30 @@ class StoreViewModel(
      * Retry functions for each section when they fail
      */
     fun retryLoadCategories() {
-        loadCategories()
+        getCategories()
     }
 
     fun retryLoadSubCategories() {
         if (uiState.value.selectedCategoryId != null) {
-            loadSubCategoriesByCategory(uiState.value.selectedCategoryId!!)
+            getSubCategoryByCategory(uiState.value.selectedCategoryId!!)
         } else {
-            loadAllSubCategories()
+            getAllSubCategories()
         }
     }
 
     fun retryLoadSubjects() {
         if (uiState.value.selectedSubCategoryId != null) {
-            loadSubjectsBySubcategory(uiState.value.selectedSubCategoryId!!)
+            getSubjectsBySubcategory(uiState.value.selectedSubCategoryId!!)
         } else {
-            loadAllSubjects()
+            getAllSubject()
         }
     }
 
     fun retryLoadCourses() {
         if (uiState.value.selectedCategoryId != null) {
-            loadCoursesByCategory(uiState.value.selectedCategoryId!!)
+            getCoursesByCategory(uiState.value.selectedCategoryId!!)
         } else {
-            loadPopularCourses()
+            getPopularCourses()
         }
     }
 }

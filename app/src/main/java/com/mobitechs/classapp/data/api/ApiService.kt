@@ -55,13 +55,25 @@ interface ApiService {
     suspend fun getNoticeboard(): Response<NoticeBoardResponse>
 
 
-    @GET("free-content")
-    suspend fun getFreeContent(): Response<List<NotificationItem>>
-
-
     //Courses
     @GET("courses?sort=newest")
     suspend fun getLatestCourses(): Response<CourseResponse>
+
+    @GET("courses?sort=newest")
+    suspend fun getPopularCourses(): Response<CourseResponse>
+
+
+    @GET("courses?sort=newest")
+    suspend fun getFeaturedCourses(): Response<CourseResponse>
+
+    @GET("courses/{categoryId}")
+    suspend fun getCoursesByCategory(@Path("categoryId") categoryId: String): Response<CourseResponse>
+
+    @GET("courses/{categoryId}/{subCategoryId}")
+    suspend fun getCourseByCategorySubCategory(@Path("categoryId") categoryId: String, @Path("subCategoryId") subCategoryId: String): Response<CourseResponse>
+
+
+
 
     @GET("categories")
     suspend fun getCategories(): Response<CategoryResponse>
@@ -70,16 +82,16 @@ interface ApiService {
     suspend fun getAllSubCategories(): Response<SubCategoryResponse>
 
     @GET("sub-categories/{categoryId}")
-    suspend fun getCategoryWiseSubCategory(@Path("categoryId") categoryId: String): Response<SubCategoryResponse>
+    suspend fun getSubCategoryByCategory(@Path("categoryId") categoryId: String): Response<SubCategoryResponse>
 
     @GET("subjects")
     suspend fun getAllSubject(): Response<SubjectResponse>
 
     @GET("subjects/{categoryId}")
-    suspend fun getSubjectCategoryWise(@Path("categoryId") categoryId: String): Response<SubjectResponse>
+    suspend fun getSubjectByCategory(@Path("categoryId") categoryId: String): Response<SubjectResponse>
 
     @GET("subjects/{subCategoryId}")
-    suspend fun getSubjectSubCategoryWise(@Path("subCategoryId") categoryId: String): Response<SubjectResponse>
+    suspend fun getSubjectsBySubcategory(@Path("subCategoryId") categoryId: String): Response<SubjectResponse>
 
 
     // Courses
