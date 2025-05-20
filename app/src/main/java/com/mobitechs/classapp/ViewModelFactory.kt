@@ -27,6 +27,7 @@ import com.mobitechs.classapp.screens.search.SearchViewModel
 import com.mobitechs.classapp.screens.splash.SplashViewModel
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreViewModel
+import com.mobitechs.classapp.screens.subCategory.SubCategoryViewModel
 
 /**
  * Factory class for creating ViewModels without dependency injection
@@ -70,6 +71,10 @@ class ViewModelFactory(
 
             modelClass.isAssignableFrom(CourseDetailViewModel::class.java) -> {
                 CourseDetailViewModel(courseRepository, paymentRepository) as T
+            }
+
+            modelClass.isAssignableFrom(SubCategoryViewModel::class.java) -> {
+                SubCategoryViewModel(courseRepository, categoryRepository) as T
             }
 
             modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {

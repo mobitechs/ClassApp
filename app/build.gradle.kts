@@ -103,6 +103,7 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
+    implementation ("androidx.compose.foundation:foundation:1.2.0")// or newer
 
 
     testImplementation(libs.junit)

@@ -2,7 +2,11 @@ package com.mobitechs.classapp.data.repository
 
 
 import com.mobitechs.classapp.data.api.ApiService
-import com.mobitechs.classapp.data.model.Course
+import com.mobitechs.classapp.data.model.response.Course
+
+import com.mobitechs.classapp.data.model.response.CourseResponse
+import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
+import com.mobitechs.classapp.data.model.response.OfferBannerResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -29,7 +33,7 @@ class CourseRepository(
 
             // Filter by subcategory if needed (client-side filtering)
             return@withContext if (subCategoryId != null) {
-                courses.filter { it.subCategory?.id == subCategoryId }
+                courses.filter { it.course_subject_id == subCategoryId.toInt() }
             } else {
                 courses
             }
@@ -37,6 +41,7 @@ class CourseRepository(
             throw Exception("Failed to get courses: ${response.message()}")
         }
     }
+
 
     suspend fun getCourseDetails(courseId: String): Course = withContext(Dispatchers.IO) {
         val response = apiService.getCourseDetails(courseId)
@@ -47,6 +52,15 @@ class CourseRepository(
         }
     }
 
+    suspend fun getLatestCourses(): CourseResponse = withContext(Dispatchers.IO) {
+        // This is simplified - in a real app, you would have a specific API endpoint for featured courses
+        val response = apiService.getLatestCourses()
+        if (response.isSuccessful) {
+            return@withContext response.body() ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Failed to get featured courses: ${response.message()}")
+        }
+    }
     suspend fun getFeaturedCourses(): List<Course> = withContext(Dispatchers.IO) {
         // This is simplified - in a real app, you would have a specific API endpoint for featured courses
         val response = apiService.getCourses(popular = true, limit = 5)
@@ -67,18 +81,28 @@ class CourseRepository(
         }
     }
 
-    suspend fun getOfferCourses(): List<Course> = withContext(Dispatchers.IO) {
+
+    suspend fun getOfferBanners(): OfferBannerResponse = withContext(Dispatchers.IO) {
         // This is simplified - in a real app, you would have a specific API endpoint for courses with offers
-        val response = apiService.getCourses(limit = 5)
+        val response = apiService.getOfferBanners()
         if (response.isSuccessful) {
             // Filter courses that have a discounted price
-            return@withContext (response.body() ?: emptyList()).filter {
-                it.discountedPrice != null
-            }
+            return@withContext response.body() ?: throw Exception("Empty response body")
         } else {
             throw Exception("Failed to get courses with offers: ${response.message()}")
         }
     }
+    suspend fun getNoticeboard(): NoticeBoardResponse = withContext(Dispatchers.IO) {
+        // This is simplified - in a real app, you would have a specific API endpoint for courses with offers
+        val response = apiService.getNoticeboard()
+        if (response.isSuccessful) {
+            // Filter courses that have a discounted price
+            return@withContext response.body() ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Failed to get courses with offers: ${response.message()}")
+        }
+    }
+
 
     // Simplified banner API - in real implementation, this would be a separate endpoint
     suspend fun getBanners(): List<String> = withContext(Dispatchers.IO) {

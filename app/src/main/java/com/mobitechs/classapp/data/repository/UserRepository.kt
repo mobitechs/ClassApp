@@ -34,11 +34,12 @@ class UserRepository(
 
 
     fun getUser(): String {
-        var userId = ""
         val user = sharedPrefsManager.getUser()
-        userId = user?.id.toString()
-        return userId
-
+        return if (user != null && user.id != null) {
+            user.id.toString()
+        } else {
+            throw Exception("User ID not found. Please login again.")
+        }
     }
 }
 

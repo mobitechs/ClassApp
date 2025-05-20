@@ -38,7 +38,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.mobitechs.classapp.data.model.Course
+import com.mobitechs.classapp.data.model.response.Course
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,8 +65,8 @@ fun CourseGridItem(
                     .height(140.dp)
             ) {
                 AsyncImage(
-                    model = course.thumbnail,
-                    contentDescription = course.title,
+                    model = course.image,
+                    contentDescription = course.course_description,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -121,7 +122,7 @@ fun CourseGridItem(
                 Column {
                     // Title
                     Text(
-                        text = course.title,
+                        text = course.course_name,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 2,
@@ -155,7 +156,7 @@ fun CourseGridItem(
                         Spacer(modifier = Modifier.width(4.dp))
 
                         Text(
-                            text = "${course.rating} (${course.totalRatings})",
+                            text = "${course.course_like}",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -166,9 +167,9 @@ fun CourseGridItem(
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (course.discountedPrice != null) {
+                        if (course.course_discounted_price != null) {
                             Text(
-                                text = "₹${course.discountedPrice}",
+                                text = "₹${course.course_discounted_price}",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold
@@ -177,14 +178,14 @@ fun CourseGridItem(
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Text(
-                                text = "₹${course.price}",
+                                text = "₹${course.course_price}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 textDecoration = TextDecoration.LineThrough
                             )
                         } else {
                             Text(
-                                text = "₹${course.price}",
+                                text = "₹${course.course_price}",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold

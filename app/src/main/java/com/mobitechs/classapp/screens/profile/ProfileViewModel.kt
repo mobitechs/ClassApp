@@ -3,7 +3,8 @@ package com.mobitechs.classapp.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mobitechs.classapp.data.model.Course
+import com.mobitechs.classapp.data.model.response.Course
+
 import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.data.repository.AuthRepository
 import com.mobitechs.classapp.data.repository.CourseRepository

@@ -41,6 +41,7 @@ fun CourseCard(
     instructor: String,
     imageUrl: String,
     rating: Float,
+    likes: Int,
     price: String,
     discountedPrice: String? = null,
     isFavorite: Boolean = false,

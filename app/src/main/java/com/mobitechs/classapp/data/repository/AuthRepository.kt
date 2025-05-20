@@ -43,15 +43,6 @@ class AuthRepository(
         }
     }
 
-    suspend fun verifyOtp(request: OtpVerificationRequest): OtpVerificationResponse =
-        withContext(Dispatchers.IO) {
-            val response = apiService.verifyOtp(request)
-            if (response.isSuccessful) {
-                return@withContext response.body() ?: throw Exception("Empty response body")
-            } else {
-                throw Exception("OTP verification failed: ${response.message()}")
-            }
-        }
 
     fun saveAuthData(token: String, user: Student) {
         sharedPrefsManager.saveAuthToken(token)

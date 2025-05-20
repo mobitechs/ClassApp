@@ -45,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -93,7 +94,7 @@ fun CourseDetailScreen(
 
                 val options = JSONObject()
                 options.put("name", "Class Connect")
-                options.put("description", "Payment for ${uiState.course?.title}")
+                options.put("description", "Payment for ${uiState.course?.course_name}")
                 options.put("order_id", paymentData.orderId)
                 options.put("currency", paymentData.currency)
                 options.put(
@@ -202,14 +203,14 @@ fun CourseDetailScreen(
                                 .height(220.dp)
                         ) {
                             AsyncImage(
-                                model = course.thumbnail,
-                                contentDescription = course.title,
+                                model = course.image,
+                                contentDescription = course.course_name,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize()
                             )
 
                             // Preview button if preview URL exists
-                            if (course.previewUrl != null) {
+                            if (course.image != null) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
@@ -240,7 +241,7 @@ fun CourseDetailScreen(
                         ) {
                             // Title
                             Text(
-                                text = course.title,
+                                text = course.course_name,
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold
                             )
@@ -274,18 +275,18 @@ fun CourseDetailScreen(
                                     Spacer(modifier = Modifier.width(4.dp))
 
                                     Text(
-                                        text = course.rating.toString(),
+                                        text = course.course_like.toString(),
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = FontWeight.Bold
                                     )
 
                                     Spacer(modifier = Modifier.width(4.dp))
 
-                                    Text(
-                                        text = "(${course.totalRatings} ratings)",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                    )
+//                                    Text(
+//                                        text = "(${course.totalRatings} ratings)",
+//                                        style = MaterialTheme.typography.bodyMedium,
+//                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+//                                    )
                                 }
 
                                 Spacer(modifier = Modifier.width(16.dp))
@@ -304,7 +305,7 @@ fun CourseDetailScreen(
                                     Spacer(modifier = Modifier.width(4.dp))
 
                                     Text(
-                                        text = "${course.totalStudents} students",
+                                        text = "10 students",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                                     )
@@ -335,13 +336,13 @@ fun CourseDetailScreen(
                                 }
 
                                 // Subcategory chip if available
-                                if (course.subCategory != null) {
+                                if (course.sub_category.name != null) {
                                     Surface(
                                         color = MaterialTheme.colorScheme.secondaryContainer,
                                         shape = RoundedCornerShape(16.dp)
                                     ) {
                                         Text(
-                                            text = course.subCategory.name,
+                                            text = course.sub_category.name,
                                             color = MaterialTheme.colorScheme.onSecondaryContainer,
                                             style = MaterialTheme.typography.bodySmall,
                                             modifier = Modifier.padding(
@@ -354,27 +355,27 @@ fun CourseDetailScreen(
                             }
 
                             // Tags if available
-                            if (!course.tags.isNullOrEmpty()) {
+                            if (!course.course_tags.isNullOrEmpty()) {
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 SingleLineFlowRow(
                                     horizontalGap = 8.dp,
                                     verticalGap = 8.dp
                                 ) {
-                                    course.tags.forEach { tag ->
+                                    course.course_tags.forEach { tag ->
                                         Surface(
                                             color = MaterialTheme.colorScheme.surfaceVariant,
                                             shape = RoundedCornerShape(16.dp)
                                         ) {
-                                            Text(
-                                                text = tag,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                style = MaterialTheme.typography.bodySmall,
-                                                modifier = Modifier.padding(
-                                                    horizontal = 12.dp,
-                                                    vertical = 6.dp
-                                                )
-                                            )
+//                                            Text(
+//                                                text = tag,
+//                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                                                style = MaterialTheme.typography.bodySmall,
+//                                                modifier = Modifier.padding(
+//                                                    horizontal = 12.dp,
+//                                                    vertical = 6.dp
+//                                                )
+//                                            )
                                         }
                                     }
                                 }
@@ -395,9 +396,9 @@ fun CourseDetailScreen(
                                         verticalAlignment = Alignment.Bottom
                                     ) {
                                         // Show discounted price if available
-                                        if (course.discountedPrice != null) {
+                                        if (course.course_discounted_price != null) {
                                             Text(
-                                                text = "₹${course.discountedPrice}",
+                                                text = "₹${course.course_discounted_price}",
                                                 style = MaterialTheme.typography.headlineMedium,
                                                 fontWeight = FontWeight.Bold,
                                                 color = MaterialTheme.colorScheme.primary
@@ -406,7 +407,7 @@ fun CourseDetailScreen(
                                             Spacer(modifier = Modifier.width(8.dp))
 
                                             Text(
-                                                text = "₹${course.price}",
+                                                text = "₹${course.course_price}",
                                                 style = MaterialTheme.typography.titleMedium,
                                                 color = MaterialTheme.colorScheme.onSurface.copy(
                                                     alpha = 0.6f
@@ -418,7 +419,7 @@ fun CourseDetailScreen(
 
                                             // Discount percentage
                                             val discountPercentage =
-                                                ((course.price - course.discountedPrice) / course.price * 100).toInt()
+                                                ((course.course_price.toInt() - course.course_discounted_price.toInt()) / course.course_price.toInt() * 100).toInt()
 
                                             Surface(
                                                 color = MaterialTheme.colorScheme.errorContainer,
@@ -437,7 +438,7 @@ fun CourseDetailScreen(
                                         } else {
                                             // Regular price if no discount
                                             Text(
-                                                text = "₹${course.price}",
+                                                text = "₹${course.course_price}",
                                                 style = MaterialTheme.typography.headlineMedium,
                                                 fontWeight = FontWeight.Bold,
                                                 color = MaterialTheme.colorScheme.primary
@@ -495,7 +496,7 @@ fun CourseDetailScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             Text(
-                                text = course.description,
+                                text = course.course_description,
                                 style = MaterialTheme.typography.bodyLarge
                             )
 
@@ -572,9 +573,9 @@ fun CourseDetailScreen(
             }
 
             // Video preview dialog
-            if (showPreview && uiState.course?.previewUrl != null) {
+            if (showPreview && uiState.course?.image != null) {
                 VideoPreviewDialog(
-                    videoUrl = uiState.course!!.previewUrl!!,
+                    videoUrl = uiState.course!!.image!!,
                     onDismiss = { showPreview = false }
                 )
             }

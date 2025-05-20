@@ -14,6 +14,7 @@ class AuthInterceptor(
         // Get JWT token from shared preferences
         val token = sharedPrefsManager.getAuthToken()
 
+
         // If token is not available, proceed with the original request
         if (token.isNullOrEmpty()) {
             return chain.proceed(originalRequest)

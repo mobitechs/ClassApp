@@ -59,3 +59,10 @@ data class Student(
     val signature: Any,
     val updated_at: String
 )
+
+
+data class ErrorResponse(
+    val status: Boolean,
+    val status_code: Int,
+    val message: String
+)

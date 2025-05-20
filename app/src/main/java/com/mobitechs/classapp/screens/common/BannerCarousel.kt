@@ -5,9 +5,12 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -25,14 +28,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.mobitechs.classapp.data.model.response.OfferBanner
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BannerCarousel(
-    banners: List<String>,
+    banners: List<OfferBanner>,
     modifier: Modifier = Modifier,
-    autoScrollDuration: Long = 5000
+    autoScrollDuration: Long = 3000
 ) {
     if (banners.isEmpty()) return
 
@@ -49,39 +53,37 @@ fun BannerCarousel(
         }
     }
 
-    Box(modifier = modifier) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxWidth()
-            ) { page ->
-                AsyncImage(
-                    model = banners[page],
-                    contentDescription = "Banner ${page + 1}",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(16f / 9f)
-                )
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(modifier = modifier) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(4.dp)
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxWidth()
+                ) { page ->
+                    AsyncImage(
+                        model = banners[page].banner_url,
+                        contentDescription = "Banner ${page + 1}",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(16f / 9f)
+                    )
+                }
             }
         }
-
+        Spacer(modifier = Modifier.height(16.dp))
         // Page indicators at the bottom
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
-        ) {
-            PageIndicator(
-                pageCount = banners.size,
-                currentPage = pagerState.currentPage
-            )
-        }
+        PageIndicator(
+            pageCount = banners.size,
+            currentPage = pagerState.currentPage
+        )
     }
+
+
 }
 
 @Composable

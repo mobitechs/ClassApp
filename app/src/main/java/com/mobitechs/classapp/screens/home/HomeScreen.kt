@@ -1,7 +1,5 @@
 package com.mobitechs.classapp.screens.home
 
-
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +36,7 @@ import androidx.compose.material.icons.filled.YoutubeSearchedFor
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,17 +50,14 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,13 +73,12 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.local.SharedPrefsManager
-import com.mobitechs.classapp.data.model.Category
+import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.screens.common.BannerCarousel
 import com.mobitechs.classapp.screens.common.CourseCard
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
-import com.mobitechs.classapp.utils.showToast
 import kotlinx.coroutines.launch
 
 
@@ -102,8 +97,6 @@ fun HomeScreen(
     val gson by lazy { Gson() }
     val sharedPrefsManager by lazy { SharedPrefsManager(context, gson) }
     val user = sharedPrefsManager.getUser()
-
-
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -131,11 +124,11 @@ fun HomeScreen(
             topBar = {
                 MediumTopAppBar(
                     title = {
-                        Text(
-                            text = "Class Connect",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+//                        Text(
+//                            text = "Class Connect22",
+//                            maxLines = 1,
+//                            overflow = TextOverflow.Ellipsis
+//                        )
                     },
                     navigationIcon = {
                         IconButton(
@@ -188,8 +181,8 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // Loading state
-                if (uiState.isLoading) {
+                // Only show the loading indicator during initial load
+                if (uiState.isInitialLoading) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -199,23 +192,16 @@ fun HomeScreen(
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-                }
-                // Error state
-                else if (uiState.error.isNotEmpty()) {
-                    ErrorView(
-                        message = uiState.error,
-                        onRetry = { viewModel.loadHomeData() }
-                    )
-                }
-                // Content
-                else {
+                } else {
+                    // Always show HomeContent, each section handles its own loading/error state
                     HomeContent(
                         uiState = uiState,
                         onCourseClick = { courseId ->
                             navController.navigate("course_details/$courseId")
                         },
                         onCategoryClick = { categoryId ->
-                            navController.navigate("category/$categoryId")
+//                            navController.navigate("category/$categoryId")
+                            navController.navigate("categoryScreen")
                         },
                         onFavoriteClick = { courseId ->
                             viewModel.toggleFavorite(courseId)
@@ -225,11 +211,14 @@ fun HomeScreen(
                                 "featured" -> navController.navigate("courses?type=featured")
                                 "popular" -> navController.navigate("courses?type=popular")
                                 "offers" -> navController.navigate("courses?type=offers")
-                                "categories" -> navController.navigate("categories")
+                                "categories" -> navController.navigate("categoryScreen")
                             }
                         },
                         onReferralClick = {
                             navController.navigate("referral")
+                        },
+                        onRetrySection = { section ->
+                            viewModel.retryLoadSection(section)
                         }
                     )
                 }
@@ -245,131 +234,267 @@ fun HomeContent(
     onCategoryClick: (String) -> Unit,
     onFavoriteClick: (String) -> Unit,
     onSeeAllClick: (String) -> Unit,
-    onReferralClick: () -> Unit
+    onReferralClick: () -> Unit,
+    onRetrySection: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        // Banner carousel
-        if (uiState.banners.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(16.dp))
-            BannerCarousel(
-                banners = uiState.banners,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
+        //section - Banner carousel
+        SectionTitle(
+            title = "Special Offers",
+
+        )
+        //
+        Spacer(modifier = Modifier.height(16.dp))
+        when {
+            uiState.offersBannersLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp)
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                }
+            }
+
+            uiState.offersBannersError.isNotEmpty() -> {
+                SectionErrorView(
+                    message = uiState.offersBannersError,
+                    onRetry = { onRetrySection("offersBanners") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp)
+                        .padding(horizontal = 16.dp)
+                )
+            }
+
+            uiState.offersBanners.isNotEmpty() -> {
+                BannerCarousel(
+                    banners = uiState.offersBanners,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            }
         }
 
-        // Special offers section
-        if (uiState.offers.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(24.dp))
-            SectionTitle(
-                title = "Special Offers",
-                onSeeAllClick = { onSeeAllClick("offers") }
-            )
+        // Popular courses section
+        Spacer(modifier = Modifier.height(24.dp))
+        SectionTitle(
+            title = "Popular Courses",
+            onSeeAllClick = { onSeeAllClick("popular") }
+        )
 
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(uiState.offers) { course ->
-                    CourseCard(
-                        title = course.title,
-                        instructor = course.instructor,
-                        imageUrl = course.thumbnail,
-                        rating = course.rating,
-                        price = "₹${course.discountedPrice ?: course.price}",
-                        discountedPrice = if (course.discountedPrice != null) "₹${course.price}" else null,
-                        isFavorite = course.isFavorite,
-                        onClick = { onCourseClick(course.id) },
-                        onFavoriteClick = { onFavoriteClick(course.id) }
-                    )
+        when {
+            uiState.popularCoursesLoading -> {
+                Box(
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                }
+            }
+
+            uiState.popularCoursesError.isNotEmpty() -> {
+                SectionErrorView(
+                    message = uiState.popularCoursesError,
+                    onRetry = { onRetrySection("popularCourses") },
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            }
+
+            uiState.popularCourses.isNotEmpty() -> {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(uiState.popularCourses) { course ->
+                        CourseCard(
+                            title = course.course_name,
+                            instructor = course.course_description,
+                            imageUrl = course.image,
+                            rating = 5f,
+                            likes = course.course_like,
+                            price = "₹${course.course_discounted_price ?: course.course_price}",
+                            discountedPrice = if (course.course_discounted_price != null) "₹${course.course_price}" else null,
+                            isFavorite = false,
+                            onClick = { onCourseClick(course.id.toString()) },
+                            onFavoriteClick = { onFavoriteClick(course.id.toString()) }
+                        )
+                    }
+                }
+            }
+        }
+
+
+        // Categories grid
+        Spacer(modifier = Modifier.height(24.dp))
+        SectionTitle(
+            title = "Categories",
+            //onSeeAllClick = { onSeeAllClick("categories") }
+        )
+
+        when {
+            uiState.categoriesLoading -> {
+                Box(
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                }
+            }
+
+            uiState.categoriesError.isNotEmpty() -> {
+                SectionErrorView(
+                    message = uiState.categoriesError,
+                    onRetry = { onRetrySection("categories") },
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            }
+
+            uiState.categories.isNotEmpty() -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth()
+                ) {
+                    items(uiState.categories.take(6)) { category ->
+                        CategoryItemUI(
+                            category = category,
+                            onClick = { onCategoryClick(category.id.toString()) }
+                        )
+                    }
+                }
+            }
+        }
+
+        // section - Notice Board
+        Spacer(modifier = Modifier.height(24.dp))
+        SectionTitle(
+            title = "Notice Board",
+            onSeeAllClick = { onSeeAllClick("offers") }
+        )
+
+        when {
+            uiState.noticeBoardLoading -> {
+                Box(
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                }
+            }
+
+            uiState.noticeBoardError.isNotEmpty() -> {
+                SectionErrorView(
+                    message = uiState.noticeBoardError,
+                    onRetry = { onRetrySection("noticeBoard") },
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            }
+
+            uiState.noticeBoard.isNotEmpty() -> {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(uiState.noticeBoard) { board ->
+                        CourseCard(
+                            title = board.notice_title,
+                            instructor = "",
+                            imageUrl = board.url,
+                            rating = 5f,
+                            likes = board.course.course_like,
+                            price = "₹${board.course.course_discounted_price ?: board.course.course_price}",
+                            discountedPrice = if (board.course.course_discounted_price != null) "₹${board.course.course_price}" else null,
+                            isFavorite = false,
+                            onClick = { onCourseClick(board.course.id.toString()) },
+                            onFavoriteClick = { onFavoriteClick(board.course.id.toString()) }
+                        )
+                    }
                 }
             }
         }
 
         // Featured courses section
-        if (uiState.featuredCourses.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(24.dp))
-            SectionTitle(
-                title = "Featured Courses",
-                onSeeAllClick = { onSeeAllClick("featured") }
-            )
+        Spacer(modifier = Modifier.height(24.dp))
+        SectionTitle(
+            title = "Featured Courses",
+            onSeeAllClick = { onSeeAllClick("featured") }
+        )
 
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(uiState.featuredCourses) { course ->
-                    CourseCard(
-                        title = course.title,
-                        instructor = course.instructor,
-                        imageUrl = course.thumbnail,
-                        rating = course.rating,
-                        price = "₹${course.discountedPrice ?: course.price}",
-                        discountedPrice = if (course.discountedPrice != null) "₹${course.price}" else null,
-                        isFavorite = course.isFavorite,
-                        onClick = { onCourseClick(course.id) },
-                        onFavoriteClick = { onFavoriteClick(course.id) }
-                    )
+        when {
+            uiState.featuredCoursesLoading -> {
+                Box(
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                }
+            }
+
+            uiState.featuredCoursesError.isNotEmpty() -> {
+                SectionErrorView(
+                    message = uiState.featuredCoursesError,
+                    onRetry = { onRetrySection("featuredCourses") },
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            }
+
+            uiState.featuredCourses.isNotEmpty() -> {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(uiState.featuredCourses) { course ->
+                        CourseCard(
+                            title = course.course_name,
+                            instructor = course.course_description,
+                            imageUrl = course.image,
+                            rating = 5f,
+                            likes = course.course_like,
+                            price = "₹${course.course_discounted_price ?: course.course_price}",
+                            discountedPrice = if (course.course_discounted_price != null) "₹${course.course_price}" else null,
+                            isFavorite = false,
+                            onClick = { onCourseClick(course.id.toString()) },
+                            onFavoriteClick = { onFavoriteClick(course.id.toString()) }
+                        )
+                    }
                 }
             }
         }
 
-        // Categories grid
-        if (uiState.categories.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(24.dp))
-            SectionTitle(
-                title = "Categories",
-                onSeeAllClick = { onSeeAllClick("categories") }
-            )
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                modifier = Modifier
-                    .height(200.dp)
-                    .fillMaxWidth()
-            ) {
-                items(uiState.categories.take(6)) { category ->
-                    CategoryItem(
-                        category = category,
-                        onClick = { onCategoryClick(category.id) }
-                    )
-                }
-            }
-        }
-
-        // Popular courses section
-        if (uiState.popularCourses.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(24.dp))
-            SectionTitle(
-                title = "Popular Courses",
-                onSeeAllClick = { onSeeAllClick("popular") }
-            )
-
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(uiState.popularCourses) { course ->
-                    CourseCard(
-                        title = course.title,
-                        instructor = course.instructor,
-                        imageUrl = course.thumbnail,
-                        rating = course.rating,
-                        price = "₹${course.discountedPrice ?: course.price}",
-                        discountedPrice = if (course.discountedPrice != null) "₹${course.price}" else null,
-                        isFavorite = course.isFavorite,
-                        onClick = { onCourseClick(course.id) },
-                        onFavoriteClick = { onFavoriteClick(course.id) }
-                    )
-                }
-            }
-        }
 
         // Referral banner
         Spacer(modifier = Modifier.height(32.dp))
@@ -470,8 +595,58 @@ fun HomeContent(
 }
 
 @Composable
-fun CategoryItem(
-    category: Category,
+fun SectionErrorView(
+    message: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Error,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(32.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            TextButton(
+                onClick = onRetry,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Retry")
+            }
+        }
+    }
+}
+
+@Composable
+fun CategoryItemUI(
+    category: CategoryItem,
     onClick: () -> Unit
 ) {
     Column(
@@ -488,12 +663,12 @@ fun CategoryItem(
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primaryContainer)
         ) {
-            AsyncImage(
-                model = category.icon,
-                contentDescription = category.name,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(36.dp)
-            )
+//            AsyncImage(
+//                model = category.icon,
+//                contentDescription = category.name,
+//                contentScale = ContentScale.Fit,
+//                modifier = Modifier.size(36.dp)
+//            )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -504,7 +679,7 @@ fun CategoryItem(
             style = MaterialTheme.typography.bodyMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            textAlign = TextAlign.Center
         )
     }
 }

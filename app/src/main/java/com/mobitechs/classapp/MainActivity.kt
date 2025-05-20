@@ -46,6 +46,8 @@ import com.mobitechs.classapp.screens.store.CourseDetailScreen
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreScreen
 import com.mobitechs.classapp.screens.store.StoreViewModel
+import com.mobitechs.classapp.screens.subCategory.CategoryScreen
+import com.mobitechs.classapp.screens.subCategory.SubCategoryViewModel
 import com.mobitechs.classapp.ui.theme.ClassConnectTheme
 
 class MainActivity : ComponentActivity() {
@@ -270,6 +272,13 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                     navController = navController
                 )
             }
+            composable(Screen.CategoryScreen.route) {
+                val viewModel: SubCategoryViewModel = viewModel(factory = viewModelFactory)
+                CategoryScreen(
+                    viewModel = viewModel,
+                    navController = navController
+                )
+            }
 
 
         }
@@ -294,5 +303,6 @@ sealed class Screen(val route: String) {
     object PrivacyPolicy : Screen("privacyPolicy")
     object TermCondition : Screen("termCondition")
     object Feedback : Screen("feedback")
+    object CategoryScreen : Screen("categoryScreen")
     // Add other screens as needed
 }

@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SectionTitle(
     title: String,
-    onSeeAllClick: () -> Unit,
+    onSeeAllClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -32,13 +32,15 @@ fun SectionTitle(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
-
-        TextButton(onClick = onSeeAllClick) {
-            Text(
-                text = "See All",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+        // Only show the button if onSeeAllClick is not null
+        if (onSeeAllClick != null) {
+            TextButton(onClick = onSeeAllClick) {
+                Text(
+                    text = "See All",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

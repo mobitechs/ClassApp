@@ -4,8 +4,9 @@ package com.mobitechs.classapp.screens.store
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mobitechs.classapp.data.model.Course
+
 import com.mobitechs.classapp.data.model.PaymentResponse
+import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,7 +74,7 @@ class CourseDetailViewModel(
         uiState.value.course?.id?.let { courseId ->
             viewModelScope.launch {
                 try {
-                    val result = courseRepository.toggleFavorite(courseId)
+                    val result = courseRepository.toggleFavorite(courseId.toString())
 
                     // Update the course in the state
                     _uiState.update { state ->
@@ -91,7 +92,7 @@ class CourseDetailViewModel(
         uiState.value.course?.id?.let { courseId ->
             viewModelScope.launch {
                 try {
-                    val result = courseRepository.toggleWishlist(courseId)
+                    val result = courseRepository.toggleWishlist(courseId.toString())
 
                     // Update the course in the state
                     _uiState.update { state ->
@@ -111,7 +112,7 @@ class CourseDetailViewModel(
 
             viewModelScope.launch {
                 try {
-                    val paymentResponse = paymentRepository.initiatePayment(courseId)
+                    val paymentResponse = paymentRepository.initiatePayment(courseId.toString())
 
                     _uiState.update {
                         it.copy(
