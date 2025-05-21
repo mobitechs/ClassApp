@@ -75,12 +75,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.gson.Gson
 import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SecondaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
 
 /**
  * Main Store Screen - Redesigned for better user experience
@@ -272,8 +274,10 @@ fun StoreScreen(
                         // Course grid with improved spacing
                         CoursesGrid(
                             courses = uiState.filteredCourses,
-                            onCourseClick = { courseId ->
-                                navController.navigate("course_details/$courseId")
+                            onCourseClick = { course ->
+//                                navController.navigate("course_details/$course")
+                                val courseJson = URLEncoder.encode(Gson().toJson(course), "UTF-8")
+                                navController.navigate("course_detail?courseJson=$courseJson")
                             }
                         )
                     }
@@ -681,7 +685,8 @@ fun PriceFilterContent(
 @Composable
 fun CoursesGrid(
     courses: List<Course>,
-    onCourseClick: (String) -> Unit
+//    onCourseClick: (String) -> Unit
+    onCourseClick: (Course) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -693,7 +698,8 @@ fun CoursesGrid(
         items(courses) { course ->
             ImprovedCourseCard2(
                 course = course,
-                onCourseClick = { onCourseClick(course.id.toString()) }
+                onCourseClick = { onCourseClick(course) }
+//                onCourseClick = { onCourseClick(course.id.toString()) }
             )
         }
     }

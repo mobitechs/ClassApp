@@ -83,6 +83,11 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.billing)
 //    kapt(libs.androidx.room.compiler)
     annotationProcessor(libs.androidx.room.compiler)
 
@@ -95,7 +100,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Razorpay for payments
-    implementation("com.razorpay:checkout:1.6.33")
+    implementation("com.razorpay:checkout:1.6.41")
 
     // ExoPlayer for video playback
     implementation("androidx.media3:media3-exoplayer:1.2.0")

@@ -4,7 +4,6 @@ package com.mobitechs.classapp.screens.store
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-
 import com.mobitechs.classapp.data.model.PaymentResponse
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.repository.CourseRepository
@@ -20,7 +19,8 @@ data class CourseDetailUiState(
     val error: String = "",
     val course: Course? = null,
     val isProcessingPayment: Boolean = false,
-    val paymentData: PaymentResponse? = null
+    val paymentData: PaymentResponse? = null,
+    val isCoursePreloaded: Boolean = false // ✅ NEW
 )
 
 class CourseDetailViewModel(
@@ -34,15 +34,23 @@ class CourseDetailViewModel(
 
     private val courseId: String = savedStateHandle?.get<String>("courseId") ?: ""
 
+
     init {
         if (courseId.isNotEmpty()) {
             loadCourseDetails()
         }
+
     }
 
     fun setCourseId(id: String) {
         if (id.isNotEmpty() && id != courseId) {
             loadCourseDetails(id)
+        }
+    }
+
+    fun setCourse(course: Course) {
+        _uiState.update {
+            it.copy(course = course, isLoading = false, isCoursePreloaded = true)
         }
     }
 
@@ -128,6 +136,39 @@ class CourseDetailViewModel(
                         )
                     }
                 }
+            }
+        }
+    }
+
+    fun updatePurchaseStatus(
+        courseId: String,
+        paymentId: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                // Make API call to your backend
+                // val result = apiService.updatePurchaseStatus(courseId, paymentId)
+
+                // Update local state
+                _uiState.update { currentState ->
+                    val updatedCourse = currentState.course?.copy(isPurchased = true)
+                    currentState.copy(
+                        course = updatedCourse,
+                        isProcessingPayment = false
+                    )
+                }
+
+                onSuccess()
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        error = "Failed to update purchase: ${e.message}",
+                        isProcessingPayment = false
+                    )
+                }
+                onError(e.message ?: "Unknown error")
             }
         }
     }

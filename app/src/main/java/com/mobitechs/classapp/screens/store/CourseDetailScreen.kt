@@ -2,6 +2,8 @@ package com.mobitechs.classapp.screens.store
 
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,10 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -34,8 +34,6 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -45,7 +43,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -69,20 +66,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.gson.Gson
+import com.mobitechs.classapp.data.local.SharedPrefsManager
+import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.screens.home.ErrorView
+import com.mobitechs.classapp.screens.payment.PaymentActivity
 import com.mobitechs.classapp.utils.Constants
+import com.mobitechs.classapp.utils.showToast
 import com.razorpay.Checkout
 import org.json.JSONObject
+import java.net.URLDecoder
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseDetailScreen(
+    courseJson: String?,
     navController: NavController,
     viewModel: CourseDetailViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var showPreview by remember { mutableStateOf(false) }
+
+    val gson by lazy { Gson() }
+    val sharedPrefsManager by lazy { SharedPrefsManager(context, gson) }
+    val user = sharedPrefsManager.getUser()
+
+    val courseObject = remember { mutableStateOf(Gson().fromJson(courseJson, Course::class.java)) }
+    LaunchedEffect(courseJson) {
+        if (uiState.course == null && !courseJson.isNullOrEmpty()) {
+            val decodedJson = URLDecoder.decode(courseJson, "UTF-8")
+            val course = Gson().fromJson(decodedJson, Course::class.java)
+            viewModel.setCourse(course)
+        }
+    }
 
     // Handle payment initialization
     LaunchedEffect(uiState.paymentData) {
@@ -97,10 +118,7 @@ fun CourseDetailScreen(
                 options.put("description", "Payment for ${uiState.course?.course_name}")
                 options.put("order_id", paymentData.orderId)
                 options.put("currency", paymentData.currency)
-                options.put(
-                    "amount",
-                    (paymentData.amount.toInt() * 100).toInt()
-                ) // Amount in smallest currency unit
+                options.put("amount", (paymentData.amount.toInt() * 100).toInt()) // Amount in smallest currency unit
 
                 val prefill = JSONObject()
                 prefill.put("email", "")
@@ -199,6 +217,7 @@ fun CourseDetailScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
+                            .padding(bottom = 80.dp) // Add padding for the floating button
                     ) {
                         // Course thumbnail with preview button overlay
                         Box(
@@ -243,81 +262,7 @@ fun CourseDetailScreen(
                         Column(
                             modifier = Modifier.padding(16.dp)
                         ) {
-                            // Title
-                            Text(
-                                text = course.course_name,
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            // Instructor
-                            Text(
-                                text = "By ${course.instructor}",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // Rating row
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Star rating
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Star,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.secondary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-
-                                    Spacer(modifier = Modifier.width(4.dp))
-
-                                    Text(
-                                        text = course.course_like.toString(),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                    Spacer(modifier = Modifier.width(4.dp))
-
-//                                    Text(
-//                                        text = "(${course.totalRatings} ratings)",
-//                                        style = MaterialTheme.typography.bodyMedium,
-//                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-//                                    )
-                                }
-
-                                Spacer(modifier = Modifier.width(16.dp))
-
-                                // Students count
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.People,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                                        modifier = Modifier.size(20.dp)
-                                    )
-
-                                    Spacer(modifier = Modifier.width(4.dp))
-
-                                    Text(
-                                        text = "10 students",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
+                            // Move tags to appear above course name
                             // Categories and tags
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -385,106 +330,129 @@ fun CourseDetailScreen(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(24.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                            // Price section
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
-                                elevation = CardDefaults.cardElevation(4.dp)
+                            // Title
+                            Text(
+                                text = course.course_name,
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Instructor
+                            Text(
+                                text = "By ${course.instructor}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Rating row
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp)
+                                // Star rating
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Row(
-                                        verticalAlignment = Alignment.Bottom
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.secondary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+
+                                    Spacer(modifier = Modifier.width(4.dp))
+
+                                    Text(
+                                        text = course.course_like.toString(),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                }
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                // Students count
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.People,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+
+                                    Spacer(modifier = Modifier.width(4.dp))
+
+                                    Text(
+                                        text = "10 students",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Price section directly below rating without card
+                            Row(
+                                verticalAlignment = Alignment.Bottom
+                            ) {
+                                // Show discounted price if available
+                                if (course.course_discounted_price != null) {
+                                    Text(
+                                        text = "₹${course.course_price}",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(
+                                            alpha = 0.6f
+                                        ),
+                                        textDecoration = TextDecoration.LineThrough
+                                    )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    Text(
+                                        text = "₹${course.course_discounted_price}",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    // Discount percentage
+                                    val discountPercentage =
+                                        ((course.course_price.toDouble() - course.course_discounted_price.toDouble()) / course.course_price.toDouble() * 100).toInt()
+
+                                    Surface(
+                                        color = MaterialTheme.colorScheme.errorContainer,
+                                        shape = RoundedCornerShape(4.dp)
                                     ) {
-                                        // Show discounted price if available
-                                        if (course.course_discounted_price != null) {
-                                            Text(
-                                                text = "₹${course.course_discounted_price}",
-                                                style = MaterialTheme.typography.headlineMedium,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.primary
+                                        Text(
+                                            text = "$discountPercentage% OFF",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onErrorContainer,
+                                            modifier = Modifier.padding(
+                                                horizontal = 6.dp,
+                                                vertical = 2.dp
                                             )
-
-                                            Spacer(modifier = Modifier.width(8.dp))
-
-                                            Text(
-                                                text = "₹${course.course_price}",
-                                                style = MaterialTheme.typography.titleMedium,
-                                                color = MaterialTheme.colorScheme.onSurface.copy(
-                                                    alpha = 0.6f
-                                                ),
-                                                textDecoration = TextDecoration.LineThrough
-                                            )
-
-                                            Spacer(modifier = Modifier.width(8.dp))
-
-                                            // Discount percentage
-                                            val discountPercentage =
-                                                ((course.course_price.toInt() - course.course_discounted_price.toInt()) / course.course_price.toInt() * 100).toInt()
-
-                                            Surface(
-                                                color = MaterialTheme.colorScheme.errorContainer,
-                                                shape = RoundedCornerShape(4.dp)
-                                            ) {
-                                                Text(
-                                                    text = "$discountPercentage% OFF",
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    color = MaterialTheme.colorScheme.onErrorContainer,
-                                                    modifier = Modifier.padding(
-                                                        horizontal = 6.dp,
-                                                        vertical = 2.dp
-                                                    )
-                                                )
-                                            }
-                                        } else {
-                                            // Regular price if no discount
-                                            Text(
-                                                text = "₹${course.course_price}",
-                                                style = MaterialTheme.typography.headlineMedium,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.primary
-                                            )
-                                        }
+                                        )
                                     }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    // Buy button
-                                    if (course.isPurchased) {
-                                        Button(
-                                            onClick = { /* Navigate to course content */ },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = MaterialTheme.colorScheme.secondary
-                                            )
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.PlayArrow,
-                                                contentDescription = null,
-                                                modifier = Modifier.padding(end = 8.dp)
-                                            )
-                                            Text("Go to Course")
-                                        }
-                                    } else {
-                                        Button(
-                                            onClick = { viewModel.initiatePayment() },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            enabled = !uiState.isProcessingPayment
-                                        ) {
-                                            if (uiState.isProcessingPayment) {
-                                                CircularProgressIndicator(
-                                                    modifier = Modifier.size(20.dp),
-                                                    strokeWidth = 2.dp,
-                                                    color = MaterialTheme.colorScheme.onPrimary
-                                                )
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                            }
-                                            Text("Buy Now")
-                                        }
-                                    }
+                                } else {
+                                    // Regular price if no discount
+                                    Text(
+                                        text = "₹${course.course_price}",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
                                 }
                             }
 
@@ -504,62 +472,51 @@ fun CourseDetailScreen(
                                 style = MaterialTheme.typography.bodyLarge
                             )
 
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            // Help section
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                                )
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Chat,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSecondaryContainer
-                                    )
-
-                                    Spacer(modifier = Modifier.width(16.dp))
-
-                                    Column(
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = "Facing any difficulties?",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                                        )
-
-                                        Text(
-                                            text = "Talk to our support team",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(
-                                                alpha = 0.8f
-                                            )
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.width(16.dp))
-
-                                    IconButton(
-                                        onClick = { navController.navigate("chat") }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.ArrowForward,
-                                            contentDescription = "Chat now",
-                                            tint = MaterialTheme.colorScheme.onSecondaryContainer
-                                        )
-                                    }
-                                }
-                            }
 
                             Spacer(modifier = Modifier.height(24.dp))
                         }
+                    }
+
+                    // Floating Buy Now button positioned at the bottom
+                    Button(
+                        onClick = {
+
+//                            openPaymentGateway(context,user!!,courseObject.value!!)
+
+//                             Launch the PaymentActivity
+                            courseObject.value?.let { course ->
+                                user?.let { userDetails ->
+                                    val intent = Intent(context, PaymentActivity::class.java).apply {
+                                        putExtra("COURSE_DATA", gson.toJson(course))
+                                        putExtra("USER_DATA", gson.toJson(userDetails))
+                                    }
+                                    context.startActivity(intent)
+                                }
+                            }
+                                  },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = ButtonDefaults.elevatedButtonElevation(
+                            defaultElevation = 6.dp,
+                            pressedElevation = 8.dp
+                        ),
+                        enabled = !uiState.isProcessingPayment
+                    ) {
+                        if (uiState.isProcessingPayment) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Text(
+                            text = if (course.isPurchased) "Go to Course" else "Buy Now",
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
                     }
                 }
             }
@@ -584,6 +541,41 @@ fun CourseDetailScreen(
                 )
             }
         }
+    }
+}
+
+
+
+fun createOrderId(): String {
+    val sdf = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
+    val currentDate = sdf.format(Date())
+    return "ORDER_$currentDate"
+}
+
+fun openPaymentGateway(context: Context, userDetails: Student,courseDetails:Course) {
+    val currency = "INR"
+    val order_id = createOrderId()
+    try {
+//        Initialize Razorpay checkout
+        val checkout = Checkout()
+        checkout.setKeyID(Constants.RAZORPAY_KEY_ID)
+
+        val options = JSONObject()
+        options.put("name", "Class Connect")
+        options.put("description", "Payment for ${courseDetails.course_name}")
+        options.put("order_id", order_id)
+        options.put("currency", currency)
+        options.put("amount", (courseDetails.course_discounted_price.toDouble() * 100).toInt()) // Amount in smallest currency unit
+
+        val prefill = JSONObject()
+        prefill.put("email", userDetails!!.email)
+        prefill.put("contact", userDetails!!.phone)
+        options.put("prefill", prefill)
+
+        checkout.open(context as Activity, options)
+    } catch (e: Exception) {
+        // Handle payment initialization error
+        showToast(context, e.message.toString())
     }
 }
 

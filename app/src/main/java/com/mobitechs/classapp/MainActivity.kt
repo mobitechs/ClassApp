@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -50,13 +49,16 @@ import com.mobitechs.classapp.screens.subCategory.CategoryScreen
 import com.mobitechs.classapp.screens.subCategory.SubCategoryViewModel
 import com.mobitechs.classapp.ui.theme.ClassConnectTheme
 
+
 class MainActivity : ComponentActivity() {
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Get repositories from application class
         val app = application as ClassConnectApp
+
 
         // Create ViewModel factory
         val viewModelFactory = ViewModelFactory(
@@ -155,7 +157,6 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
             }
 
 
-
             // Main screens
             composable(Screen.Home.route) {
                 val homeViewModel: HomeViewModel = viewModel(factory = viewModelFactory)
@@ -189,25 +190,50 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            // Detail screens
+            // Course Detail screens
+//            composable(
+//                route = "course_details/{courseId}",
+//                arguments = listOf(navArgument("courseId") { type = NavType.StringType })
+//            ) {
+//                val courseDetailViewModel: CourseDetailViewModel =
+//                    viewModel(factory = viewModelFactory)
+//                CourseDetailScreen(
+//                    viewModel = courseDetailViewModel,
+//                    navController = navController
+//                )
+//            }
+
+//            composable("course_details/{jsonObject}", arguments = listOf(navArgument("jsonObject") {
+//                    type = NavType.StringType
+//                    defaultValue = "{}" // Use empty JSON instead of "null"
+//                })
+//            ) { backStackEntry ->
+//                val jsonObject = backStackEntry.arguments?.getString("jsonObject")
+//                val courseDetailViewModel: CourseDetailViewModel = viewModel(factory = viewModelFactory)
+//                CourseDetailScreen(jsonObject = jsonObject, viewModel = courseDetailViewModel, navController = navController)
+//            }
+
+
             composable(
-                route = "course_details/{courseId}",
-                arguments = listOf(navArgument("courseId") { type = NavType.StringType })
+                "course_detail?courseJson={courseJson}",
+                arguments = listOf(
+                    navArgument("courseJson") {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    }
+                )
             ) {
                 val courseDetailViewModel: CourseDetailViewModel =
                     viewModel(factory = viewModelFactory)
+                val courseJson = it.arguments?.getString("courseJson")
                 CourseDetailScreen(
-                    viewModel = courseDetailViewModel,
-                    navController = navController
+                    courseJson = courseJson,
+                    navController = navController,
+                    viewModel = courseDetailViewModel
                 )
             }
 
-            composable(
-                route = "study_material/{materialId}",
-                arguments = listOf(navArgument("materialId") { type = NavType.StringType })
-            ) {
-                // Study material screen implementation
-            }
+
 
             composable(Screen.FreeContent.route) {
                 val viewModel: FreeContentViewModel = viewModel(factory = viewModelFactory)

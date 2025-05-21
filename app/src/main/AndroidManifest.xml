@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -11,7 +15,8 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
-
+    <uses-permission android:name="android.permission.READ_SMS" /> <!-- For OTP detection -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
 
     <application
         android:name=".ClassConnectApp"
@@ -24,6 +29,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ClassApp"
         tools:targetApi="31">
+        <activity
+            android:name=".screens.payment.PaymentActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ClassApp" />
+
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -46,14 +58,10 @@
                     android:host="app"
                     android:scheme="classconnect" />
             </intent-filter>
-        </activity>
-
-        <!-- RazorPay Integration -->
+        </activity> <!-- RazorPay Integration -->
         <meta-data
             android:name="com.razorpay.ApiKey"
-            android:value="rzp_test_xxxxxxxxxxxxxxx" />
-
-
+            android:value="rzp_test_Wjyo4GzP0wDOnH" />
     </application>
 
 </manifest>
