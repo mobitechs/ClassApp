@@ -15,6 +15,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerScreen
+import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.auth.LoginScreen
 import com.mobitechs.classapp.screens.auth.RegisterScreen
@@ -233,6 +235,30 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
+            composable(
+                "video_player?courseJson={courseJson}/videoUrl={videoUrl}",
+                arguments = listOf(
+                    navArgument("courseJson") {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    },
+                    navArgument("videoUrl") {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    }
+                )
+            ) {
+                val viewModel: VideoPlayerViewModel = viewModel(factory = viewModelFactory)
+                val courseJson = it.arguments?.getString("courseJson")
+                val videoUrl = it.arguments?.getString("videoUrl")
+
+                VideoPlayerScreen(
+                    courseJson = courseJson,
+                    videoUrl = videoUrl,
+                    navController = navController,
+                    viewModel = viewModel
+                )
+            }
 
 
             composable(Screen.FreeContent.route) {
@@ -330,5 +356,6 @@ sealed class Screen(val route: String) {
     object TermCondition : Screen("termCondition")
     object Feedback : Screen("feedback")
     object CategoryScreen : Screen("categoryScreen")
+    object VideoPlayerScreen : Screen("videoPlayerScreen")
     // Add other screens as needed
 }

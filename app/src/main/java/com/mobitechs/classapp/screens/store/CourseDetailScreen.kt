@@ -3,7 +3,6 @@ package com.mobitechs.classapp.screens.store
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -71,12 +70,12 @@ import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.screens.home.ErrorView
-import com.mobitechs.classapp.screens.payment.PaymentActivity
 import com.mobitechs.classapp.utils.Constants
 import com.mobitechs.classapp.utils.showToast
 import com.razorpay.Checkout
 import org.json.JSONObject
 import java.net.URLDecoder
+import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -118,7 +117,10 @@ fun CourseDetailScreen(
                 options.put("description", "Payment for ${uiState.course?.course_name}")
                 options.put("order_id", paymentData.orderId)
                 options.put("currency", paymentData.currency)
-                options.put("amount", (paymentData.amount.toInt() * 100).toInt()) // Amount in smallest currency unit
+                options.put(
+                    "amount",
+                    (paymentData.amount.toInt() * 100).toInt()
+                ) // Amount in smallest currency unit
 
                 val prefill = JSONObject()
                 prefill.put("email", "")
@@ -481,19 +483,25 @@ fun CourseDetailScreen(
                     Button(
                         onClick = {
 
-//                            openPaymentGateway(context,user!!,courseObject.value!!)
+//                                  Launch the PaymentActivity
+//                                    courseObject.value?.let { course ->
+//                                        user?.let { userDetails ->
+//                                            val intent = Intent(context, PaymentActivity::class.java).apply {
+//                                                putExtra("COURSE_DATA", gson.toJson(course))
+//                                                putExtra("USER_DATA", gson.toJson(userDetails))
+//                                            }
+//                                            context.startActivity(intent)
+//                                        }
+//                                    }
 
-//                             Launch the PaymentActivity
-                            courseObject.value?.let { course ->
-                                user?.let { userDetails ->
-                                    val intent = Intent(context, PaymentActivity::class.java).apply {
-                                        putExtra("COURSE_DATA", gson.toJson(course))
-                                        putExtra("USER_DATA", gson.toJson(userDetails))
-                                    }
-                                    context.startActivity(intent)
-                                }
-                            }
-                                  },
+//                            play video
+
+
+                            val courseJson = URLEncoder.encode(gson.toJson(courseObject), "UTF-8")
+                            val videoUrl = Constants.video1 // or your actual video URL
+
+                            navController.navigate("video_player?courseJson=$courseJson/videoUrl=$videoUrl")
+                        },
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(16.dp)
@@ -545,14 +553,13 @@ fun CourseDetailScreen(
 }
 
 
-
 fun createOrderId(): String {
     val sdf = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
     val currentDate = sdf.format(Date())
     return "ORDER_$currentDate"
 }
 
-fun openPaymentGateway(context: Context, userDetails: Student,courseDetails:Course) {
+fun openPaymentGateway(context: Context, userDetails: Student, courseDetails: Course) {
     val currency = "INR"
     val order_id = createOrderId()
     try {
@@ -565,7 +572,10 @@ fun openPaymentGateway(context: Context, userDetails: Student,courseDetails:Cour
         options.put("description", "Payment for ${courseDetails.course_name}")
         options.put("order_id", order_id)
         options.put("currency", currency)
-        options.put("amount", (courseDetails.course_discounted_price.toDouble() * 100).toInt()) // Amount in smallest currency unit
+        options.put(
+            "amount",
+            (courseDetails.course_discounted_price.toDouble() * 100).toInt()
+        ) // Amount in smallest currency unit
 
         val prefill = JSONObject()
         prefill.put("email", userDetails!!.email)

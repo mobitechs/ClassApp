@@ -14,6 +14,7 @@ import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.data.repository.UserRepository
+import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.batches.BatchViewModel
 import com.mobitechs.classapp.screens.freeContent.FreeContentViewModel
@@ -71,6 +72,10 @@ class ViewModelFactory(
 
             modelClass.isAssignableFrom(CourseDetailViewModel::class.java) -> {
                 CourseDetailViewModel(courseRepository, paymentRepository) as T
+            }
+
+            modelClass.isAssignableFrom(VideoPlayerViewModel::class.java) -> {
+                VideoPlayerViewModel() as T
             }
 
             modelClass.isAssignableFrom(SubCategoryViewModel::class.java) -> {

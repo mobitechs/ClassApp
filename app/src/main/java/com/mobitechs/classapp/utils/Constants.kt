@@ -39,6 +39,21 @@ object Constants {
     const val DEEP_LINK_HOST = "app"
 
 
+    // 1. Big Buck Bunny (Open Source Movie) - Various Qualities
+    const val video1 = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    const val video2 = "https://sample-videos.com/zip/10/mp4/480/BigBuckBunny_320x180_1mb_mp4.mp4"
+
+    // 2. Elephant's Dream (Open Source Movie)
+    const val video3 = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+
+    // 3. For Bigger Blazes (Google Sample)
+    const val video4 = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+
+    // 4. For Bigger Escape (Google Sample)
+    const val video5 = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+
+    // 5. For Bigger Fun (Google Sample)
+    const val video6 = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
 
 
     // Keys for SharedPreferences
