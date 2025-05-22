@@ -1,15 +1,19 @@
 package com.mobitechs.classapp.screens.VideoPlayer
-
-// 2. VideoPlayerViewModel.kt
+// VideoPlayerViewModel.kt
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.common.VideoSize
+import androidx.media3.common.PlaybackException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import android.util.Log
 
 class VideoPlayerViewModel : ViewModel() {
 
@@ -28,31 +32,65 @@ class VideoPlayerViewModel : ViewModel() {
     var exoPlayer: ExoPlayer? = null
         private set
 
-    fun initializePlayer(context: android.content.Context) {
-        if (exoPlayer == null) {
-            exoPlayer = ExoPlayer.Builder(context).build().apply {
-                addListener(object : Player.Listener {
-                    override fun onIsPlayingChanged(isPlaying: Boolean) {
-                        _isPlaying.value = isPlaying
-                    }
+    private var isPlayerInitialized = false
+    private var currentVideoUrl: String? = null
+    private var savedPosition: Long = 0L
+    private var wasPlaying = false
 
-                    override fun onPlaybackStateChanged(playbackState: Int) {
-                        _isLoading.value = playbackState == Player.STATE_BUFFERING
-                        if (playbackState == Player.STATE_READY) {
-                            _duration.value = duration
+    fun initializePlayer(context: Context) {
+        if (exoPlayer == null && !isPlayerInitialized) {
+            exoPlayer = ExoPlayer.Builder(context)
+                .build()
+                .apply {
+                    addListener(object : Player.Listener {
+                        override fun onIsPlayingChanged(isPlaying: Boolean) {
+                            _isPlaying.value = isPlaying
+                            wasPlaying = isPlaying
                         }
-                    }
-                })
-            }
+
+                        override fun onPlaybackStateChanged(playbackState: Int) {
+                            _isLoading.value = playbackState == Player.STATE_BUFFERING
+                            if (playbackState == Player.STATE_READY) {
+                                _duration.value = duration
+                                // Restore saved position if available
+                                if (savedPosition > 0) {
+                                    seekTo(savedPosition)
+                                    savedPosition = 0L
+                                }
+                            }
+                        }
+
+                        override fun onVideoSizeChanged(videoSize: VideoSize) {
+                            Log.d("VideoPlayer", "Video size: ${videoSize.width} x ${videoSize.height}")
+                        }
+
+                        override fun onRenderedFirstFrame() {
+                            Log.d("VideoPlayer", "First frame rendered")
+                            _isLoading.value = false
+                        }
+
+                        override fun onPlayerError(error: PlaybackException) {
+                            Log.e("VideoPlayer", "Player error: ${error.message}")
+                        }
+                    })
+                }
+            isPlayerInitialized = true
             startPositionUpdates()
         }
     }
 
     fun setVideoUrl(url: String) {
-        exoPlayer?.let { player ->
-            val mediaItem = MediaItem.fromUri(url)
-            player.setMediaItem(mediaItem)
-            player.prepare()
+        if (currentVideoUrl != url) {
+            currentVideoUrl = url
+            exoPlayer?.let { player ->
+                val mediaItem = MediaItem.Builder()
+                    .setUri(url)
+                    .build()
+                player.setMediaItem(mediaItem)
+                player.prepare()
+                // Don't auto-play, let user control
+                player.playWhenReady = false
+            }
         }
     }
 
@@ -70,20 +108,67 @@ class VideoPlayerViewModel : ViewModel() {
         exoPlayer?.seekTo(position)
     }
 
+    // Save state for orientation changes
+    fun saveState() {
+        exoPlayer?.let { player ->
+            savedPosition = player.currentPosition
+            wasPlaying = player.isPlaying
+        }
+    }
+
+    // Restore state after orientation change
+    fun restoreState() {
+        exoPlayer?.let { player ->
+            if (savedPosition > 0) {
+                player.seekTo(savedPosition)
+                savedPosition = 0L
+            }
+            if (wasPlaying) {
+                player.play()
+            }
+        }
+    }
+
+    // Pause player (for lifecycle events)
+    fun pausePlayer() {
+        exoPlayer?.let { player ->
+            wasPlaying = player.isPlaying
+            if (player.isPlaying) {
+                player.pause()
+            }
+        }
+    }
+
+    // Resume player (for lifecycle events)
+    fun resumePlayer() {
+        if (wasPlaying) {
+            exoPlayer?.play()
+        }
+    }
+
+    // Release player completely
+    fun releasePlayer() {
+        exoPlayer?.release()
+        exoPlayer = null
+        isPlayerInitialized = false
+        currentVideoUrl = null
+        savedPosition = 0L
+        wasPlaying = false
+    }
+
     private fun startPositionUpdates() {
         viewModelScope.launch {
-            while (true) {
+            while (isPlayerInitialized && exoPlayer != null) {
                 exoPlayer?.let { player ->
                     _currentPosition.value = player.currentPosition
                 }
-                kotlinx.coroutines.delay(1000) // Update every second
+                delay(1000) // Update every second
             }
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        exoPlayer?.release()
-        exoPlayer = null
+        releasePlayer()
     }
 }
