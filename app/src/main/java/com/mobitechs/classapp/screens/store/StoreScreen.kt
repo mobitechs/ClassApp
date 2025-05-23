@@ -275,9 +275,7 @@ fun StoreScreen(
                         CoursesGrid(
                             courses = uiState.filteredCourses,
                             onCourseClick = { course ->
-//                                navController.navigate("course_details/$course")
-                                val courseJson = URLEncoder.encode(Gson().toJson(course), "UTF-8")
-                                navController.navigate("course_detail?courseJson=$courseJson")
+                                navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")
                             }
                         )
                     }

@@ -76,8 +76,10 @@ import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.utils.showToast
 import kotlinx.coroutines.delay
 import java.net.URLDecoder
+import kotlin.jvm.java
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,19 +95,8 @@ fun VideoPlayerScreen(
     val configuration = LocalConfiguration.current
     val gson = Gson()
 
-    // Get course from SharedPreferences instead of JSON parameter
-    val course = remember {
-        val sharedPrefs = context.getSharedPreferences("course_temp", Context.MODE_PRIVATE)
-        val courseJsonFromPrefs = sharedPrefs.getString("current_course", null)
-        courseJsonFromPrefs?.let {
-            try {
-                gson.fromJson(it, Course::class.java)
-            } catch (e: Exception) {
-                Log.e("VideoPlayer", "Error parsing course: ${e.message}")
-                null
-            }
-        }
-    }
+    val course = remember { Gson().fromJson(courseJson, Course::class.java) }
+
 
     val isPlaying by viewModel.isPlaying.collectAsState()
     val currentPosition by viewModel.currentPosition.collectAsState()

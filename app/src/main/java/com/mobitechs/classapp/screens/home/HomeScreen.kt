@@ -195,6 +195,7 @@ fun HomeScreen(
                 } else {
                     // Always show HomeContent, each section handles its own loading/error state
                     HomeContent(
+                        navController = navController,
                         uiState = uiState,
                         onCourseClick = { courseId ->
                             navController.navigate("course_details/$courseId")
@@ -229,6 +230,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeContent(
+    navController: NavController,
     uiState: HomeUiState,
     onCourseClick: (String) -> Unit,
     onCategoryClick: (String) -> Unit,
@@ -329,7 +331,7 @@ fun HomeContent(
                             price = "₹${course.course_discounted_price ?: course.course_price}",
                             discountedPrice = if (course.course_discounted_price != null) "₹${course.course_price}" else null,
                             isFavorite = false,
-                            onClick = { onCourseClick(course.id.toString()) },
+                            onClick = { navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")},
                             onFavoriteClick = { onFavoriteClick(course.id.toString()) }
                         )
                     }
@@ -487,7 +489,7 @@ fun HomeContent(
                             price = "₹${course.course_discounted_price ?: course.course_price}",
                             discountedPrice = if (course.course_discounted_price != null) "₹${course.course_price}" else null,
                             isFavorite = false,
-                            onClick = { onCourseClick(course.id.toString()) },
+                            onClick = { navController.navigate("course_detail?courseJson=${Gson().toJson(course)}") },
                             onFavoriteClick = { onFavoriteClick(course.id.toString()) }
                         )
                     }

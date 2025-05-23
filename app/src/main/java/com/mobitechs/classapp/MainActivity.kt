@@ -192,47 +192,39 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            // Course Detail screens
+
+//
+//
 //            composable(
-//                route = "course_details/{courseId}",
-//                arguments = listOf(navArgument("courseId") { type = NavType.StringType })
+//                "course_detail?courseJson={courseJson}",
+//                arguments = listOf(
+//                    navArgument("courseJson") {
+//                        type = NavType.StringType
+//                        defaultValue = ""
+//                    }
+//                )
 //            ) {
-//                val courseDetailViewModel: CourseDetailViewModel =
-//                    viewModel(factory = viewModelFactory)
+//                val courseDetailViewModel: CourseDetailViewModel = viewModel(factory = viewModelFactory)
+//                val courseJson = it.arguments?.getString("courseJson")
 //                CourseDetailScreen(
-//                    viewModel = courseDetailViewModel,
-//                    navController = navController
+//                    courseJson = courseJson,
+//                    navController = navController,
+//                    viewModel = courseDetailViewModel
 //                )
 //            }
-
-//            composable("course_details/{jsonObject}", arguments = listOf(navArgument("jsonObject") {
-//                    type = NavType.StringType
-//                    defaultValue = "{}" // Use empty JSON instead of "null"
-//                })
-//            ) { backStackEntry ->
-//                val jsonObject = backStackEntry.arguments?.getString("jsonObject")
-//                val courseDetailViewModel: CourseDetailViewModel = viewModel(factory = viewModelFactory)
-//                CourseDetailScreen(jsonObject = jsonObject, viewModel = courseDetailViewModel, navController = navController)
-//            }
-
 
             composable(
                 "course_detail?courseJson={courseJson}",
                 arguments = listOf(
                     navArgument("courseJson") {
                         type = NavType.StringType
-                        defaultValue = ""
+                        defaultValue = "null"
                     }
                 )
-            ) {
-                val courseDetailViewModel: CourseDetailViewModel =
-                    viewModel(factory = viewModelFactory)
-                val courseJson = it.arguments?.getString("courseJson")
-                CourseDetailScreen(
-                    courseJson = courseJson,
-                    navController = navController,
-                    viewModel = courseDetailViewModel
-                )
+            ) { backStackEntry ->
+                val courseJson = backStackEntry.arguments?.getString("courseJson")
+                val viewModel: CourseDetailViewModel = viewModel(factory = viewModelFactory)
+                CourseDetailScreen(courseJson, navController,viewModel)
             }
 
             composable(
@@ -240,24 +232,18 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 arguments = listOf(
                     navArgument("courseJson") {
                         type = NavType.StringType
-                        defaultValue = ""
+                        defaultValue = "null" // Handle null case
                     },
                     navArgument("videoUrl") {
                         type = NavType.StringType
-                        defaultValue = ""
+                        defaultValue = "null" // Handle null case
                     }
                 )
-            ) {
+            ) { backStackEntry ->
+                val courseJson = backStackEntry.arguments?.getString("courseJson")
+                val videoUrl = backStackEntry.arguments?.getString("videoUrl")
                 val viewModel: VideoPlayerViewModel = viewModel(factory = viewModelFactory)
-                val courseJson = it.arguments?.getString("courseJson")
-                val videoUrl = it.arguments?.getString("videoUrl")
-
-                VideoPlayerScreen(
-                    courseJson = courseJson,
-                    videoUrl = videoUrl,
-                    navController = navController,
-                    viewModel = viewModel
-                )
+                VideoPlayerScreen(courseJson, videoUrl,navController,viewModel)
             }
 
 

@@ -3,6 +3,7 @@ package com.mobitechs.classapp.screens.store
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -70,12 +71,11 @@ import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.screens.home.ErrorView
+import com.mobitechs.classapp.screens.payment.PaymentActivity
 import com.mobitechs.classapp.utils.Constants
 import com.mobitechs.classapp.utils.showToast
 import com.razorpay.Checkout
 import org.json.JSONObject
-import java.net.URLDecoder
-import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -95,12 +95,13 @@ fun CourseDetailScreen(
     val sharedPrefsManager by lazy { SharedPrefsManager(context, gson) }
     val user = sharedPrefsManager.getUser()
 
-    val courseObject = remember { mutableStateOf(Gson().fromJson(courseJson, Course::class.java)) }
+    val courseObject = remember { Gson().fromJson(courseJson, Course::class.java) }
+
+
+
     LaunchedEffect(courseJson) {
         if (uiState.course == null && !courseJson.isNullOrEmpty()) {
-            val decodedJson = URLDecoder.decode(courseJson, "UTF-8")
-            val course = Gson().fromJson(decodedJson, Course::class.java)
-            viewModel.setCourse(course)
+            viewModel.setCourse(courseObject)
         }
     }
 
@@ -243,7 +244,11 @@ fun CourseDetailScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     IconButton(
-                                        onClick = { showPreview = true },
+                                        onClick = {
+                                            //play video
+                                            val videoUrl = Constants.video1 // or your actual video URL
+                                            navController.navigate("video_player?courseJson=${Gson().toJson(course)}/videoUrl=$videoUrl")
+                                        },
                                         modifier = Modifier
                                             .size(64.dp)
                                             .clip(CircleShape)
@@ -482,25 +487,16 @@ fun CourseDetailScreen(
                     // Floating Buy Now button positioned at the bottom
                     Button(
                         onClick = {
-
 //                                  Launch the PaymentActivity
-//                                    courseObject.value?.let { course ->
-//                                        user?.let { userDetails ->
-//                                            val intent = Intent(context, PaymentActivity::class.java).apply {
-//                                                putExtra("COURSE_DATA", gson.toJson(course))
-//                                                putExtra("USER_DATA", gson.toJson(userDetails))
-//                                            }
-//                                            context.startActivity(intent)
-//                                        }
-//                                    }
-
-//                            play video
-
-
-                            val courseJson = URLEncoder.encode(gson.toJson(courseObject), "UTF-8")
-                            val videoUrl = Constants.video1 // or your actual video URL
-
-                            navController.navigate("video_player?courseJson=$courseJson/videoUrl=$videoUrl")
+                                    courseObject?.let { course ->
+                                        user?.let { userDetails ->
+                                            val intent = Intent(context, PaymentActivity::class.java).apply {
+                                                putExtra("COURSE_DATA", gson.toJson(course))
+                                                putExtra("USER_DATA", gson.toJson(userDetails))
+                                            }
+                                            context.startActivity(intent)
+                                        }
+                                    }
                         },
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
