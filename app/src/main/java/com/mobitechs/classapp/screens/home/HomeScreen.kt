@@ -76,9 +76,13 @@ import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.screens.common.BannerCarousel
 import com.mobitechs.classapp.screens.common.CourseCard
+import com.mobitechs.classapp.screens.common.Grid
+import com.mobitechs.classapp.screens.common.HomeCategoryItem
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
+import com.mobitechs.classapp.screens.common.StoreCategoryItem
+import com.mobitechs.classapp.screens.store.getCategoryIcon
 import kotlinx.coroutines.launch
 
 
@@ -372,20 +376,44 @@ fun HomeContent(
             }
 
             uiState.categories.isNotEmpty() -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    contentPadding = PaddingValues(horizontal = 16.dp),
+
+//                LazyVerticalGrid(
+//                    columns = GridCells.Fixed(2),
+//                    contentPadding = PaddingValues(horizontal = 16.dp),
+//                    modifier = Modifier
+//                        .height(250.dp) // Increased from 200.dp
+//                        .fillMaxWidth(),
+//                    userScrollEnabled = false
+//                ) {
+//                    items(uiState.categories) { category ->
+//                        HomeCategoryItem(
+//                            icon = getCategoryIcon(category.name),
+//                            name = category.name,
+//                            isSelected = false,
+//                            onCategorySelected = { onCategoryClick(category.id.toString()) }
+//                        )
+//                    }
+//                }
+
+                Grid(
+                    items = uiState.categories,
+                    columns = 2,
+                    horizontalSpacing = 1.dp,
+                    verticalSpacing = 1.dp,
                     modifier = Modifier
-                        .height(200.dp)
                         .fillMaxWidth()
-                ) {
-                    items(uiState.categories.take(6)) { category ->
-                        CategoryItemUI(
-                            category = category,
-                            onClick = { onCategoryClick(category.id.toString()) }
-                        )
-                    }
+                        .padding(horizontal = 10.dp)
+                ) { category ->
+                    HomeCategoryItem(
+                        icon = getCategoryIcon(category.name),
+                        name = category.name,
+                        isSelected = false,
+                        onCategorySelected = { onCategoryClick(category.id.toString()) }
+                    )
                 }
+
+
+
             }
         }
 
@@ -645,47 +673,6 @@ fun SectionErrorView(
         }
     }
 }
-
-@Composable
-fun CategoryItemUI(
-    category: CategoryItem,
-    onClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(8.dp)
-            .clickable(onClick = onClick)
-    ) {
-        // Category icon
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer)
-        ) {
-//            AsyncImage(
-//                model = category.icon,
-//                contentDescription = category.name,
-//                contentScale = ContentScale.Fit,
-//                modifier = Modifier.size(36.dp)
-//            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Category name
-        Text(
-            text = category.name,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
 @Composable
 fun SocialMediaIcon(
     icon: androidx.compose.ui.graphics.vector.ImageVector,

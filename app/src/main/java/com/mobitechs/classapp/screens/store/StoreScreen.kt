@@ -1,11 +1,16 @@
 package com.mobitechs.classapp.screens.store
 
 
+import android.R.attr.layout
+import android.R.layout
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,6 +57,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -68,9 +74,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -81,6 +90,7 @@ import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SecondaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
+import com.mobitechs.classapp.screens.common.StoreCategoryItem
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 
@@ -111,7 +121,7 @@ fun StoreScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = uiState.selectedCategory?.name ?: "Store",
+                        text = uiState.selectedCategory?.name ?: "New Courses",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold
                         )
@@ -325,26 +335,26 @@ fun StoreScreen(
                     )
                 }
 
-                FilterType.PRICE -> {
-                    PriceFilterContent(
-                        priceRanges = listOf(
-                            PriceRange("all", "All Prices"),
-                            PriceRange("free", "Free"),
-                            PriceRange("0-500", "Under ₹500"),
-                            PriceRange("500-1000", "₹500 - ₹1000"),
-                            PriceRange("1000-2000", "₹1000 - ₹2000"),
-                            PriceRange("2000+", "₹2000+")
-                        ),
-                        selectedRange = uiState.selectedPriceRange,
-                        onRangeSelected = {
-                            viewModel.selectPriceRange(it)
-                            coroutineScope.launch {
-                                sheetState.hide()
-                                currentFilterType = null
-                            }
-                        }
-                    )
-                }
+//                FilterType.PRICE -> {
+//                    PriceFilterContent(
+//                        priceRanges = listOf(
+//                            PriceRange("all", "All Prices"),
+//                            PriceRange("free", "Free"),
+//                            PriceRange("0-500", "Under ₹500"),
+//                            PriceRange("500-1000", "₹500 - ₹1000"),
+//                            PriceRange("1000-2000", "₹1000 - ₹2000"),
+//                            PriceRange("2000+", "₹2000+")
+//                        ),
+//                        selectedRange = uiState.selectedPriceRange,
+//                        onRangeSelected = {
+//                            viewModel.selectPriceRange(it)
+//                            coroutineScope.launch {
+//                                sheetState.hide()
+//                                currentFilterType = null
+//                            }
+//                        }
+//                    )
+//                }
 
                 else -> {}
             }
@@ -411,9 +421,9 @@ fun CategoriesSidebar(
     ) {
         // Special "Top Picks" category
         item {
-            CategoryItem(
+            StoreCategoryItem(
                 icon = Icons.Default.Star,
-                name = "Top Picks",
+                name = "New Courses",
                 isSelected = selectedCategoryId == null,
                 onCategorySelected = { onCategorySelected(-1) }
             )
@@ -421,7 +431,7 @@ fun CategoriesSidebar(
 
         // Regular categories
         items(categories) { category ->
-            CategoryItem(
+            StoreCategoryItem(
                 icon = getCategoryIcon(category.name),
                 name = category.name,
                 isSelected = selectedCategoryId == category.id,
@@ -588,7 +598,8 @@ data class FilterOption(
 
 /**
  * Bottom sheet for filters with improved layout
- */
+// */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterBottomSheetContent(
     title: String,
@@ -607,24 +618,32 @@ fun FilterBottomSheetContent(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        LazyColumn {
-            items(options) { option ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onOptionSelected(option.id) }
-                        .padding(vertical = 12.dp, horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = selectedOptionId == option.id,
-                        onClick = { onOptionSelected(option.id) }
+        // FlowRow automatically arranges items based on available space
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            options.forEach { option ->
+                Card(
+                    onClick = { onOptionSelected(option.id) },
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (selectedOptionId == option.id)
+                            MaterialTheme.colorScheme.primary
+                        else Color.Transparent
+                    ),
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = if (selectedOptionId == option.id)
+                            MaterialTheme.colorScheme.primary
+                        else Color.Gray
                     )
-
+                ) {
                     Text(
                         text = option.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(start = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        color = if (selectedOptionId == option.id) Color.White else Color.Black
                     )
                 }
             }
@@ -632,6 +651,7 @@ fun FilterBottomSheetContent(
     }
 }
 
+//--------------------------------------------------------------------------------------------------
 /**
  * Price filter content
  */
