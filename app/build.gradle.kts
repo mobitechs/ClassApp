@@ -100,7 +100,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Razorpay for payments
-    implementation("com.razorpay:checkout:1.6.41")
+    implementation("com.razorpay:checkout:1.6.40")
 
     // ExoPlayer for video playback
     implementation("androidx.media3:media3-exoplayer:1.2.0")

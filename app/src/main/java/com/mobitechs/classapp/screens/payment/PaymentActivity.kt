@@ -1,10 +1,7 @@
 package com.mobitechs.classapp.screens.payment
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -101,40 +98,43 @@ class PaymentActivity : ComponentActivity(), PaymentResultListener {
     }
 
 
-
-
     private fun initializePayment() {
-        val currency = "INR"
-        val orderId = createOrderId()
+        val checkout = Checkout()
+        checkout.setKeyID(Constants.RAZORPAY_KEY_ID)
 
         try {
-            val checkout = Checkout()
-            checkout.setKeyID(Constants.RAZORPAY_KEY_ID)
-
             val options = JSONObject()
-            options.put("name", "Class Connect")
-            options.put("description", "Payment for ${course.course_name}")
-            options.put("order_id", orderId)
-            options.put("currency", currency)
+            val amountInPaise = (course.course_discounted_price.toFloat() * 100).toInt()
 
-            // Calculate amount based on whether discounted price exists
-            val price = if (course.course_discounted_price != null) {
-                course.course_discounted_price.toDouble()
-            } else {
-                course.course_price.toDouble()
-            }
+            // ✅ Create proper order ID (or get from your backend)
+            val orderId = createOrderId()
+//            options.put("order_id", orderId) // if its a demo order_id then razor pay wont allow  and you will get error
 
-            options.put("amount", (50 * 100).toInt()) // Convert to smallest currency unit
+            options.put("name", "ClassConnect") // Your app name
+            options.put("description", course.course_name) // Actual course name
+            options.put("send_sms_hash", true)
+            options.put("allow_rotation", true)
+            options.put("image", course.image) // Your app logo
+            options.put("currency", "INR")
+            options.put("amount", amountInPaise.toString())
 
-            val prefill = JSONObject()
-            prefill.put("email", user.email)
-            prefill.put("contact", user.phone)
-            options.put("prefill", prefill)
+            val preFill = JSONObject()
+            preFill.put("email", user.email)
+            preFill.put("contact", user.phone) // Make sure user has phone field
+            options.put("prefill", preFill)
+
+            val retryObj = JSONObject()
+            retryObj.put("enabled", true)
+            retryObj.put("max_count", 3)
+            options.put("retry", retryObj)
+            options.put("timeout", 300) // 5 minutes
 
             checkout.open(this, options)
+
         } catch (e: Exception) {
-            Toast.makeText(this, "Payment Error: ${e.message}", Toast.LENGTH_LONG).show()
-            finish()
+            Toast.makeText(this, "Error in payment: ${e.message}", Toast.LENGTH_SHORT).show()
+            e.printStackTrace()
+            finish() // Close activity on error
         }
     }
 
@@ -162,16 +162,39 @@ class PaymentActivity : ComponentActivity(), PaymentResultListener {
     }
 
     override fun onPaymentError(code: Int, description: String) {
-        // Handle payment failure
-        Toast.makeText(this, "Payment Failed: $description", Toast.LENGTH_LONG).show()
+        try {
+            // Parse the error response
+            val jsonResponse = JSONObject(description)
+            val error = jsonResponse.getJSONObject("error")
+            val reason = error.getString("reason")
 
-        // You could send a broadcast for error handling
+            when (reason) {
+                "payment_cancelled" -> {
+                    Toast.makeText(
+                        this,
+                        "Payment was cancelled. Please try again.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                "payment_timeout" -> {
+                    Toast.makeText(this, "Payment timed out. Please try again.", Toast.LENGTH_LONG)
+                        .show()
+                }
+
+                else -> {
+                    Toast.makeText(this, "Payment failed: $reason", Toast.LENGTH_LONG).show()
+                }
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Payment failed: $description", Toast.LENGTH_LONG).show()
+        }
+
         val intent = Intent("PAYMENT_FAILURE")
         intent.putExtra("ERROR_CODE", code)
         intent.putExtra("ERROR_DESC", description)
         sendBroadcast(intent)
 
-        // Return to previous screen
         finish()
     }
 

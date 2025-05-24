@@ -246,8 +246,15 @@ fun CourseDetailScreen(
                                     IconButton(
                                         onClick = {
                                             //play video
-                                            val videoUrl = Constants.video1 // or your actual video URL
-                                            navController.navigate("video_player?courseJson=${Gson().toJson(course)}/videoUrl=$videoUrl")
+                                            val videoUrl =
+                                                Constants.video1 // or your actual video URL
+                                            navController.navigate(
+                                                "video_player?courseJson=${
+                                                    Gson().toJson(
+                                                        course
+                                                    )
+                                                }/videoUrl=$videoUrl"
+                                            )
                                         },
                                         modifier = Modifier
                                             .size(64.dp)
@@ -547,6 +554,7 @@ fun CourseDetailScreen(
         }
     }
 }
+
 
 
 fun createOrderId(): String {

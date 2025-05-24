@@ -30,9 +30,9 @@ object Constants {
     const val FILTER_TRENDING = "TRENDING"
 
     // Payment related
-    const val RAZORPAY_KEY_ID = "rzp_test_Wjyo4GzP0wDOnH" // Replace with actual key in build config
+    const val RAZORPAY_KEY_ID = "rzp_test_cMgcyHVPwSF1sq" // Replace with actual key in build config
 //    const val RAZORPAY_KEY_ID = "rzp_test_e9mokpUFZZRN4g" // Replace with actual key in build config
-    const val RAZORPAY_KEY_SECRET = "GA4aaivEKCFoXLXoR2xD6wun" // Replace with actual key in build config
+    const val RAZORPAY_KEY_SECRET = "9uttQ5gw8WlYwkvRYVKnGE8I" // Replace with actual key in build config
 
     // Deep link URI schemes
     const val DEEP_LINK_SCHEME = "classconnect"

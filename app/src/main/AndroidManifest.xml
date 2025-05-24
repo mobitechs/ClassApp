@@ -62,7 +62,7 @@
         </activity> <!-- RazorPay Integration -->
         <meta-data
             android:name="com.razorpay.ApiKey"
-            android:value="rzp_test_Wjyo4GzP0wDOnH" />
+            android:value="rzp_test_cMgcyHVPwSF1sq" />
     </application>
 
 </manifest>
