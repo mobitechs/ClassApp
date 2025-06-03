@@ -1,7 +1,6 @@
 package com.mobitechs.classapp.screens.home
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,9 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -57,7 +53,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,28 +61,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.local.SharedPrefsManager
-import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.screens.common.BannerCarousel
-import com.mobitechs.classapp.screens.common.CourseCard
+import com.mobitechs.classapp.screens.common.CourseCardPopularFeatured
 import com.mobitechs.classapp.screens.common.Grid
 import com.mobitechs.classapp.screens.common.HomeCategoryItem
 import com.mobitechs.classapp.screens.common.ModernNoticeCard
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
-import com.mobitechs.classapp.screens.common.StoreCategoryItem
 import com.mobitechs.classapp.screens.store.getCategoryIcon
-import com.mobitechs.classapp.utils.showToast
 import kotlinx.coroutines.launch
 
 
@@ -332,15 +321,8 @@ fun HomeContent(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(uiState.popularCourses) { course ->
-                        CourseCard(
-                            title = course.course_name,
-                            description = course.course_description.toString(),
-                            imageUrl = course.image.toString(),
-                            rating = 5f,
-                            likes = course.course_like.toString(),
-                            price = "₹${course.course_discounted_price ?: course.course_price}",
-                            discountedPrice = if (course.course_discounted_price != null) "₹${course.course_price}" else null,
-                            isFavorite = false,
+                        CourseCardPopularFeatured(
+                            course = course,
                             onClick = { navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")},
                             onFavoriteClick = { onFavoriteClick(course.id.toString()) }
                         )
@@ -505,15 +487,8 @@ fun HomeContent(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(uiState.featuredCourses) { course ->
-                        CourseCard(
-                            title = course.course_name,
-                            description = course.course_description.toString(),
-                            imageUrl = course.image.toString(),
-                            rating = 5f,
-                            likes = course.course_like.toString(),
-                            price = "₹${course.course_discounted_price ?: course.course_price}",
-                            discountedPrice = if (course.course_discounted_price != null) "₹${course.course_price}" else null,
-                            isFavorite = false,
+                        CourseCardPopularFeatured(
+                            course = course,
                             onClick = { navController.navigate("course_detail?courseJson=${Gson().toJson(course)}") },
                             onFavoriteClick = { onFavoriteClick(course.id.toString()) }
                         )

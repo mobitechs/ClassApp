@@ -96,6 +96,7 @@ import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.SubCategoryItem
 import com.mobitechs.classapp.data.model.response.SubjectItem
+import com.mobitechs.classapp.screens.common.CourseCardForStore
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SecondaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
@@ -725,67 +726,6 @@ fun CategoriesSidebar(
     }
 }
 
-/**
- * Single category item with improved styling
- */
-@Composable
-fun CategoryItem(
-    icon: ImageVector,
-    name: String,
-    isSelected: Boolean,
-    onCategorySelected: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .width(75.dp)
-            .padding(vertical = 4.dp)
-            .clickable(onClick = onCategorySelected),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Icon with circle background
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(
-                    if (isSelected)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else
-                        MaterialTheme.colorScheme.surfaceVariant
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = name,
-                tint = if (isSelected)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        // Category name with better text handling
-        Text(
-            text = name,
-            style = MaterialTheme.typography.bodySmall.copy(
-                fontSize = 10.sp,
-                lineHeight = 12.sp
-            ),
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
-            color = if (isSelected)
-                MaterialTheme.colorScheme.primary
-            else
-                MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(horizontal = 2.dp)
-        )
-    }
-}
 
 /**
  * Helper function to get an icon for a category
@@ -984,51 +924,7 @@ fun FilterBottomSheetContent(
     }
 }
 
-//--------------------------------------------------------------------------------------------------
-/**
- * Price filter content (kept for backward compatibility, but replaced by PriceSliderContent)
- */
-@Composable
-fun PriceFilterContent(
-    priceRanges: List<PriceRange>,
-    selectedRange: PriceRange?,
-    onRangeSelected: (PriceRange) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Select Price Range",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
 
-        LazyColumn {
-            items(priceRanges) { range ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onRangeSelected(range) }
-                        .padding(vertical = 12.dp, horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = selectedRange?.minPrice == range.minPrice,
-                        onClick = { onRangeSelected(range) }
-                    )
-
-                    Text(
-                        text = range.displayName,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                }
-            }
-        }
-    }
-}
 
 /**
  * Grid of courses with improved card layout
@@ -1047,7 +943,7 @@ fun CoursesGrid(
         modifier = Modifier.fillMaxSize()
     ) {
         items(courses) { course ->
-            ImprovedCourseCard2(
+            CourseCardForStore(
                 course = course,
                 onCourseClick = { onCourseClick(course) }
 //                onCourseClick = { onCourseClick(course.id.toString()) }
@@ -1056,185 +952,6 @@ fun CoursesGrid(
     }
 }
 
-/**
- * Improved course card with rating and likes in a solid dark rectangle overlay on the image
- */
-@Composable
-fun ImprovedCourseCard2(
-    course: Course,
-    onCourseClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onCourseClick),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Column {
-            // Course image with overlay for rating and likes
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-            ) {
-                // Course image
-                AsyncImage(
-                    model = course.image,
-                    contentDescription = course.course_name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-
-                // Solid dark rectangle overlay at bottom of image
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp)
-                        .align(Alignment.BottomCenter)
-                        .background(Color.Black.copy(alpha = 0.7f))
-                ) {
-                    // Row for rating and likes inside the overlay
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .padding(horizontal = 6.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Rating on left
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            Card(
-                                shape = RoundedCornerShape(4.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = Color(0xFF388E3C)
-                                )
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                                ) {
-                                    Text(
-                                        text = "4.${course.course_like % 10}",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = Color.White
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Default.Star,
-                                        contentDescription = null,
-                                        tint = Color.White,
-                                        modifier = Modifier.size(10.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        // Likes on right
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ThumbUp,
-                                contentDescription = "Likes",
-                                tint = Color.White,
-                                modifier = Modifier.size(12.dp)
-                            )
-                            Spacer(modifier = Modifier.width(2.dp))
-                            Text(
-                                text = "${course.course_like}",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = Color.White
-                            )
-                        }
-                    }
-                }
-            }
-
-            // Course details with better spacing
-            Column(
-                modifier = Modifier.padding(8.dp)
-            ) {
-                // Course name
-                Text(
-                    text = course.course_name,
-                    style = MaterialTheme.typography.titleSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    ),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                Text(
-                    text = course.course_description.toString(),
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontSize = 11.sp
-                    ),
-                    maxLines = 2,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Price row with better alignment
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Discounted price
-                    if (course.course_discounted_price != null) {
-
-                        // Original price with strikethrough
-                        Text(
-                            text = "₹${course.course_price}",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = 14.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "₹${course.course_discounted_price}",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                        )
-
-
-                    } else {
-                        // Regular price (no discount)
-                        Text(
-                            text = if (course.course_price == "0") "FREE" else "₹${course.course_price}",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            ),
-                            color = if (course.course_price == "0")
-                                Color(0xFF388E3C)
-                            else
-                                MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Buy now button with fixed size text
-                SecondaryButton(
-                    text = "Buy Now",
-                    onClick = onCourseClick,
-                    modifier = Modifier.height(36.dp)
-                )
-            }
-        }
-    }
-}
 
 
 /**

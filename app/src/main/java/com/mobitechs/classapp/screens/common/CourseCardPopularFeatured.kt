@@ -34,17 +34,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.mobitechs.classapp.data.model.response.Course
 
 @Composable
-fun CourseCard(
-    title: String,
-    description: String,
-    imageUrl: String,
-    rating: Float,
-    likes: String,
-    price: String,
-    discountedPrice: String? = null,
-    isFavorite: Boolean = false,
+fun CourseCardPopularFeatured(
+    course: Course,
     onClick: () -> Unit,
     onFavoriteClick: () -> Unit
 ) {
@@ -66,8 +60,8 @@ fun CourseCard(
                     .height(140.dp)
             ) {
                 AsyncImage(
-                    model = imageUrl,
-                    contentDescription = title,
+                    model = course.image,
+                    contentDescription = course.course_name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
@@ -82,9 +76,9 @@ fun CourseCard(
                         .padding(4.dp)
                 ) {
                     Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (isFavorite) MaterialTheme.colorScheme.secondary else Color.White,
+                        imageVector = if (course.isFavorite == 1) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                        contentDescription = if (course.isFavorite ==1) "Remove from favorites" else "Add to favorites",
+                        tint = if (course.isFavorite ==1) MaterialTheme.colorScheme.secondary else Color.White,
                         modifier = Modifier.size(28.dp)
                     )
                 }
@@ -96,7 +90,7 @@ fun CourseCard(
             ) {
                 // Title
                 Text(
-                    text = title,
+                    text = course.course_name,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -106,7 +100,7 @@ fun CourseCard(
 
                 // Instructor
                 Text(
-                    text = description,
+                    text = course.course_description.toString(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     maxLines = 1,
@@ -127,7 +121,7 @@ fun CourseCard(
                     )
 
                     Text(
-                        text = rating.toString(),
+                        text = "5",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(start = 4.dp)
                     )
@@ -139,11 +133,11 @@ fun CourseCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (discountedPrice != null) {
+                    if (course.course_discounted_price != null) {
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Text(
-                            text = discountedPrice,
+                            text = course.course_discounted_price,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             textDecoration = TextDecoration.LineThrough
@@ -151,7 +145,7 @@ fun CourseCard(
                     }
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = price,
+                        text = course.course_price,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
