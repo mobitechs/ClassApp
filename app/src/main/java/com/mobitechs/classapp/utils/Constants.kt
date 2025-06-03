@@ -85,4 +85,15 @@ object Constants {
 
 
 
+    const val KEY_tbl_course = "courses"
+    const val KEY_tbl_categories = "categories"
+    const val KEY_tbl_sub_categories = "subCategories"
+    const val KEY_tbl_subjects = "subjects"
+    const val KEY_tbl_offerBanners = "offerBanners"
+    const val KEY_tbl_notifications = "notifications"
+    const val KEY_tbl_notices = "notices"
+
+
+
+
 }

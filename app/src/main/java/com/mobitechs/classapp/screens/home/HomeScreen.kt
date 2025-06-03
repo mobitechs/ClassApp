@@ -1,5 +1,7 @@
 package com.mobitechs.classapp.screens.home
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +57,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -78,11 +81,13 @@ import com.mobitechs.classapp.screens.common.BannerCarousel
 import com.mobitechs.classapp.screens.common.CourseCard
 import com.mobitechs.classapp.screens.common.Grid
 import com.mobitechs.classapp.screens.common.HomeCategoryItem
+import com.mobitechs.classapp.screens.common.ModernNoticeCard
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
 import com.mobitechs.classapp.screens.common.StoreCategoryItem
 import com.mobitechs.classapp.screens.store.getCategoryIcon
+import com.mobitechs.classapp.utils.showToast
 import kotlinx.coroutines.launch
 
 
@@ -101,6 +106,7 @@ fun HomeScreen(
     val gson by lazy { Gson() }
     val sharedPrefsManager by lazy { SharedPrefsManager(context, gson) }
     val user = sharedPrefsManager.getUser()
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -241,7 +247,7 @@ fun HomeContent(
     onFavoriteClick: (String) -> Unit,
     onSeeAllClick: (String) -> Unit,
     onReferralClick: () -> Unit,
-    onRetrySection: (String) -> Unit
+    onRetrySection: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -328,10 +334,10 @@ fun HomeContent(
                     items(uiState.popularCourses) { course ->
                         CourseCard(
                             title = course.course_name,
-                            description = course.course_description,
-                            imageUrl = course.image,
+                            description = course.course_description.toString(),
+                            imageUrl = course.image.toString(),
                             rating = 5f,
-                            likes = course.course_like,
+                            likes = course.course_like.toString(),
                             price = "₹${course.course_discounted_price ?: course.course_price}",
                             discountedPrice = if (course.course_discounted_price != null) "₹${course.course_price}" else null,
                             isFavorite = false,
@@ -411,9 +417,6 @@ fun HomeContent(
                         onCategorySelected = { onCategoryClick(category.id.toString()) }
                     )
                 }
-
-
-
             }
         }
 
@@ -454,17 +457,11 @@ fun HomeContent(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(uiState.noticeBoard) { board ->
-                        CourseCard(
-                            title = board.notice_title,
-                            description = "",
-                            imageUrl = board.url,
-                            rating = 5f,
-                            likes = board.course.course_like,
-                            price = "₹${board.course.course_discounted_price ?: board.course.course_price}",
-                            discountedPrice = if (board.course.course_discounted_price != null) "₹${board.course.course_price}" else null,
-                            isFavorite = false,
-                            onClick = { onCourseClick(board.course.id.toString()) },
-                            onFavoriteClick = { onFavoriteClick(board.course.id.toString()) }
+                        ModernNoticeCard(
+                            notice = board,
+                            onClick = {
+                                Log.d("Notice Board", "Details: ${board.notice_title}")
+                            }
                         )
                     }
                 }
@@ -510,10 +507,10 @@ fun HomeContent(
                     items(uiState.featuredCourses) { course ->
                         CourseCard(
                             title = course.course_name,
-                            description = course.course_description,
-                            imageUrl = course.image,
+                            description = course.course_description.toString(),
+                            imageUrl = course.image.toString(),
                             rating = 5f,
-                            likes = course.course_like,
+                            likes = course.course_like.toString(),
                             price = "₹${course.course_discounted_price ?: course.course_price}",
                             discountedPrice = if (course.course_discounted_price != null) "₹${course.course_price}" else null,
                             isFavorite = false,

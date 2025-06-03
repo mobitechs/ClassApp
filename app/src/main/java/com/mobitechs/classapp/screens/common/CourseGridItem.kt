@@ -87,9 +87,9 @@ fun CourseGridItem(
                             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
                     ) {
                         Icon(
-                            imageVector = if (course.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (course.isFavorite) "Remove from favorites" else "Add to favorites",
-                            tint = if (course.isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface,
+                            imageVector = if (course.isFavorite == 1) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (course.isFavorite == 1) "Remove from favorites" else "Add to favorites",
+                            tint = if (course.isFavorite == 1) Color.Red else MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -103,9 +103,9 @@ fun CourseGridItem(
                             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
                     ) {
                         Icon(
-                            imageVector = if (course.isWishlisted) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                            contentDescription = if (course.isWishlisted) "Remove from wishlist" else "Add to wishlist",
-                            tint = if (course.isWishlisted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            imageVector = if (course.isWishlisted == 1) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                            contentDescription = if (course.isWishlisted == 1) "Remove from wishlist" else "Add to wishlist",
+                            tint = if (course.isWishlisted == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(18.dp)
                         )
                     }

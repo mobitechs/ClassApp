@@ -57,6 +57,9 @@ interface ApiService {
 
     //Courses
     @GET("courses?sort=newest")
+    suspend fun getCourses(): Response<CourseResponse>
+
+    @GET("courses?sort=newest")
     suspend fun getLatestCourses(): Response<CourseResponse>
 
     @GET("courses?sort=newest")
@@ -66,11 +69,15 @@ interface ApiService {
     @GET("courses?sort=newest")
     suspend fun getFeaturedCourses(): Response<CourseResponse>
 
-    @GET("courses/{categoryId}")
+    @GET("categorywiseCourses/{categoryId}")
     suspend fun getCoursesByCategory(@Path("categoryId") categoryId: String): Response<CourseResponse>
 
-    @GET("courses/{categoryId}/{subCategoryId}")
+    @GET("categorywiseCourses/{categoryId}/{subCategoryId}")
     suspend fun getCourseByCategorySubCategory(@Path("categoryId") categoryId: String, @Path("subCategoryId") subCategoryId: String): Response<CourseResponse>
+
+
+    @GET("categorywiseCourses/{categoryId}/{subCategoryId}/{subjectId}")
+    suspend fun getCoursesByCategorySubCategorySubject(@Path("categoryId") categoryId: String, @Path("subCategoryId") subCategoryId: String, @Path("subjectId") subjectId: String): Response<CourseResponse>
 
 
 

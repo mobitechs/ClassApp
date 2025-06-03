@@ -39,7 +39,7 @@ data class StoreUiState(
     // Selected filters
     val selectedSubCategoryId: String? = null,
     val selectedSubjectId: String? = null,
-    val selectedPriceRange: PriceRange? = PriceRange("all", "All Prices"),
+    val selectedPriceRange: PriceRange = PriceRange(0f, 10000f, false), // Changed to support slider
 
     // Course data
     val allCourses: List<Course> = emptyList(),
@@ -53,12 +53,22 @@ data class StoreUiState(
 }
 
 /**
- * Data class for price range options
+ * Data class for price range options (updated for slider)
  */
 data class PriceRange(
-    val id: String,
+    val minPrice: Float,
+    val maxPrice: Float,
+    val isActive: Boolean = false
+) {
     val displayName: String
-)
+        get() = when {
+            !isActive -> "All Prices"
+            minPrice == 0f && maxPrice >= 10000f -> "All Prices"
+            minPrice == 0f -> "Under ₹${maxPrice.toInt()}"
+            maxPrice >= 10000f -> "₹${minPrice.toInt()}+"
+            else -> "₹${minPrice.toInt()} - ₹${maxPrice.toInt()}"
+        }
+}
 
 /**
  * ViewModel for the Store screen with independent data loading operations
@@ -89,6 +99,260 @@ class StoreViewModel(
         getAllSubject()
         getLatestCourses()
     }
+
+
+
+    /**
+     * Selects a category and loads related data
+     */
+    fun selectCategory(categoryId: Int) {
+        // Special case for "New Courses" (-1)
+
+        if (categoryId == -1) {
+            _uiState.update { state ->
+                state.copy(
+                    selectedCategoryId = null,
+                    selectedCategory = null,
+                    // Reset filters when changing categories
+                    selectedSubCategoryId = null,
+                    selectedSubjectId = null
+                )
+            }
+            getLatestCourses() // Load popular courses default courses
+
+            // Load ALL subcategories and subjects (not filtered by category)
+            getAllSubCategories()
+            getAllSubject()
+            return
+        }
+
+        // Regular category
+        val selectedCategory = uiState.value.categories.find { it.id == categoryId }
+
+        _uiState.update { state ->
+            state.copy(
+                selectedCategoryId = categoryId,
+                selectedCategory = selectedCategory,
+                // Reset filters when changing categories
+                selectedSubCategoryId = null,
+                selectedSubjectId = null
+            )
+        }
+
+        // Load courses for the selected category
+        getCoursesByCategory(categoryId)
+
+        // Load subcategories for the selected category (filtered)
+        getSubCategoryByCategory(categoryId)
+
+        // When a specific category is selected, load ALL subjects (not filtered by category)
+        // Users can then filter subjects by selecting a subcategory
+        getSubjectsByCategory(categoryId.toString())
+    }
+
+    /**
+     * Selects a subcategory for filtering
+     */
+    fun selectSubCategory(subCategoryId: String) {
+        _uiState.update { state ->
+            state.copy(
+                selectedSubCategoryId = subCategoryId,
+                // Also clear subject filter as it depends on subcategory
+                selectedSubjectId = null
+            )
+        }
+
+        //get course by sub categories
+        getCoursesByCategorySubCategory(subCategoryId)
+        // Apply filters and update filtered courses
+        applyFiltersAndUpdateState()
+
+        // Load subjects for this subcategory
+        getSubjectsBySubcategory(subCategoryId)
+    }
+
+    /**
+     * Selects a subject for filtering
+     */
+    fun selectSubject(subjectId: String) {
+        _uiState.update { state ->
+            state.copy(selectedSubjectId = subjectId)
+        }
+
+        // Apply filters and update filtered courses
+        applyFiltersAndUpdateState()
+    }
+
+    /**
+     * Selects a price range for filtering (updated for slider)
+     */
+    fun selectPriceRange(minPrice: Float, maxPrice: Float) {
+        _uiState.update { state ->
+            state.copy(
+                selectedPriceRange = PriceRange(
+                    minPrice = minPrice,
+                    maxPrice = maxPrice,
+                    isActive = !(minPrice == 0f && maxPrice >= 10000f)
+                )
+            )
+        }
+
+        // Apply filters and update filtered courses
+        applyFiltersAndUpdateState()
+    }
+
+    /**
+     * Clear filter methods for Applied Filters component
+     */
+    fun clearCategoryFilter() {
+        selectCategory(-1) // Reset to "New Courses"
+    }
+
+    fun clearSubCategoryFilter() {
+        _uiState.update { state ->
+            state.copy(
+                selectedSubCategoryId = null,
+                selectedSubjectId = null // Also clear subject when clearing subcategory
+            )
+        }
+        applyFiltersAndUpdateState()
+    }
+
+    fun clearSubjectFilter() {
+        _uiState.update { state ->
+            state.copy(selectedSubjectId = null)
+        }
+        applyFiltersAndUpdateState()
+    }
+
+    fun clearPriceFilter() {
+        _uiState.update { state ->
+            state.copy(
+                selectedPriceRange = PriceRange(0f, 10000f, false)
+            )
+        }
+        applyFiltersAndUpdateState()
+    }
+
+    /**
+     * Reset all filters at once
+     */
+    fun resetAllFilters() {
+        _uiState.update { state ->
+            state.copy(
+                selectedCategoryId = null,
+                selectedCategory = null,
+                selectedSubCategoryId = null,
+                selectedSubjectId = null,
+                selectedPriceRange = PriceRange(0f, 10000f, false)
+            )
+        }
+
+        // Load popular courses when all filters are reset
+        getPopularCourses()
+
+        // Reload ALL subcategories and subjects (not filtered by category)
+        getAllSubCategories()
+        getAllSubject()
+    }
+
+    /**
+     * Applies all current filters and updates the UI state
+     */
+    private fun applyFiltersAndUpdateState() {
+        val currentState = uiState.value
+
+        _uiState.update { state ->
+            state.copy(
+                filteredCourses = applyFilters(
+                    currentState.allCourses,
+                    currentState.selectedSubCategoryId,
+                    currentState.selectedSubjectId,
+                    currentState.selectedPriceRange
+                )
+            )
+        }
+    }
+
+    /**
+     * Applies filters to the course list (updated for price slider)
+     */
+    private fun applyFilters(
+        courses: List<Course>,
+        subCategoryId: String?,
+        subjectId: String?,
+        priceRange: PriceRange
+    ): List<Course> {
+        var filteredCourses = courses
+
+        // Apply subcategory filter
+        if (!subCategoryId.isNullOrEmpty()) {
+            filteredCourses = filteredCourses.filter {
+                it.course_subcategory_id.toString() == subCategoryId
+            }
+        }
+
+        // Apply subject filter
+        if (!subjectId.isNullOrEmpty()) {
+            filteredCourses = filteredCourses.filter {
+                it.course_subject_id.toString() == subjectId
+            }
+        }
+
+        // Apply price range filter (updated for slider)
+        if (priceRange.isActive) {
+            filteredCourses = filteredCourses.filter { course ->
+                val price = course.course_discounted_price?.toFloatOrNull()
+                    ?: course.course_price.toFloatOrNull() ?: 0f
+
+                price >= priceRange.minPrice && price <= priceRange.maxPrice
+            }
+        }
+
+        return filteredCourses
+    }
+
+
+
+    /**
+     * Retry functions for each section when they fail
+     */
+    fun retryLoadCategories() {
+        getCategories()
+    }
+
+    fun retryLoadSubCategories() {
+        if (uiState.value.selectedCategoryId != null) {
+            // If a specific category is selected, load filtered subcategories
+            getSubCategoryByCategory(uiState.value.selectedCategoryId!!)
+        } else {
+            // If no category selected (New Courses), load ALL subcategories
+            getAllSubCategories()
+        }
+    }
+
+    fun retryLoadSubjects() {
+        if (uiState.value.selectedSubCategoryId != null) {
+            // If a subcategory is selected, load filtered subjects
+            getSubjectsBySubcategory(uiState.value.selectedSubCategoryId!!)
+        } else {
+            // If no subcategory selected, load ALL subjects
+            getAllSubject()
+        }
+    }
+
+    fun retryLoadCourses() {
+        if (uiState.value.selectedCategoryId != null) {
+            getCoursesByCategory(uiState.value.selectedCategoryId!!)
+        } else {
+            getPopularCourses()
+        }
+    }
+
+
+
+
+//    API Calls
 
     /**
      * Loads categories independently
@@ -124,6 +388,7 @@ class StoreViewModel(
 
         viewModelScope.launch {
             try {
+                // Try to get all subcategories (without category filter)
                 val response = categoryRepository.getAllSubCategories()
                 _uiState.update { state ->
                     state.copy(
@@ -131,11 +396,46 @@ class StoreViewModel(
                         subCategoriesLoading = false
                     )
                 }
+                // Debug log
+                println("DEBUG: Loaded ${response.subCategories.size} subcategories")
+                if (response.subCategories.isNotEmpty()) {
+                    println("DEBUG: First subcategory: ${response.subCategories.first().name}")
+                }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         subCategoriesLoading = false,
                         subCategoriesError = e.message ?: "Failed to load subcategories"
+                    )
+                }
+                // Debug log
+                println("DEBUG: Error loading subcategories: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Loads subcategories for a specific category independently
+     */
+    private fun getSubCategoryByCategory(categoryId: Int) {
+        _uiState.update { it.copy(subCategoriesLoading = true, subCategoriesError = "") }
+
+        viewModelScope.launch {
+            try {
+                val response = categoryRepository.getSubCategoryByCategory(categoryId.toString())
+
+                _uiState.update { state ->
+                    state.copy(
+                        subCategories = response.subCategories,
+                        subCategoriesLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update { state ->
+                    state.copy(
+                        subCategoriesLoading = false,
+                        subCategoriesError = e.message ?: "Failed to load subcategories"
+                        // Keep existing subcategories on error
                     )
                 }
             }
@@ -150,7 +450,42 @@ class StoreViewModel(
 
         viewModelScope.launch {
             try {
+                // Try to get all subjects (without category filter)
                 val response = categoryRepository.getAllSubject()
+                _uiState.update { state ->
+                    state.copy(
+                        subjects = response.subjects,
+                        subjectsLoading = false
+                    )
+                }
+                // Debug log
+                println("DEBUG: Loaded ${response.subjects.size} subjects")
+                if (response.subjects.isNotEmpty()) {
+                    println("DEBUG: First subject: ${response.subjects.first().name}")
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        subjectsLoading = false,
+                        subjectsError = e.message ?: "Failed to load subjects"
+                    )
+                }
+                // Debug log
+                println("DEBUG: Error loading subjects: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Loads subjects for a specific subcategory independently
+     */
+    private fun getSubjectsByCategory(categoryId: String) {
+        _uiState.update { it.copy(subjectsLoading = true, subjectsError = "") }
+
+        viewModelScope.launch {
+            try {
+                val response = categoryRepository.getSubjectByCategory(categoryId =  categoryId)
+
                 _uiState.update { state ->
                     state.copy(
                         subjects = response.subjects,
@@ -162,6 +497,35 @@ class StoreViewModel(
                     it.copy(
                         subjectsLoading = false,
                         subjectsError = e.message ?: "Failed to load subjects"
+                        // Keep existing subjects on error
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads subjects for a specific subcategory independently
+     */
+    private fun getSubjectsBySubcategory(subCategoryId: String) {
+        _uiState.update { it.copy(subjectsLoading = true, subjectsError = "") }
+
+        viewModelScope.launch {
+            try {
+                val response = categoryRepository.getSubjectBySubCategory(subCategoryId)
+
+                _uiState.update { state ->
+                    state.copy(
+                        subjects = response.subjects,
+                        subjectsLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        subjectsLoading = false,
+                        subjectsError = e.message ?: "Failed to load subjects"
+                        // Keep existing subjects on error
                     )
                 }
             }
@@ -189,73 +553,6 @@ class StoreViewModel(
                     it.copy(
                         coursesLoading = false,
                         coursesError = e.message ?: "Failed to load courses"
-                    )
-                }
-            }
-        }
-    }
-
-    /**
-     * Selects a category and loads related data
-     */
-    fun selectCategory(categoryId: Int) {
-        // Special case for "Top Picks" (-1)
-        if (categoryId == -1) {
-            _uiState.update { state ->
-                state.copy(
-                    selectedCategoryId = null,
-                    selectedCategory = null,
-                    // Reset filters when changing categories
-                    selectedSubCategoryId = null,
-                    selectedSubjectId = null
-                )
-            }
-            getPopularCourses()
-            return
-        }
-
-        // Regular category
-        val selectedCategory = uiState.value.categories.find { it.id == categoryId }
-
-        _uiState.update { state ->
-            state.copy(
-                selectedCategoryId = categoryId,
-                selectedCategory = selectedCategory,
-                // Reset filters when changing categories
-                selectedSubCategoryId = null,
-                selectedSubjectId = null
-            )
-        }
-
-        // Load courses for the selected category
-        getCoursesByCategory(categoryId)
-
-        // Load subcategories for the selected category
-        getSubCategoryByCategory(categoryId)
-    }
-
-    /**
-     * Loads subcategories for a specific category independently
-     */
-    private fun getSubCategoryByCategory(categoryId: Int) {
-        _uiState.update { it.copy(subCategoriesLoading = true, subCategoriesError = "") }
-
-        viewModelScope.launch {
-            try {
-                val response = categoryRepository.getSubCategoryByCategory(categoryId.toString())
-
-                _uiState.update { state ->
-                    state.copy(
-                        subCategories = response.subCategories,
-                        subCategoriesLoading = false
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.update { state ->
-                    state.copy(
-                        subCategoriesLoading = false,
-                        subCategoriesError = e.message ?: "Failed to load subcategories"
-                        // Keep existing subcategories on error
                     )
                 }
             }
@@ -329,187 +626,71 @@ class StoreViewModel(
     }
 
     /**
-     * Selects a subcategory for filtering
+     * Loads courses by category independently
      */
-    fun selectSubCategory(subCategoryId: String) {
-        _uiState.update { state ->
-            state.copy(
-                selectedSubCategoryId = subCategoryId,
-                // Also clear subject filter as it depends on subcategory
-                selectedSubjectId = null
-            )
-        }
-
-        // Apply filters and update filtered courses
-        applyFiltersAndUpdateState()
-
-        // Load subjects for this subcategory
-        getSubjectsBySubcategory(subCategoryId)
-    }
-
-    /**
-     * Loads subjects for a specific subcategory independently
-     */
-    private fun getSubjectsBySubcategory(subCategoryId: String) {
-        _uiState.update { it.copy(subjectsLoading = true, subjectsError = "") }
+    private fun getCoursesByCategorySubCategory(subCategoryId: String) { //
+        _uiState.update { it.copy(coursesLoading = true, coursesError = "") }
 
         viewModelScope.launch {
             try {
-                val response = categoryRepository.getSubjectsBySubcategory(subCategoryId)
-
+                val courses = courseRepository.getCourseByCategorySubCategory(uiState.value.selectedCategoryId.toString(),subCategoryId)
                 _uiState.update { state ->
                     state.copy(
-                        subjects = response.subjects,
-                        subjectsLoading = false
+                        allCourses = courses.courses,
+                        filteredCourses = applyFilters(
+                            courses.courses,
+                            state.selectedSubCategoryId,
+                            state.selectedSubjectId,
+                            state.selectedPriceRange
+                        ),
+                        coursesLoading = false
                     )
                 }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        subjectsLoading = false,
-                        subjectsError = e.message ?: "Failed to load subjects"
-                        // Keep existing subjects on error
+                        coursesLoading = false,
+                        coursesError = e.message ?: "Failed to load courses"
+                        // Keep existing courses on error
                     )
                 }
             }
         }
     }
 
-    /**
-     * Selects a subject for filtering
-     */
-    fun selectSubject(subjectId: String) {
-        _uiState.update { state ->
-            state.copy(selectedSubjectId = subjectId)
-        }
-
-        // Apply filters and update filtered courses
-        applyFiltersAndUpdateState()
-    }
 
     /**
-     * Selects a price range for filtering
+     * Loads courses by category independently
      */
-    fun selectPriceRange(priceRange: PriceRange) {
-        _uiState.update { state ->
-            state.copy(selectedPriceRange = priceRange)
-        }
+    private fun getCoursesByCategorySubCategorySubject(subjectId: String) { //
+        _uiState.update { it.copy(coursesLoading = true, coursesError = "") }
 
-        // Apply filters and update filtered courses
-        applyFiltersAndUpdateState()
-    }
-
-    /**
-     * Applies all current filters and updates the UI state
-     */
-    private fun applyFiltersAndUpdateState() {
-        val currentState = uiState.value
-
-        _uiState.update { state ->
-            state.copy(
-                filteredCourses = applyFilters(
-                    currentState.allCourses,
-                    currentState.selectedSubCategoryId,
-                    currentState.selectedSubjectId,
-                    currentState.selectedPriceRange
-                )
-            )
-        }
-    }
-
-    /**
-     * Applies filters to the course list
-     */
-    private fun applyFilters(
-        courses: List<Course>,
-        subCategoryId: String?,
-        subjectId: String?,
-        priceRange: PriceRange?
-    ): List<Course> {
-        var filteredCourses = courses
-
-        // Apply subcategory filter
-        if (!subCategoryId.isNullOrEmpty()) {
-            filteredCourses = filteredCourses.filter {
-                it.course_subcategory_id.toString() == subCategoryId
+        viewModelScope.launch {
+            try {
+                val courses = courseRepository.getCoursesByCategorySubCategorySubject(uiState.value.selectedCategoryId.toString(),uiState.value.selectedSubCategoryId.toString(),subjectId)
+                _uiState.update { state ->
+                    state.copy(
+                        allCourses = courses.courses,
+                        filteredCourses = applyFilters(
+                            courses.courses,
+                            state.selectedSubCategoryId,
+                            state.selectedSubjectId,
+                            state.selectedPriceRange
+                        ),
+                        coursesLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        coursesLoading = false,
+                        coursesError = e.message ?: "Failed to load courses"
+                        // Keep existing courses on error
+                    )
+                }
             }
         }
-
-        // Apply subject filter
-        if (!subjectId.isNullOrEmpty()) {
-            filteredCourses = filteredCourses.filter {
-                it.course_subject_id.toString() == subjectId
-            }
-        }
-
-        // Apply price range filter
-        if (priceRange != null && priceRange.id != "all") {
-            filteredCourses = when (priceRange.id) {
-                "free" -> filteredCourses.filter {
-                    it.course_price == "0" || it.course_discounted_price == "0"
-                }
-                "0-500" -> filteredCourses.filter {
-                    val price = it.course_discounted_price?.toDoubleOrNull()
-                        ?: it.course_price.toDoubleOrNull() ?: 0.0
-                    price > 0 && price <= 500
-                }
-                "500-1000" -> filteredCourses.filter {
-                    val price = it.course_discounted_price?.toDoubleOrNull()
-                        ?: it.course_price.toDoubleOrNull() ?: 0.0
-                    price > 500 && price <= 1000
-                }
-                "1000-2000" -> filteredCourses.filter {
-                    val price = it.course_discounted_price?.toDoubleOrNull()
-                        ?: it.course_price.toDoubleOrNull() ?: 0.0
-                    price > 1000 && price <= 2000
-                }
-                "2000+" -> filteredCourses.filter {
-                    val price = it.course_discounted_price?.toDoubleOrNull()
-                        ?: it.course_price.toDoubleOrNull() ?: 0.0
-                    price > 2000
-                }
-                else -> filteredCourses
-            }
-        }
-
-        return filteredCourses
     }
 
-    /**
-     * Selects a category directly from the bottom sheet
-     */
-    fun selectCategoryFromFilter(categoryId: String) {
-        selectCategory(categoryId.toInt())
-    }
 
-    /**
-     * Retry functions for each section when they fail
-     */
-    fun retryLoadCategories() {
-        getCategories()
-    }
-
-    fun retryLoadSubCategories() {
-        if (uiState.value.selectedCategoryId != null) {
-            getSubCategoryByCategory(uiState.value.selectedCategoryId!!)
-        } else {
-            getAllSubCategories()
-        }
-    }
-
-    fun retryLoadSubjects() {
-        if (uiState.value.selectedSubCategoryId != null) {
-            getSubjectsBySubcategory(uiState.value.selectedSubCategoryId!!)
-        } else {
-            getAllSubject()
-        }
-    }
-
-    fun retryLoadCourses() {
-        if (uiState.value.selectedCategoryId != null) {
-            getCoursesByCategory(uiState.value.selectedCategoryId!!)
-        } else {
-            getPopularCourses()
-        }
-    }
 }

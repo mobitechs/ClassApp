@@ -1,5 +1,8 @@
 package com.mobitechs.classapp.data.model.response
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 data class CourseResponse(
     val courses: List<Course>,
     val message: String,
@@ -7,35 +10,39 @@ data class CourseResponse(
     val status_code: Int
 )
 
-
+@Entity(tableName = "courses")
 data class Course(
-    val id: Int,
+    @PrimaryKey val id: Int,
     val course_name: String,
-    val course_description: String,
-    val image: String,
-    val course_duration: Any,
-    val course_expiry_date: Any,
+    val course_description: String?,
+    val image: String?,
+    val course_duration: String?,
+    val course_expiry_date: String?,
     val course_price: String,
     val course_discounted_price: String,
-    val offer_code: String,
+    val offer_code: String?,
     val course_like: Int,
-    val course_tags: String,
-    val isFavorite: Boolean,
-    val isPurchased: Boolean,
-    val isWishlisted: Boolean,
-    val instructor: String,
+    val course_tags: String?,
+    val isFavorite: Int?, //1 = favourite, 0 = no favourite
+    val isPurchased: Int?,
+    val isWishlisted: Int?,
+    val instructor: String?,
 
-    val category: CategoryItem,
-    val course_category_id: Int,
-    val sub_category: SubCategoryItem,
-    val course_subcategory_id: Int,
-    val subject: SubjectItem,
-    val course_subject_id: Int,
+//    val category: CategoryItem,
+    val course_category_id: Int?,
+    val course_category_name: String?,
+//    val sub_category: SubCategoryItem,
+    val course_subcategory_id: Int?,
+    val course_subcategory_name: String?,
+//    val subject: SubjectItem,
+    val course_subject_id: Int?,
+    val course_subject_name: String?,
 
-    val is_active: String,
+    val is_active: String?,
 
-    val created_at: String,
-    val updated_at: String,
-    val deleted_at: Any,
-    val added_by: Any,
+    val created_at: String?,
+    val updated_at: String?,
+    val deleted_at: String?,
+    val added_by: String?,
+    val lastSyncedAt: Long = System.currentTimeMillis()
 )

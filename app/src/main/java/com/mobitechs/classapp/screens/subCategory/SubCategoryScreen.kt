@@ -56,7 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.mobitechs.classapp.data.local.StaticData
+import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.SubCategoryItem
 import com.mobitechs.classapp.data.model.response.SubjectItem
 import com.mobitechs.classapp.screens.common.SectionTitle
@@ -111,29 +111,7 @@ fun CategoryScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Subjects grid section (if a subcategory is selected)
-            if (selectedSubcategory != null) {
-                SubjectsGridSection(
-                    subcategory = selectedSubcategory!!,
-                    subjects = uiState.subject,
-                    subjectCounts = StaticData.subjectCounts,
-                    onSubjectClick = { subject ->
-                        navController.navigate("subject/${subject.id}?name=${subject.name}")
-                    }
-                )
 
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Courses section
-                if (uiState.subject.isNotEmpty()) {
-                    CoursesSection(
-                        courses = StaticData.sampleCourses,
-                        onCourseClick = { courseId ->
-                            navController.navigate("course_details/$courseId")
-                        }
-                    )
-                }
-            }
         }
     }
 }
@@ -360,7 +338,7 @@ fun SubjectCard(
 
 @Composable
 fun CoursesSection(
-    courses: List<StaticData.CourseData>,
+    courses: List<Course>,
     onCourseClick: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -381,7 +359,7 @@ fun CoursesSection(
             courses.forEach { course ->
                 CourseListItem(
                     course = course,
-                    onClick = { onCourseClick(course.id) }
+                    onClick = { onCourseClick(course.id.toString()) }
                 )
             }
         }
@@ -390,7 +368,7 @@ fun CoursesSection(
 
 @Composable
 fun CourseListItem(
-    course: StaticData.CourseData,
+    course: Course,
     onClick: () -> Unit
 ) {
     Card(
@@ -425,7 +403,7 @@ fun CourseListItem(
             // Course details
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = course.title,
+                    text = course.course_name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
@@ -460,7 +438,7 @@ fun CourseListItem(
                         Spacer(modifier = Modifier.width(4.dp))
 
                         Text(
-                            text = course.rating.toString(),
+                            text = course.course_like.toString(),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold
                         )
@@ -468,7 +446,7 @@ fun CourseListItem(
 
                     // Price
                     Text(
-                        text = course.price,
+                        text = course.course_discounted_price,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary

@@ -16,7 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mobitechs.classapp.data.model.response.NotificationItem
-import com.mobitechs.classapp.screens.common.NotificationCard
 import com.mobitechs.classapp.screens.common.SocialMediaStyleNotificationCard
 import com.mobitechs.classapp.screens.home.ErrorView
 

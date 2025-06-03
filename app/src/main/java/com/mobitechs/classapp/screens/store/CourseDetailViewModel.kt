@@ -153,7 +153,7 @@ class CourseDetailViewModel(
 
                 // Update local state
                 _uiState.update { currentState ->
-                    val updatedCourse = currentState.course?.copy(isPurchased = true)
+                    val updatedCourse = currentState.course?.copy(isPurchased = 1)
                     currentState.copy(
                         course = updatedCourse,
                         isProcessingPayment = false

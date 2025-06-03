@@ -37,31 +37,33 @@ data class LoginResponse(
 )
 
 data class Student(
-    val added_by: Any,
-    val address: Any,
-    val adharImage: Any,
+    val id: Int,
+    val added_by: String,
+    val address: String,
+    val adharImage: String,
     val adharNo: String,
-    val bloodGroup: Any,
+    val bloodGroup: String,
     val city: String,
     val created_at: String,
-    val deleted_at: Any,
+    val deleted_at: String,
     val email: String,
     val gender: String,
-    val id: Int,
     val is_active: Int,
     val name: String,
-    val panImage: Any,
-    val panNo: Any,
+    val panImage: String,
+    val panNo: String,
     val password: String,
     val phone: String,
-    val photo: Any,
+    val photo: String,
     val pincode: String,
-    val signature: Any,
+    val signature: String,
     val updated_at: String
 )
 
 
-data class ErrorResponse(
+
+
+data class CommonResponse(
     val status: Boolean,
     val status_code: Int,
     val message: String

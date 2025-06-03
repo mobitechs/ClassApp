@@ -3,8 +3,6 @@ package com.mobitechs.classapp.data.repository
 
 import com.mobitechs.classapp.data.api.ApiService
 import com.mobitechs.classapp.data.local.SharedPrefsManager
-import com.mobitechs.classapp.data.model.OtpVerificationRequest
-import com.mobitechs.classapp.data.model.OtpVerificationResponse
 import com.mobitechs.classapp.data.model.response.LoginRequest
 import com.mobitechs.classapp.data.model.response.LoginResponse
 import com.mobitechs.classapp.data.model.response.RegisterRequest

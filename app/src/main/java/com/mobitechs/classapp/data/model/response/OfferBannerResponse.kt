@@ -1,5 +1,8 @@
 package com.mobitechs.classapp.data.model.response
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 data class OfferBannerResponse(
     val message: String,
     val offerBanners: List<OfferBanner>,
@@ -8,17 +11,19 @@ data class OfferBannerResponse(
 )
 
 
+@Entity(tableName = "offerBanner")
 data class OfferBanner(
-    val id: Int,
+    @PrimaryKey val id: Int,
     val banner_type: String,
     val banner_url: String,
-    val offer_code: String,
-    val start_date: String,
-    val end_date: String,
+    val offer_code: String?,
+    val start_date: String?,
+    val end_date: String?,
 
     val is_active: String,
-    val created_at: String,
-    val deleted_at: Any,
-    val updated_at: String,
-    val added_by: Any
+    val created_at: String?,
+    val deleted_at: String?,
+    val updated_at: String?,
+    val added_by: String?,
+    val lastSyncedAt: Long = System.currentTimeMillis()
 )

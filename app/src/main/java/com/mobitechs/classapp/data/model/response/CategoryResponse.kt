@@ -1,5 +1,8 @@
 package com.mobitechs.classapp.data.model.response
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 data class CategoryResponse(
     val categories: List<CategoryItem>,
     val message: String,
@@ -8,14 +11,18 @@ data class CategoryResponse(
 )
 
 
+@Entity(tableName = "categories")
 data class CategoryItem(
-    val added_by: Any,
-    val created_at: String,
-    val deleted_at: Any,
-    val id: Int,
-    val is_active: String,
+    @PrimaryKey val id: Int,
     val name: String,
-    val updated_at: String
+    val is_active: String,
+    val added_by: String?,
+    val created_at: String?,
+    val deleted_at: String?,
+    val updated_at: String?,
+    val lastSyncedAt: Long = System.currentTimeMillis()
 )
+
+
 
 

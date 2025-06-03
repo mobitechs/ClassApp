@@ -1,5 +1,6 @@
 package com.mobitechs.classapp.screens.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.response.CategoryItem
@@ -10,9 +11,11 @@ import com.mobitechs.classapp.data.repository.AuthRepository
 import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.NotificationRepository
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -54,6 +57,9 @@ class HomeViewModel(
 
     private val _uiState = MutableStateFlow(HomeUiState(isInitialLoading = true))
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+
+//    private val _toastEvent = Channel<String>()
+//    val toastEvent = _toastEvent.receiveAsFlow()
 
     init {
         loadHomeData()
@@ -194,6 +200,8 @@ class HomeViewModel(
                         categoriesLoading = false
                     )
                 }
+                // Send toast event
+//                _toastEvent.send(categories.message)
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(

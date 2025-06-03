@@ -106,13 +106,13 @@ fun NotificationCard(
                 ) {
                     // Date
                     Text(
-                        text = formatDate(notification.created_at),
+                        text = formatDate(notification.created_at.toString()),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
 
                     // Course tag if applicable
-                    if (notification.is_course == "Yes" && notification.course != null) {
+                    if (notification.is_course == "Yes") {
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(4.dp))

@@ -35,9 +35,12 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Search
@@ -45,6 +48,8 @@ import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -55,7 +60,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -87,12 +94,15 @@ import coil.compose.AsyncImage
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.data.model.response.SubCategoryItem
+import com.mobitechs.classapp.data.model.response.SubjectItem
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SecondaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.StoreCategoryItem
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
+import kotlin.math.roundToInt
 
 /**
  * Main Store Screen - Redesigned for better user experience
@@ -211,26 +221,24 @@ fun StoreScreen(
                         onFilterClick = { filterType ->
                             when (filterType) {
                                 FilterType.SUBCATEGORY -> {
-                                    if (!uiState.subCategoriesLoading &&
-                                        uiState.subCategoriesError.isEmpty() &&
-                                        uiState.subCategories.isNotEmpty()
-                                    ) {
+                                    if (uiState.subCategoriesLoading) {
+                                        // Still loading, do nothing
+                                        return@FilterChipsRow
+                                    } else {
+                                        // Always show bottom sheet, handle empty state inside
                                         currentFilterType = filterType
                                         coroutineScope.launch { sheetState.show() }
-                                    } else if (uiState.subCategoriesError.isNotEmpty()) {
-                                        viewModel.retryLoadSubCategories()
                                     }
                                 }
 
                                 FilterType.SUBJECT -> {
-                                    if (!uiState.subjectsLoading &&
-                                        uiState.subjectsError.isEmpty() &&
-                                        uiState.subjects.isNotEmpty()
-                                    ) {
+                                    if (uiState.subjectsLoading) {
+                                        // Still loading, do nothing
+                                        return@FilterChipsRow
+                                    } else {
+                                        // Always show bottom sheet, handle empty state inside
                                         currentFilterType = filterType
                                         coroutineScope.launch { sheetState.show() }
-                                    } else if (uiState.subjectsError.isNotEmpty()) {
-                                        viewModel.retryLoadSubjects()
                                     }
                                 }
 
@@ -273,21 +281,42 @@ fun StoreScreen(
                     } else if (uiState.filteredCourses.isEmpty()) {
                         EmptyCoursesList()
                     } else {
-                        // Section title for current category or all courses
-                        SectionTitle(
-                            title = if (uiState.selectedCategory != null)
-                                "${uiState.selectedCategory?.name} Courses"
-                            else
-                                "All Courses"
-                        )
+                        Column {
+                            // Section title for current category or all courses
+//                            SectionTitle(
+//                                title = if (uiState.selectedCategory != null)
+//                                    "${uiState.selectedCategory?.name} Courses"
+//                                else
+//                                    "All Courses"
+//                            )
 
-                        // Course grid with improved spacing
-                        CoursesGrid(
-                            courses = uiState.filteredCourses,
-                            onCourseClick = { course ->
-                                navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")
-                            }
-                        )
+                            // Applied Filters Section with Reset Button
+                            AppliedFiltersSection(
+                                selectedCategory = uiState.selectedCategory,
+                                selectedSubCategoryId = uiState.selectedSubCategoryId,
+                                selectedSubjectId = uiState.selectedSubjectId,
+                                selectedPriceRange = uiState.selectedPriceRange,
+                                subCategories = uiState.subCategories,
+                                subjects = uiState.subjects,
+                                onClearFilter = { filterType ->
+                                    when (filterType) {
+                                        FilterType.CATEGORY -> viewModel.clearCategoryFilter()
+                                        FilterType.SUBCATEGORY -> viewModel.clearSubCategoryFilter()
+                                        FilterType.SUBJECT -> viewModel.clearSubjectFilter()
+                                        FilterType.PRICE -> viewModel.clearPriceFilter()
+                                    }
+                                },
+                                onResetAllFilters = { viewModel.resetAllFilters() }
+                            )
+
+                            // Course grid with improved spacing
+                            CoursesGrid(
+                                courses = uiState.filteredCourses,
+                                onCourseClick = { course ->
+                                    navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -335,30 +364,285 @@ fun StoreScreen(
                     )
                 }
 
-//                FilterType.PRICE -> {
-//                    PriceFilterContent(
-//                        priceRanges = listOf(
-//                            PriceRange("all", "All Prices"),
-//                            PriceRange("free", "Free"),
-//                            PriceRange("0-500", "Under ₹500"),
-//                            PriceRange("500-1000", "₹500 - ₹1000"),
-//                            PriceRange("1000-2000", "₹1000 - ₹2000"),
-//                            PriceRange("2000+", "₹2000+")
-//                        ),
-//                        selectedRange = uiState.selectedPriceRange,
-//                        onRangeSelected = {
-//                            viewModel.selectPriceRange(it)
-//                            coroutineScope.launch {
-//                                sheetState.hide()
-//                                currentFilterType = null
-//                            }
-//                        }
-//                    )
-//                }
+                FilterType.PRICE -> {
+                    PriceSliderContent(
+                        currentPriceRange = uiState.selectedPriceRange,
+                        onPriceRangeChanged = { minPrice, maxPrice ->
+                            viewModel.selectPriceRange(minPrice, maxPrice)
+                        },
+                        onApply = {
+                            coroutineScope.launch {
+                                sheetState.hide()
+                                currentFilterType = null
+                            }
+                        }
+                    )
+                }
 
                 else -> {}
             }
         }
+    }
+}
+
+/**
+ * Component to show currently applied filters with Reset All button
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun AppliedFiltersSection(
+    selectedCategory: CategoryItem?,
+    selectedSubCategoryId: String?,
+    selectedSubjectId: String?,
+    selectedPriceRange: PriceRange,
+    subCategories: List<SubCategoryItem>,
+    subjects: List<SubjectItem>,
+    onClearFilter: (FilterType) -> Unit,
+    onResetAllFilters: () -> Unit
+) {
+    // Get the names for selected filters
+    val selectedSubCategoryName = selectedSubCategoryId?.let { id ->
+        subCategories.find { it.id.toString() == id }?.name
+    }
+
+    val selectedSubjectName = selectedSubjectId?.let { id ->
+        subjects.find { it.id.toString() == id }?.name
+    }
+
+    // Check if any filters are applied
+    val hasFilters = selectedCategory != null ||
+            selectedSubCategoryName != null ||
+            selectedSubjectName != null ||
+            selectedPriceRange.isActive
+
+    if (hasFilters) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            // Header row with "Applied Filters" and "Reset All" button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Applied Filters:",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+
+                // Reset All Filters Button
+                OutlinedButton(
+                    onClick = onResetAllFilters,
+                    modifier = Modifier.height(32.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Reset All",
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Reset All",
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                // Category filter chip
+                selectedCategory?.let { category ->
+                    FilterTag(
+                        label = "Category: ${category.name}",
+                        onClear = { onClearFilter(FilterType.CATEGORY) }
+                    )
+                }
+
+                // Subcategory filter chip
+                selectedSubCategoryName?.let { name ->
+                    FilterTag(
+                        label = "Type: $name",
+                        onClear = { onClearFilter(FilterType.SUBCATEGORY) }
+                    )
+                }
+
+                // Subject filter chip
+                selectedSubjectName?.let { name ->
+                    FilterTag(
+                        label = "Subject: $name",
+                        onClear = { onClearFilter(FilterType.SUBJECT) }
+                    )
+                }
+
+                // Price filter chip
+                if (selectedPriceRange.isActive) {
+                    FilterTag(
+                        label = "Price: ${selectedPriceRange.displayName}",
+                        onClear = { onClearFilter(FilterType.PRICE) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Individual filter tag with clear button
+ */
+@Composable
+fun FilterTag(
+    label: String,
+    onClear: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        modifier = Modifier.padding(2.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Clear filter",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier
+                    .size(16.dp)
+                    .clickable { onClear() }
+            )
+        }
+    }
+}
+
+/**
+ * Price slider content for bottom sheet
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PriceSliderContent(
+    currentPriceRange: PriceRange,
+    onPriceRangeChanged: (Float, Float) -> Unit,
+    onApply: () -> Unit
+) {
+    var sliderPosition by remember {
+        mutableStateOf(currentPriceRange.minPrice..currentPriceRange.maxPrice)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Select Price Range",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+
+        // Current range display
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "₹${sliderPosition.start.roundToInt()}",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "₹${sliderPosition.endInclusive.roundToInt()}",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Range Slider
+        RangeSlider(
+            value = sliderPosition,
+            onValueChange = { newRange ->
+                sliderPosition = newRange
+            },
+            valueRange = 0f..10000f,
+            steps = 19, // Creates steps of 500
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Min and Max labels
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "₹0",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+            Text(
+                text = "₹10,000+",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Action buttons
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedButton(
+                onClick = {
+                    sliderPosition = 0f..10000f
+                    onPriceRangeChanged(0f, 10000f)
+                    onApply()
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Clear")
+            }
+
+            Button(
+                onClick = {
+                    onPriceRangeChanged(sliderPosition.start, sliderPosition.endInclusive)
+                    onApply()
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Apply")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -528,14 +812,14 @@ enum class FilterType {
 }
 
 /**
- * Filter chips row with improved layout
+ * Filter chips row with improved layout and loading states
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterChipsRow(
     selectedSubCategoryId: String?,
     selectedSubjectId: String?,
-    selectedPriceRange: PriceRange?,
+    selectedPriceRange: PriceRange,
     onFilterClick: (FilterType) -> Unit
 ) {
     LazyRow(
@@ -548,7 +832,11 @@ fun FilterChipsRow(
             FilterChip(
                 selected = selectedSubCategoryId != null,
                 onClick = { onFilterClick(FilterType.SUBCATEGORY) },
-                label = { Text("Type") },
+                label = {
+                    Text(
+                        text = if (selectedSubCategoryId != null) "Type ✓" else "Type"
+                    )
+                },
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
@@ -562,7 +850,11 @@ fun FilterChipsRow(
             FilterChip(
                 selected = selectedSubjectId != null,
                 onClick = { onFilterClick(FilterType.SUBJECT) },
-                label = { Text("Subject") },
+                label = {
+                    Text(
+                        text = if (selectedSubjectId != null) "Subject ✓" else "Subject"
+                    )
+                },
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
@@ -574,9 +866,13 @@ fun FilterChipsRow(
 
         item {
             FilterChip(
-                selected = selectedPriceRange != null && selectedPriceRange.id != "all",
+                selected = selectedPriceRange.isActive,
                 onClick = { onFilterClick(FilterType.PRICE) },
-                label = { Text("Price") },
+                label = {
+                    Text(
+                        text = if (selectedPriceRange.isActive) "Price ✓" else "Price"
+                    )
+                },
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
@@ -597,8 +893,8 @@ data class FilterOption(
 )
 
 /**
- * Bottom sheet for filters with improved layout
-// */
+ * Bottom sheet for filters with improved layout and empty state handling
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterBottomSheetContent(
@@ -618,42 +914,79 @@ fun FilterBottomSheetContent(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // FlowRow automatically arranges items based on available space
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            options.forEach { option ->
-                Card(
-                    onClick = { onOptionSelected(option.id) },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (selectedOptionId == option.id)
-                            MaterialTheme.colorScheme.primary
-                        else Color.Transparent
-                    ),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = if (selectedOptionId == option.id)
-                            MaterialTheme.colorScheme.primary
-                        else Color.Gray
-                    )
-                ) {
-                    Text(
-                        text = option.name,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        color = if (selectedOptionId == option.id) Color.White else Color.Black
-                    )
+        if (options.isEmpty()) {
+            // Empty state
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FilterList,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "No options available",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Try selecting a category first or check your connection",
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                )
+            }
+        } else {
+            // FlowRow automatically arranges items based on available space
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                options.forEach { option ->
+                    Card(
+                        onClick = { onOptionSelected(option.id) },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (selectedOptionId == option.id)
+                                MaterialTheme.colorScheme.primary
+                            else Color.Transparent
+                        ),
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = if (selectedOptionId == option.id)
+                                MaterialTheme.colorScheme.primary
+                            else Color.Gray
+                        )
+                    ) {
+                        Text(
+                            text = option.name,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            color = if (selectedOptionId == option.id) Color.White else Color.Black
+                        )
+                    }
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
 //--------------------------------------------------------------------------------------------------
 /**
- * Price filter content
+ * Price filter content (kept for backward compatibility, but replaced by PriceSliderContent)
  */
 @Composable
 fun PriceFilterContent(
@@ -682,7 +1015,7 @@ fun PriceFilterContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(
-                        selected = selectedRange?.id == range.id,
+                        selected = selectedRange?.minPrice == range.minPrice,
                         onClick = { onRangeSelected(range) }
                     )
 
@@ -839,7 +1172,7 @@ fun ImprovedCourseCard2(
                 Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
-                    text = course.course_description,
+                    text = course.course_description.toString(),
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 11.sp
                     ),

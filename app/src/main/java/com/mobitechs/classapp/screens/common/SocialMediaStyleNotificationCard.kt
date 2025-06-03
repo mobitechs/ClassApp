@@ -86,14 +86,14 @@ fun SocialMediaStyleNotificationCard(
                 )
 
                 Text(
-                    text = formatDate(notification.created_at),
+                    text = formatDate(notification.created_at.toString()),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }
 
             // Course tag if applicable
-            if (notification.is_course == "Yes" && notification.course != null) {
+            if (notification.is_course == "Yes" ) {
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(4.dp))
@@ -125,7 +125,7 @@ fun SocialMediaStyleNotificationCard(
                 )
 
                 // Overlay tag for course if applicable
-                if (notification.is_course == "Yes" && notification.course != null) {
+                if (notification.is_course == "Yes" ) {
                     Box(
                         modifier = Modifier
                             .padding(12.dp)
@@ -135,7 +135,7 @@ fun SocialMediaStyleNotificationCard(
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
                         Text(
-                            text = notification.course.course_name,
+                            text = notification.notice_title,
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             maxLines = 1,

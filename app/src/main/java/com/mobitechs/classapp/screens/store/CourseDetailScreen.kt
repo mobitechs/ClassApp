@@ -161,12 +161,12 @@ fun CourseDetailScreen(
 //                        viewModel.toggleFavorite()
                     }) {
                         Icon(
-                            imageVector = if (uiState.course?.isFavorite == true)
+                            imageVector = if (uiState.course?.isFavorite  == 1)
                                 Icons.Default.Favorite
                             else
                                 Icons.Default.FavoriteBorder,
                             contentDescription = "Favorite",
-                            tint = if (uiState.course?.isFavorite == true)
+                            tint = if (uiState.course?.isFavorite  == 1)
                                 Color.Red
                             else
                                 MaterialTheme.colorScheme.onSurface
@@ -178,12 +178,12 @@ fun CourseDetailScreen(
 //                        viewModel.toggleWishlist()
                     }) {
                         Icon(
-                            imageVector = if (uiState.course?.isWishlisted == true)
+                            imageVector = if (uiState.course?.isWishlisted  == 1)
                                 Icons.Default.Bookmark
                             else
                                 Icons.Default.BookmarkBorder,
                             contentDescription = "Wishlist",
-                            tint = if (uiState.course?.isWishlisted == true)
+                            tint = if (uiState.course?.isWishlisted == 1)
                                 MaterialTheme.colorScheme.primary
                             else
                                 MaterialTheme.colorScheme.onSurface
@@ -288,7 +288,7 @@ fun CourseDetailScreen(
                                     shape = RoundedCornerShape(16.dp)
                                 ) {
                                     Text(
-                                        text = course.category.name,
+                                        text = course.course_name,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                                         style = MaterialTheme.typography.bodySmall,
                                         modifier = Modifier.padding(
@@ -299,13 +299,13 @@ fun CourseDetailScreen(
                                 }
 
                                 // Subcategory chip if available
-                                if (course.sub_category.name != null) {
+                                if (course.course_subcategory_name != null) {
                                     Surface(
                                         color = MaterialTheme.colorScheme.secondaryContainer,
                                         shape = RoundedCornerShape(16.dp)
                                     ) {
                                         Text(
-                                            text = course.sub_category.name,
+                                            text = course.course_subcategory_name,
                                             color = MaterialTheme.colorScheme.onSecondaryContainer,
                                             style = MaterialTheme.typography.bodySmall,
                                             modifier = Modifier.padding(
@@ -482,7 +482,7 @@ fun CourseDetailScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             Text(
-                                text = course.course_description,
+                                text = course.course_description.toString(),
                                 style = MaterialTheme.typography.bodyLarge
                             )
 
@@ -525,7 +525,7 @@ fun CourseDetailScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                         }
                         Text(
-                            text = if (course.isPurchased) "Go to Course" else "Buy Now",
+                            text = if (course.isPurchased==1) "Go to Course" else "Buy Now",
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
