@@ -47,8 +47,8 @@ import com.mobitechs.classapp.screens.store.CourseDetailScreen
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreScreen
 import com.mobitechs.classapp.screens.store.StoreViewModel
-import com.mobitechs.classapp.screens.subCategory.CategoryScreen
-import com.mobitechs.classapp.screens.subCategory.SubCategoryViewModel
+import com.mobitechs.classapp.screens.categoryDetails.CategoryWiseDetailsScreen
+import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
 import com.mobitechs.classapp.ui.theme.ClassConnectTheme
 
 
@@ -224,7 +224,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
             ) { backStackEntry ->
                 val courseJson = backStackEntry.arguments?.getString("courseJson")
                 val viewModel: CourseDetailViewModel = viewModel(factory = viewModelFactory)
-                CourseDetailScreen(courseJson, navController,viewModel)
+                CourseDetailScreen(courseJson, navController, viewModel)
             }
 
             composable(
@@ -243,7 +243,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 val courseJson = backStackEntry.arguments?.getString("courseJson")
                 val videoUrl = backStackEntry.arguments?.getString("videoUrl")
                 val viewModel: VideoPlayerViewModel = viewModel(factory = viewModelFactory)
-                VideoPlayerScreen(courseJson, videoUrl,navController,viewModel)
+                VideoPlayerScreen(courseJson, videoUrl, navController, viewModel)
             }
 
 
@@ -310,11 +310,29 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                     navController = navController
                 )
             }
-            composable(Screen.CategoryScreen.route) {
+
+
+            composable(
+                "categoryWiseDetailsScreen?categoryId={categoryId}/categoryName={categoryName}",
+                arguments = listOf(
+                    navArgument("categoryId") {
+                        type = NavType.StringType
+                        defaultValue = "null" // Handle null case
+                    },
+                    navArgument("categoryName") {
+                        type = NavType.StringType
+                        defaultValue = "null" // Handle null case
+                    }
+                )
+            ) { backStackEntry ->
+                val categoryId = backStackEntry.arguments?.getString("categoryId")
+                val categoryName = backStackEntry.arguments?.getString("categoryName")
                 val viewModel: SubCategoryViewModel = viewModel(factory = viewModelFactory)
-                CategoryScreen(
+                CategoryWiseDetailsScreen(
                     viewModel = viewModel,
-                    navController = navController
+                    navController = navController,
+                    categoryId = categoryId?.toInt() ?: 1,
+                    categoryName = categoryName.toString()
                 )
             }
 

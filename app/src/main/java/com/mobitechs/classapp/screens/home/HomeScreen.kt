@@ -396,7 +396,11 @@ fun HomeContent(
                         icon = getCategoryIcon(category.name),
                         name = category.name,
                         isSelected = false,
-                        onCategorySelected = { onCategoryClick(category.id.toString()) }
+                        onCategorySelected = {
+                            navController.navigate("categoryWiseDetailsScreen?categoryId=${category.id}/categoryName=${category.name}")
+
+
+                        }
                     )
                 }
             }

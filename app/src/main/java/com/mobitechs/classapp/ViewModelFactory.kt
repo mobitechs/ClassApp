@@ -28,7 +28,7 @@ import com.mobitechs.classapp.screens.search.SearchViewModel
 import com.mobitechs.classapp.screens.splash.SplashViewModel
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreViewModel
-import com.mobitechs.classapp.screens.subCategory.SubCategoryViewModel
+import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
 
 /**
  * Factory class for creating ViewModels without dependency injection
