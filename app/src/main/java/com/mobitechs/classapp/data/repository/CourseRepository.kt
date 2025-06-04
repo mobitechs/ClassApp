@@ -5,10 +5,14 @@ import android.util.Log
 import com.mobitechs.classapp.data.api.ApiService
 import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.mobitechs.classapp.data.model.dao.CourseDao
+import com.mobitechs.classapp.data.model.request.CommonCourseRequest
+import com.mobitechs.classapp.data.model.request.GetCourseByRequest
+import com.mobitechs.classapp.data.model.response.CommonResponse
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.CourseResponse
 import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
 import com.mobitechs.classapp.data.model.response.OfferBannerResponse
+import com.mobitechs.classapp.data.model.response.SubjectResponse
 import com.mobitechs.classapp.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -29,33 +33,6 @@ class CourseRepository(
         }
     }
 
-    suspend fun getCourses(categoryId: Int = 0, subcategoryId: Int = 0, subjectId: Int = 0): CourseResponse = withContext(Dispatchers.IO) {
-        // Check if already called API today
-        if (sharedPrefsManager.isAlreadySyncedToday(Constants.KEY_tbl_course)) {
-            Log.d("Course API", "Course Already called API today cat =$categoryId subCat = $subcategoryId subject = $subjectId")
-            // Get from Room DB
-            return@withContext CourseResponse(
-                courses = courseDao.getCourses(categoryId,subcategoryId,subjectId),
-                message = "Courses from RoomDb",
-                status = true,
-                status_code = 200
-            )
-        } else {
-            val response = apiService.getCourses()
-            if (response.isSuccessful) {
-                val courseResponse = response.body() ?: throw Exception("Empty response body")
-                // Save to Room DB
-                courseDao.insertCourses(courseResponse.courses)
-                sharedPrefsManager.setLastSyncDate(Constants.KEY_tbl_course)
-
-                return@withContext courseResponse
-            } else {
-                throw Exception("Failed to get courses: ${response.message()}")
-                // you can cache data from room db here and return
-            }
-        }
-
-    }
 
     suspend fun getLatestCourses(): CourseResponse = withContext(Dispatchers.IO) {
         val response = apiService.getLatestCourses()
@@ -87,9 +64,9 @@ class CourseRepository(
         }
     }
 
-    suspend fun getCoursesByCategory(categoryId: String): CourseResponse =
+    suspend fun getCoursesFilterWise(reqObj: GetCourseByRequest): CourseResponse =
         withContext(Dispatchers.IO) {
-        val response = apiService.getCoursesByCategory(categoryId)
+            val response = apiService.getCourses(reqObj)
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
@@ -97,29 +74,9 @@ class CourseRepository(
             }
         }
 
-    suspend fun getCourseByCategorySubCategory(
-        categoryId: String,
-        subCategoryId: String
-    ): CourseResponse = withContext(Dispatchers.IO) {
-        val response = apiService.getCourseByCategorySubCategory(categoryId,subCategoryId)
-        if (response.isSuccessful) {
-            return@withContext response.body() ?: throw Exception("Empty response body")
-        } else {
-            throw Exception("Failed to get featured courses: ${response.message()}")
-        }
-    }
-    suspend fun getCoursesByCategorySubCategorySubject(
-        categoryId: String,
-        subCategoryId: String,
-        subjectId: String
-    ): CourseResponse = withContext(Dispatchers.IO) {
-        val response = apiService.getCoursesByCategorySubCategorySubject(categoryId,subCategoryId,subjectId)
-        if (response.isSuccessful) {
-            return@withContext response.body() ?: throw Exception("Empty response body")
-        } else {
-            throw Exception("Failed to get featured courses: ${response.message()}")
-        }
-    }
+
+
+
 
 
     suspend fun getOfferBanners(): OfferBannerResponse = withContext(Dispatchers.IO) {
@@ -141,6 +98,75 @@ class CourseRepository(
             throw Exception("Failed to get courses with offers: ${response.message()}")
         }
     }
+
+
+    suspend fun addToFavorite(courseId: Int): CommonResponse =
+        withContext(Dispatchers.IO) {
+            val userId = sharedPrefsManager.getUser()?.id.toString()
+            val response = apiService.addToFavorite(CommonCourseRequest(userId.toString(),courseId.toString()))
+            if (response.isSuccessful) {
+                return@withContext response.body() ?: throw Exception("Empty response body")
+            } else {
+                throw Exception("Failed to get categories: ${response.message()}")
+            }
+        }
+
+    suspend fun removeFromFavorite(courseId: Int): CommonResponse =
+        withContext(Dispatchers.IO) {
+            val userId = sharedPrefsManager.getUser()?.id.toString()
+            val response = apiService.removeFromFavorite(userId.toString(),courseId.toString())
+            if (response.isSuccessful) {
+                return@withContext response.body() ?: throw Exception("Empty response body")
+            } else {
+                throw Exception("Failed to get categories: ${response.message()}")
+            }
+        }
+
+    suspend fun addToWishlist(courseId: Int): CommonResponse =
+        withContext(Dispatchers.IO) {
+            val userId = sharedPrefsManager.getUser()?.id.toString()
+            val response = apiService.addToWishlist(CommonCourseRequest(userId.toString(),courseId.toString()))
+            if (response.isSuccessful) {
+                return@withContext response.body() ?: throw Exception("Empty response body")
+            } else {
+                throw Exception("Failed to get categories: ${response.message()}")
+            }
+        }
+
+    suspend fun removeFromWishlist(courseId: Int): CommonResponse =
+        withContext(Dispatchers.IO) {
+            val userId = sharedPrefsManager.getUser()?.id.toString()
+            val response = apiService.removeFromWishlist(userId.toString(),courseId.toString())
+            if (response.isSuccessful) {
+                return@withContext response.body() ?: throw Exception("Empty response body")
+            } else {
+                throw Exception("Failed to get categories: ${response.message()}")
+            }
+        }
+
+    suspend fun courseLike(courseId: Int): CommonResponse =
+        withContext(Dispatchers.IO) {
+            val userId = sharedPrefsManager.getUser()?.id.toString()
+            val response = apiService.courseLike(CommonCourseRequest(userId.toString(),courseId.toString()))
+            if (response.isSuccessful) {
+                return@withContext response.body() ?: throw Exception("Empty response body")
+            } else {
+                throw Exception("Failed to get categories: ${response.message()}")
+            }
+        }
+
+    suspend fun courseDislike(courseId: Int): CommonResponse =
+        withContext(Dispatchers.IO) {
+            val userId = sharedPrefsManager.getUser()?.id.toString()
+            val response = apiService.courseDislike(CommonCourseRequest(userId.toString(),courseId.toString()))
+            if (response.isSuccessful) {
+                return@withContext response.body() ?: throw Exception("Empty response body")
+            } else {
+                throw Exception("Failed to get categories: ${response.message()}")
+            }
+        }
+
+
 
 
 }

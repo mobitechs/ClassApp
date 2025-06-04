@@ -14,7 +14,7 @@ class UserRepository(
 ) {
 
     suspend fun getUserProfile(): LoginResponse = withContext(Dispatchers.IO) {
-        val response = apiService.getUserProfile(getUser())
+        val response = apiService.getUserProfile(sharedPrefsManager.getUser()?.id.toString())
         if (response.isSuccessful) {
             return@withContext response.body() ?: throw Exception("Empty response body")
         } else {
@@ -33,13 +33,5 @@ class UserRepository(
 
 
 
-    fun getUser(): String {
-        val user = sharedPrefsManager.getUser()
-        return if (user != null && user.id != null) {
-            user.id.toString()
-        } else {
-            throw Exception("User ID not found. Please login again.")
-        }
-    }
 }
 

@@ -3,23 +3,26 @@ package com.mobitechs.classapp.data.api
 import com.mobitechs.classapp.data.model.Batch
 import com.mobitechs.classapp.data.model.PaymentResponse
 import com.mobitechs.classapp.data.model.StudyMaterial
+import com.mobitechs.classapp.data.model.request.CommonCourseRequest
+import com.mobitechs.classapp.data.model.request.GetCourseByRequest
+import com.mobitechs.classapp.data.model.request.LoginRequest
+import com.mobitechs.classapp.data.model.request.RefreshTokenRequest
+import com.mobitechs.classapp.data.model.request.RegisterRequest
 import com.mobitechs.classapp.data.model.response.CategoryResponse
+import com.mobitechs.classapp.data.model.response.CommonResponse
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.CourseResponse
-import com.mobitechs.classapp.data.model.response.LoginRequest
 import com.mobitechs.classapp.data.model.response.LoginResponse
 import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
-import com.mobitechs.classapp.data.model.response.NotificationItem
 import com.mobitechs.classapp.data.model.response.NotificationsResponse
 import com.mobitechs.classapp.data.model.response.OfferBannerResponse
-import com.mobitechs.classapp.data.model.response.RefreshTokenRequest
 import com.mobitechs.classapp.data.model.response.RefreshTokenResponse
-import com.mobitechs.classapp.data.model.response.RegisterRequest
 import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.data.model.response.SubCategoryResponse
 import com.mobitechs.classapp.data.model.response.SubjectResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -56,8 +59,8 @@ interface ApiService {
 
 
     //Courses
-    @GET("courses?sort=newest")
-    suspend fun getCourses(): Response<CourseResponse>
+    @POST("courses-with-filters")
+    suspend fun getCourses(@Body request: GetCourseByRequest): Response<CourseResponse>
 
     @GET("courses?sort=newest")
     suspend fun getLatestCourses(): Response<CourseResponse>
@@ -65,21 +68,34 @@ interface ApiService {
     @GET("courses?sort=newest")
     suspend fun getPopularCourses(): Response<CourseResponse>
 
-
     @GET("courses?sort=newest")
     suspend fun getFeaturedCourses(): Response<CourseResponse>
 
-    @GET("categorywiseCourses/{categoryId}")
-    suspend fun getCoursesByCategory(@Path("categoryId") categoryId: String): Response<CourseResponse>
-
-    @GET("categorywiseCourses/{categoryId}/{subCategoryId}")
-    suspend fun getCourseByCategorySubCategory(@Path("categoryId") categoryId: String, @Path("subCategoryId") subCategoryId: String): Response<CourseResponse>
+    @POST("favourite-courses")
+    suspend fun addToFavorite(@Body request: CommonCourseRequest): Response<CommonResponse>
 
 
-    @GET("categorywiseCourses/{categoryId}/{subCategoryId}/{subjectId}")
-    suspend fun getCoursesByCategorySubCategorySubject(@Path("categoryId") categoryId: String, @Path("subCategoryId") subCategoryId: String, @Path("subjectId") subjectId: String): Response<CourseResponse>
+    @DELETE("remove-favourite-courses/{studentId}/{courseId}")
+    suspend fun removeFromFavorite(
+        @Path("studentId") studentId: String,
+        @Path("courseId") courseId: String
+    ): Response<CommonResponse>
 
 
+    @POST("whishlist-courses")
+    suspend fun addToWishlist(@Body request: CommonCourseRequest): Response<CommonResponse>
+
+    @DELETE("remove-whishlist-courses/{studentId}/{courseId}")
+    suspend fun removeFromWishlist(
+        @Path("studentId") studentId: String,
+        @Path("courseId") courseId: String
+    ): Response<CommonResponse>
+
+    @POST("like-courses")
+    suspend fun courseLike(@Body request: CommonCourseRequest): Response<CommonResponse>
+
+    @POST("unlike-courses")
+    suspend fun courseDislike(@Body request: CommonCourseRequest): Response<CommonResponse>
 
 
     @GET("categories")
@@ -89,27 +105,17 @@ interface ApiService {
     suspend fun getAllSubCategories(): Response<SubCategoryResponse>
 
     @GET("sub-categories/{categoryId}")
-    suspend fun getSubCategoryByCategory(@Path("categoryId") categoryId: String): Response<SubCategoryResponse>
+    suspend fun getSubCategoryByCategory(@Path("categoryId") categoryId: Int): Response<SubCategoryResponse>
 
     @GET("subjects")
     suspend fun getAllSubject(): Response<SubjectResponse>
 
     @GET("subjects/{categoryId}")
-    suspend fun getSubjectByCategory(@Path("categoryId") categoryId: String): Response<SubjectResponse>
+    suspend fun getSubjectByCategory(@Path("categoryId") categoryId: Int): Response<SubjectResponse>
 
     @GET("subjects/{subCategoryId}")
-    suspend fun getSubjectsBySubcategory(@Path("subCategoryId") categoryId: String): Response<SubjectResponse>
+    suspend fun getSubjectsBySubcategory(@Path("subCategoryId") categoryId: Int): Response<SubjectResponse>
 
-
-    // Courses
-    @GET("courses")
-    suspend fun getCourses(
-        @Query("category") categoryId: String? = null,
-        @Query("query") searchQuery: String? = null,
-        @Query("popular") popular: Boolean? = null,
-        @Query("page") page: Int = 1,
-        @Query("limit") limit: Int = 20
-    ): Response<List<Course>>
 
     @GET("courses/{id}")
     suspend fun getCourseDetails(@Path("id") courseId: String): Response<Course>

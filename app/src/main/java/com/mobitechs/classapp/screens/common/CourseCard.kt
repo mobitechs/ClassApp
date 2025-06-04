@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
@@ -45,12 +46,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.mobitechs.classapp.data.model.response.Course
-
 @Composable
 fun CourseCardPopularFeatured(
     course: Course,
     onClick: () -> Unit,
-    onFavoriteClick: () -> Unit
+    onFavoriteClick: () -> Unit,
+    onWishlistClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -78,19 +79,28 @@ fun CourseCardPopularFeatured(
                         .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 )
 
-                // Favorite button
-                IconButton(
-                    onClick = onFavoriteClick,
+                // Favorite button with background
+                Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(4.dp)
+                        .padding(8.dp)
                 ) {
-                    Icon(
-                        imageVector = if (course.isFavorite == 1) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                        contentDescription = if (course.isFavorite ==1) "Remove from favorites" else "Add to favorites",
-                        tint = if (course.isFavorite ==1) MaterialTheme.colorScheme.secondary else Color.White,
-                        modifier = Modifier.size(28.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black.copy(alpha = 0.5f))
+                            .clickable { onFavoriteClick() }
+                    ) {
+                        Icon(
+                            imageVector = if (course.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (course.isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = if (course.isFavorite) Color.Red else Color.White,
+                            modifier = Modifier
+                                .size(22.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
                 }
             }
 
@@ -98,17 +108,39 @@ fun CourseCardPopularFeatured(
             Column(
                 modifier = Modifier.padding(12.dp)
             ) {
-                // Title
-                Text(
-                    text = course.course_name,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                // Title with wishlist icon
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Text(
+                        text = course.course_name,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    // Wishlist icon
+                    IconButton(
+                        onClick = onWishlistClick,
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (course.isWishlisted) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                            contentDescription = if (course.isWishlisted) "Remove from wishlist" else "Add to wishlist",
+                            tint = if (course.isWishlisted)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Instructor
+                // Description
                 Text(
                     text = course.course_description.toString(),
                     style = MaterialTheme.typography.bodyMedium,
@@ -119,22 +151,46 @@ fun CourseCardPopularFeatured(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Rating
+                // Rating and Likes Row
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    // Rating
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = null,
+                            tint = Color(0xFFFFC107),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = "4.${course.course_like % 10}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
 
-                    Text(
-                        text = "5",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
+                    // Likes
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ThumbUp,
+                            contentDescription = "Likes",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "${course.course_like}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -144,24 +200,30 @@ fun CourseCardPopularFeatured(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (course.course_discounted_price != null) {
-                        Spacer(modifier = Modifier.width(8.dp))
-
                         Text(
-                            text = course.course_discounted_price,
+                            text = "₹${course.course_price}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             textDecoration = TextDecoration.LineThrough
                         )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "₹${course.course_discounted_price}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    } else {
+                        Text(
+                            text = if (course.course_price == "0") "FREE" else "₹${course.course_price}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = if (course.course_price == "0")
+                                Color(0xFF388E3C)
+                            else
+                                MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = course.course_price,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-
-
                 }
             }
         }
@@ -170,11 +232,12 @@ fun CourseCardPopularFeatured(
 
 
 // course card - store page
-
 @Composable
 fun CourseCardForStore(
     course: Course,
-    onCourseClick: () -> Unit
+    onCourseClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    onWishlistClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -198,6 +261,31 @@ fun CourseCardForStore(
                     modifier = Modifier.fillMaxSize()
                 )
 
+                // Favorite icon with background at top right
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                ) {
+                    // Background circle for favorite icon
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black.copy(alpha = 0.5f))
+                            .clickable { onFavoriteClick() }
+                    ) {
+                        Icon(
+                            imageVector = if (course.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (course.isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = if (course.isFavorite) Color.Red else Color.White,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
+
                 // Solid dark rectangle overlay at bottom of image
                 Box(
                     modifier = Modifier
@@ -219,7 +307,6 @@ fun CourseCardForStore(
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-
                             Card(
                                 shape = RoundedCornerShape(4.dp),
                                 colors = CardDefaults.cardColors(
@@ -270,16 +357,38 @@ fun CourseCardForStore(
             Column(
                 modifier = Modifier.padding(8.dp)
             ) {
-                // Course name
-                Text(
-                    text = course.course_name,
-                    style = MaterialTheme.typography.titleSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    ),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                // Course name with wishlist icon
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Text(
+                        text = course.course_name,
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        ),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    // Wishlist icon
+                    IconButton(
+                        onClick = onWishlistClick,
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (course.isWishlisted) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                            contentDescription = if (course.isWishlisted) "Remove from wishlist" else "Add to wishlist",
+                            tint = if (course.isWishlisted)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(2.dp))
 
@@ -299,7 +408,6 @@ fun CourseCardForStore(
                 ) {
                     // Discounted price
                     if (course.course_discounted_price != null) {
-
                         // Original price with strikethrough
                         Text(
                             text = "₹${course.course_price}",
@@ -317,8 +425,6 @@ fun CourseCardForStore(
                                 fontSize = 14.sp
                             )
                         )
-
-
                     } else {
                         // Regular price (no discount)
                         Text(
@@ -348,13 +454,13 @@ fun CourseCardForStore(
     }
 }
 
-
 // category page all course view
 @Composable
 fun CourseCardRectangular(
     course: Course,
     onClick: () -> Unit,
-    onFavoriteClick: () -> Unit
+    onFavoriteClick: () -> Unit,
+    onWishlistClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -376,11 +482,11 @@ fun CourseCardRectangular(
                 contentAlignment = Alignment.Center
             ) {
                 // You can use AsyncImage here when you have the actual image URLs
-                Icon(
-                    imageVector = Icons.Default.School,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(36.dp)
+                AsyncImage(
+                    model = course.image,
+                    contentDescription = course.course_name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
 
@@ -399,7 +505,8 @@ fun CourseCardRectangular(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "By ${course.instructor}",
+                    text = "${course.course_description}",
+                    maxLines = 2,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
@@ -409,7 +516,7 @@ fun CourseCardRectangular(
                 // Rating and price
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                   // horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Rating
@@ -429,14 +536,62 @@ fun CourseCardRectangular(
                             fontWeight = FontWeight.Bold
                         )
                     }
-
-                    // Price
-                    Text(
-                        text = "₹${course.course_discounted_price ?: course.course_price}",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    // likes
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ThumbUp,
+                            contentDescription = "Likes",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "${course.course_like}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    // Discounted price
+                    if (course.course_discounted_price != null) {
+                        // Original price with strikethrough
+                        Text(
+                            text = "₹${course.course_price}",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontSize = 14.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "₹${course.course_discounted_price}",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        )
+                    } else {
+                        // Regular price (no discount)
+                        Text(
+                            text = if (course.course_price == "0") "FREE" else "₹${course.course_price}",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            ),
+                            color = if (course.course_price == "0")
+                                Color(0xFF388E3C)
+                            else
+                                MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         }
@@ -491,9 +646,9 @@ fun CourseGridItem(
                             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
                     ) {
                         Icon(
-                            imageVector = if (course.isFavorite == 1) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (course.isFavorite == 1) "Remove from favorites" else "Add to favorites",
-                            tint = if (course.isFavorite == 1) Color.Red else MaterialTheme.colorScheme.onSurface,
+                            imageVector = if (course.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (course.isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = if (course.isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -507,9 +662,9 @@ fun CourseGridItem(
                             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
                     ) {
                         Icon(
-                            imageVector = if (course.isWishlisted == 1) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                            contentDescription = if (course.isWishlisted == 1) "Remove from wishlist" else "Add to wishlist",
-                            tint = if (course.isWishlisted == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            imageVector = if (course.isWishlisted) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                            contentDescription = if (course.isWishlisted) "Remove from wishlist" else "Add to wishlist",
+                            tint = if (course.isWishlisted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(18.dp)
                         )
                     }

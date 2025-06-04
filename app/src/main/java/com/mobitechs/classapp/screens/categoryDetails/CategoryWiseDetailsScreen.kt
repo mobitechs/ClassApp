@@ -46,7 +46,7 @@ import com.mobitechs.classapp.screens.common.CourseCardEmptyMessage
 import com.mobitechs.classapp.screens.common.CourseCardPopularFeatured
 import com.mobitechs.classapp.screens.common.CourseCardRectangular
 import com.mobitechs.classapp.screens.common.SectionTitle
-
+import com.mobitechs.classapp.utils.ToastObserver
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +57,8 @@ fun CategoryWiseDetailsScreen(
     categoryName: String = "Category" // Pass this from navigation
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    ToastObserver(viewModel)
 
     // Initialize with the passed category ID
     LaunchedEffect(categoryId) {
@@ -71,7 +73,7 @@ fun CategoryWiseDetailsScreen(
     LaunchedEffect(uiState.subcategories) {
         if (uiState.subcategories.isNotEmpty() && selectedSubcategory == null) {
             selectedSubcategory = uiState.subcategories.first()
-            viewModel.setSelectedSubcategory(selectedSubcategory!!.id.toString())
+            viewModel.setSelectedSubcategory(selectedSubcategory!!.id)
         }
     }
 
@@ -79,7 +81,7 @@ fun CategoryWiseDetailsScreen(
     LaunchedEffect(uiState.subject) {
         if (uiState.subject.isNotEmpty() && selectedSubject == null) {
             selectedSubject = uiState.subject.first()
-            viewModel.setSelectedSubject(selectedSubject!!.id.toString())
+            viewModel.setSelectedSubject(selectedSubject!!.id)
         }
     }
 
@@ -153,7 +155,20 @@ fun CategoryWiseDetailsScreen(
                                     }"
                                 )
                             },
-                            onFavoriteClick = { viewModel.toggleFavorite(course.id.toString()) }
+                            onFavoriteClick = {
+                                if (course.isFavorite) {
+                                    viewModel.removeFromFavorite(course.id)
+                                } else {
+                                    viewModel.addToFavorite(course.id)
+                                }
+                            },
+                            onWishlistClick = {
+                                if (course.isWishlisted) {
+                                   viewModel.removeFromWishlist(course.id)
+                                } else {
+                                    viewModel.addToWishlist(course.id)
+                                }
+                            }
                         )
                     }
                 }
@@ -168,8 +183,8 @@ fun CategoryWiseDetailsScreen(
                     selectedItem = selectedSubcategory,
                     onItemClick = {
                         selectedSubcategory = it
-                        viewModel.setSelectedSubcategory(it.id.toString())
-                        viewModel.loadCoursesBySubcategory(it.id.toString())
+                        viewModel.setSelectedSubcategory(it.id)
+                        viewModel.loadCoursesBySubcategory(it.id)
                     },
                     itemContent = { item, isSelected ->
                         FilterChip(
@@ -177,8 +192,8 @@ fun CategoryWiseDetailsScreen(
                             isSelected = isSelected,
                             onClick = {
                                 selectedSubcategory = item
-                                viewModel.setSelectedSubcategory(item.id.toString())
-                                viewModel.loadCoursesBySubcategory(item.id.toString())
+                                viewModel.setSelectedSubcategory(item.id)
+                                viewModel.loadCoursesBySubcategory(item.id)
                             }
                         )
                     }
@@ -223,7 +238,20 @@ fun CategoryWiseDetailsScreen(
                                                 }"
                                             )
                                         },
-                                        onFavoriteClick = { viewModel.toggleFavorite(course.id.toString()) }
+                                        onFavoriteClick = {
+                                            if (course.isFavorite) {
+                                                viewModel.removeFromFavorite(course.id)
+                                            } else {
+                                                viewModel.addToFavorite(course.id)
+                                            }
+                                        },
+                                        onWishlistClick = {
+                                            if (course.isWishlisted) {
+                                                viewModel.removeFromWishlist(course.id)
+                                            } else {
+                                                viewModel.addToWishlist(course.id)
+                                            }
+                                        }
                                     )
                                 }
                             }
@@ -241,8 +269,8 @@ fun CategoryWiseDetailsScreen(
                     selectedItem = selectedSubject,
                     onItemClick = {
                         selectedSubject = it
-                        viewModel.setSelectedSubject(it.id.toString())
-                        viewModel.loadCoursesBySubject(it.id.toString())
+                        viewModel.setSelectedSubject(it.id)
+                        viewModel.loadCoursesBySubject(it.id)
                     },
                     itemContent = { item, isSelected ->
                         FilterChip(
@@ -250,8 +278,8 @@ fun CategoryWiseDetailsScreen(
                             isSelected = isSelected,
                             onClick = {
                                 selectedSubject = item
-                                viewModel.setSelectedSubject(item.id.toString())
-                                viewModel.loadCoursesBySubject(item.id.toString())
+                                viewModel.setSelectedSubject(item.id)
+                                viewModel.loadCoursesBySubject(item.id)
                             }
                         )
                     }
@@ -296,7 +324,20 @@ fun CategoryWiseDetailsScreen(
                                                 }"
                                             )
                                         },
-                                        onFavoriteClick = { viewModel.toggleFavorite(course.id.toString()) }
+                                        onFavoriteClick = {
+                                            if (course.isFavorite) {
+                                                viewModel.removeFromFavorite(course.id)
+                                            } else {
+                                                viewModel.addToFavorite(course.id)
+                                            }
+                                        },
+                                        onWishlistClick = {
+                                            if (course.isWishlisted) {
+                                                viewModel.removeFromWishlist(course.id)
+                                            } else {
+                                                viewModel.addToWishlist(course.id)
+                                            }
+                                        }
                                     )
                                 }
                             }
@@ -349,7 +390,20 @@ fun CategoryWiseDetailsScreen(
                                         }"
                                     )
                                 },
-                                onFavoriteClick = { viewModel.toggleFavorite(course.id.toString()) }
+                                onFavoriteClick = {
+                                    if (course.isFavorite) {
+                                        viewModel.removeFromFavorite(course.id)
+                                    } else {
+                                        viewModel.addToFavorite(course.id)
+                                    }
+                                },
+                                onWishlistClick = {
+                                    if (course.isWishlisted) {
+                                        viewModel.removeFromWishlist(course.id)
+                                    } else {
+                                        viewModel.addToWishlist(course.id)
+                                    }
+                                }
                             )
                         }
                     }

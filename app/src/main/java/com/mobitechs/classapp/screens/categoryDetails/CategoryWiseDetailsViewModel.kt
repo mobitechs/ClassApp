@@ -1,12 +1,13 @@
 package com.mobitechs.classapp.screens.categoryDetails
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobitechs.classapp.data.model.request.GetCourseByRequest
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.SubCategoryItem
 import com.mobitechs.classapp.data.model.response.SubjectItem
 import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
+import com.mobitechs.classapp.utils.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,16 +45,16 @@ data class SubCategoryUiState(
     val allCoursesLoading: Boolean = false,
     val allCoursesError: String = "",
 
-    val selectedCategoryId: Int? = null,
-    val selectedSubCategoryId: String? = null,
-    val selectedSubjectId: String? = null
+    val selectedCategoryId: Int? = 0,
+    val selectedSubCategoryId: Int? = 0,
+    val selectedSubjectId: Int? = 0
 )
 
 
 class SubCategoryViewModel(
     private val courseRepository: CourseRepository,
     private val categoryRepository: CategoryRepository,
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow(SubCategoryUiState(isInitialLoading = true))
     val uiState: StateFlow<SubCategoryUiState> = _uiState.asStateFlow()
@@ -67,11 +68,11 @@ class SubCategoryViewModel(
         loadSubCategory()
     }
 
-    fun setSelectedSubcategory(subcategoryId: String) {
+    fun setSelectedSubcategory(subcategoryId: Int) {
         _uiState.update { it.copy(selectedSubCategoryId = subcategoryId) }
     }
 
-    fun setSelectedSubject(subjectId: String) {
+    fun setSelectedSubject(subjectId: Int) {
         _uiState.update { it.copy(selectedSubjectId = subjectId) }
     }
 
@@ -96,7 +97,7 @@ class SubCategoryViewModel(
         _uiState.update { it.copy(subcategoriesLoading = true, subcategoriesError = "") }
 
         viewModelScope.launch {
-            val categoryId = _uiState.value.selectedCategoryId?.toString() ?: "1"
+            val categoryId = _uiState.value.selectedCategoryId ?: 0
             try {
                 val subCategory = categoryRepository.getSubCategoryByCategory(categoryId)
                 _uiState.update {
@@ -108,7 +109,7 @@ class SubCategoryViewModel(
 
                 // Load courses for the first subcategory
                 if (subCategory.subCategories.isNotEmpty()) {
-                    val firstSubcategoryId = subCategory.subCategories.first().id.toString()
+                    val firstSubcategoryId = subCategory.subCategories.first().id
                     setSelectedSubcategory(firstSubcategoryId)
                     loadCoursesBySubcategory(firstSubcategoryId)
                 }
@@ -138,7 +139,7 @@ class SubCategoryViewModel(
 
                 // Load courses for the first subject
                 if (subject.subjects.isNotEmpty()) {
-                    val firstSubjectId = subject.subjects.first().id.toString()
+                    val firstSubjectId = subject.subjects.first().id
                     setSelectedSubject(firstSubjectId)
                     loadCoursesBySubject(firstSubjectId)
                 }
@@ -181,8 +182,8 @@ class SubCategoryViewModel(
 
         viewModelScope.launch {
             try {
-                val categoryId = _uiState.value.selectedCategoryId ?: 1
-                val allCourses = courseRepository.getCourses(categoryId = categoryId)
+                var reqObj = GetCourseByRequest(categoryId = _uiState.value.selectedCategoryId ?: 1)
+                val allCourses = courseRepository.getCoursesFilterWise(reqObj)
                 _uiState.update {
                     it.copy(
                         allCourses = allCourses.courses,
@@ -202,7 +203,7 @@ class SubCategoryViewModel(
         }
     }
 
-    fun loadCoursesBySubcategory(subcategoryId: String) {
+    fun loadCoursesBySubcategory(subcategoryId: Int) {
         _uiState.update {
             it.copy(
                 subcategoryCoursesLoading = true,
@@ -213,8 +214,11 @@ class SubCategoryViewModel(
 
         viewModelScope.launch {
             try {
-                val categoryId = _uiState.value.selectedCategoryId
-                val subCategoryWiseCourses = courseRepository.getCourseByCategorySubCategory(categoryId.toString(), subcategoryId.toString())
+                var reqObj = GetCourseByRequest(
+                    categoryId = _uiState.value.selectedCategoryId,
+                    subCategoryId = subcategoryId
+                )
+                val subCategoryWiseCourses = courseRepository.getCoursesFilterWise(reqObj)
                 _uiState.update {
                     it.copy(
                         subcategoryCourses = subCategoryWiseCourses.courses,
@@ -232,7 +236,7 @@ class SubCategoryViewModel(
         }
     }
 
-    fun loadCoursesBySubject(subjectId: String) {
+    fun loadCoursesBySubject(subjectId: Int) {
         _uiState.update {
             it.copy(
                 subjectCoursesLoading = true,
@@ -243,14 +247,13 @@ class SubCategoryViewModel(
 
         viewModelScope.launch {
             try {
-//                // Since the API doesn't have subject-specific filtering from the provided code,
-//                // we'll filter client-side or you can update based on your actual API
-//                val courses = courseRepository.getCourses(limit = 10)
-//                val filteredCourses = courses.filter { it.course_subject_id == subjectId.toInt() }
 
-                val categoryId = _uiState.value.selectedCategoryId.toString()
-                val subCategoryId = _uiState.value.selectedSubCategoryId.toString()
-                val subjectWiseCourses = courseRepository.getCoursesByCategorySubCategorySubject(categoryId, subCategoryId, subjectId.toString())
+                var reqObj = GetCourseByRequest(
+                    categoryId = _uiState.value.selectedCategoryId,
+                    subCategoryId = _uiState.value.selectedSubCategoryId,
+                    subjectId = subjectId
+                )
+                val subjectWiseCourses = courseRepository.getCoursesFilterWise(reqObj)
 
                 _uiState.update {
                     it.copy(
@@ -269,34 +272,140 @@ class SubCategoryViewModel(
         }
     }
 
-    fun toggleFavorite(courseId: String) {
-//        viewModelScope.launch {
-//            try {
-//                val result = courseRepository.toggleFavorite(courseId)
-//
-//                // Update all course lists
-//                _uiState.update { state ->
-//                    val updateCourseList = { courses: List<Course> ->
-//                        courses.map { course ->
-//                            if (course.id == courseId.toInt()) {
-//                                course.copy(isFavorite = result)
-//                            } else {
-//                                course
-//                            }
-//                        }
-//                    }
-//
-//                    state.copy(
-//                        popularCourses = updateCourseList(state.popularCourses),
-//                        subcategoryCourses = updateCourseList(state.subcategoryCourses),
-//                        subjectCourses = updateCourseList(state.subjectCourses),
-//                        allCourses = updateCourseList(state.allCourses)
-//                    )
-//                }
-//            } catch (e: Exception) {
-//                // Handle error silently
-//            }
-//        }
+    fun addToFavorite(courseId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = courseRepository.addToFavorite(courseId)
+                showToast(response.message)
+                if(response.status_code == 200){
+                    // Update all course lists
+                    _uiState.update { state ->
+                        val updateCourseList = { courses: List<Course> ->
+                            courses.map { course ->
+                                if (course.id == courseId.toInt()) {
+                                    course.copy(isFavorite = true)
+                                } else {
+                                    course
+                                }
+                            }
+                        }
+
+                        state.copy(
+                            popularCourses = updateCourseList(state.popularCourses),
+                            subcategoryCourses = updateCourseList(state.subcategoryCourses),
+                            subjectCourses = updateCourseList(state.subjectCourses),
+                            allCourses = updateCourseList(state.allCourses)
+                        )
+                    }
+                }
+
+            } catch (e: Exception) {
+                // Handle error silently.
+                showToast(e.message ?: "Failed to update favorites")
+            }
+        }
+    }
+
+    fun removeFromFavorite(courseId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = courseRepository.removeFromFavorite(courseId)
+                showToast(response.message)
+                if(response.status_code == 200){
+                    _uiState.update { state ->
+                        val updateCourseList = { courses: List<Course> ->
+                            courses.map { course ->
+                                if (course.id == courseId.toInt()) {
+                                    course.copy(isFavorite = false)
+                                } else {
+                                    course
+                                }
+                            }
+                        }
+
+                        state.copy(
+                            popularCourses = updateCourseList(state.popularCourses),
+                            subcategoryCourses = updateCourseList(state.subcategoryCourses),
+                            subjectCourses = updateCourseList(state.subjectCourses),
+                            allCourses = updateCourseList(state.allCourses)
+                        )
+                    }
+                }
+
+
+            } catch (e: Exception) {
+                // Handle error silently.
+                showToast(e.message ?: "Failed to update favorites")
+            }
+        }
+    }
+
+    fun addToWishlist(courseId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = courseRepository.addToWishlist(courseId)
+                showToast(response.message)
+                if(response.status_code == 200){
+                    // Update all course lists
+                    _uiState.update { state ->
+                        val updateCourseList = { courses: List<Course> ->
+                            courses.map { course ->
+                                if (course.id == courseId.toInt()) {
+                                    course.copy(isWishlisted = true)
+                                } else {
+                                    course
+                                }
+                            }
+                        }
+
+                        state.copy(
+                            popularCourses = updateCourseList(state.popularCourses),
+                            subcategoryCourses = updateCourseList(state.subcategoryCourses),
+                            subjectCourses = updateCourseList(state.subjectCourses),
+                            allCourses = updateCourseList(state.allCourses)
+                        )
+                    }
+                }
+
+            } catch (e: Exception) {
+                // Handle error silently.
+                showToast(e.message ?: "Failed to update favorites")
+            }
+        }
+    }
+
+    fun removeFromWishlist(courseId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = courseRepository.removeFromWishlist(courseId)
+                showToast(response.message)
+                if(response.status_code == 200){
+                    _uiState.update { state ->
+                        val updateCourseList = { courses: List<Course> ->
+                            courses.map { course ->
+                                if (course.id == courseId.toInt()) {
+                                    course.copy(isWishlisted = false)
+                                } else {
+                                    course
+                                }
+                            }
+                        }
+
+                        state.copy(
+                            popularCourses = updateCourseList(state.popularCourses),
+                            subcategoryCourses = updateCourseList(state.subcategoryCourses),
+                            subjectCourses = updateCourseList(state.subjectCourses),
+                            allCourses = updateCourseList(state.allCourses)
+                        )
+                    }
+                }
+
+
+            } catch (e: Exception) {
+                // Handle error silently.
+                showToast(e.message ?: "Failed to update favorites")
+            }
+        }
     }
 
     fun retryLoadSection(section: String) {

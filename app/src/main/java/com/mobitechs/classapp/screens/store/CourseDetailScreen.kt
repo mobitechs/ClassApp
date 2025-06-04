@@ -83,9 +83,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseDetailScreen(
-    courseJson: String?,
-    navController: NavController,
-    viewModel: CourseDetailViewModel
+    courseJson: String?, navController: NavController, viewModel: CourseDetailViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -119,8 +117,7 @@ fun CourseDetailScreen(
                 options.put("order_id", paymentData.orderId)
                 options.put("currency", paymentData.currency)
                 options.put(
-                    "amount",
-                    (paymentData.amount.toInt() * 100).toInt()
+                    "amount", (paymentData.amount.toInt() * 100).toInt()
                 ) // Amount in smallest currency unit
 
                 val prefill = JSONObject()
@@ -137,62 +134,47 @@ fun CourseDetailScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Course Details") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    // Share button
-                    IconButton(onClick = { /* Share functionality */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = "Share"
-                        )
-                    }
-
-                    // Favorite button
-                    IconButton(onClick = {
-//                        viewModel.toggleFavorite()
-                    }) {
-                        Icon(
-                            imageVector = if (uiState.course?.isFavorite  == 1)
-                                Icons.Default.Favorite
-                            else
-                                Icons.Default.FavoriteBorder,
-                            contentDescription = "Favorite",
-                            tint = if (uiState.course?.isFavorite  == 1)
-                                Color.Red
-                            else
-                                MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    // Wishlist button
-                    IconButton(onClick = {
-//                        viewModel.toggleWishlist()
-                    }) {
-                        Icon(
-                            imageVector = if (uiState.course?.isWishlisted  == 1)
-                                Icons.Default.Bookmark
-                            else
-                                Icons.Default.BookmarkBorder,
-                            contentDescription = "Wishlist",
-                            tint = if (uiState.course?.isWishlisted == 1)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+            TopAppBar(title = { Text("Course Details") }, navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack, contentDescription = "Back"
+                    )
                 }
-            )
-        }
-    ) { paddingValues ->
+            }, actions = {
+                // Share button
+                IconButton(onClick = { /* Share functionality */ }) {
+                    Icon(
+                        imageVector = Icons.Default.Share, contentDescription = "Share"
+                    )
+                }
+
+                // Favorite button
+                IconButton(onClick = {
+//                        viewModel.toggleFavorite()
+                }) {
+                    Icon(
+                        imageVector = if (uiState.course?.isFavorite == true) Icons.Default.Favorite
+                        else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (uiState.course?.isFavorite == true) Color.Red
+                        else MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                // Wishlist button
+                IconButton(onClick = {
+//                        viewModel.toggleWishlist()
+                }) {
+                    Icon(
+                        imageVector = if (uiState.course?.isWishlisted == true) Icons.Default.Bookmark
+                        else Icons.Default.BookmarkBorder,
+                        contentDescription = "Wishlist",
+                        tint = if (uiState.course?.isWishlisted == true) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            })
+        }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -209,9 +191,7 @@ fun CourseDetailScreen(
             // Error state
             else if (uiState.error.isNotEmpty()) {
                 ErrorView(
-                    message = uiState.error,
-                    onRetry = { /* Reload course details */ }
-                )
+                    message = uiState.error, onRetry = { /* Reload course details */ })
             }
             // Course details content
             else {
@@ -292,25 +272,23 @@ fun CourseDetailScreen(
                                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                                         style = MaterialTheme.typography.bodySmall,
                                         modifier = Modifier.padding(
-                                            horizontal = 12.dp,
-                                            vertical = 6.dp
+                                            horizontal = 12.dp, vertical = 6.dp
                                         )
                                     )
                                 }
 
                                 // Subcategory chip if available
-                                if (course.course_subcategory_name != null) {
+                                if (course.sub_category_name != null) {
                                     Surface(
                                         color = MaterialTheme.colorScheme.secondaryContainer,
                                         shape = RoundedCornerShape(16.dp)
                                     ) {
                                         Text(
-                                            text = course.course_subcategory_name,
+                                            text = course.sub_category_name,
                                             color = MaterialTheme.colorScheme.onSecondaryContainer,
                                             style = MaterialTheme.typography.bodySmall,
                                             modifier = Modifier.padding(
-                                                horizontal = 12.dp,
-                                                vertical = 6.dp
+                                                horizontal = 12.dp, vertical = 6.dp
                                             )
                                         )
                                     }
@@ -322,8 +300,7 @@ fun CourseDetailScreen(
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 SingleLineFlowRow(
-                                    horizontalGap = 8.dp,
-                                    verticalGap = 8.dp
+                                    horizontalGap = 8.dp, verticalGap = 8.dp
                                 ) {
                                     course.course_tags.forEach { tag ->
                                         Surface(
@@ -356,11 +333,11 @@ fun CourseDetailScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             // Instructor
-                            Text(
-                                text = "By ${course.instructor}",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
+//                            Text(
+//                                text = "By ${course.instructor}",
+//                                style = MaterialTheme.typography.bodyLarge,
+//                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+//                            )
 
                             Spacer(modifier = Modifier.height(16.dp))
 
@@ -454,8 +431,7 @@ fun CourseDetailScreen(
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.onErrorContainer,
                                             modifier = Modifier.padding(
-                                                horizontal = 6.dp,
-                                                vertical = 2.dp
+                                                horizontal = 6.dp, vertical = 2.dp
                                             )
                                         )
                                     }
@@ -495,15 +471,16 @@ fun CourseDetailScreen(
                     Button(
                         onClick = {
 //                                  Launch the PaymentActivity
-                                    courseObject?.let { course ->
-                                        user?.let { userDetails ->
-                                            val intent = Intent(context, PaymentActivity::class.java).apply {
-                                                putExtra("COURSE_DATA", gson.toJson(course))
-                                                putExtra("USER_DATA", gson.toJson(userDetails))
-                                            }
-                                            context.startActivity(intent)
+                            courseObject?.let { course ->
+                                user?.let { userDetails ->
+                                    val intent =
+                                        Intent(context, PaymentActivity::class.java).apply {
+                                            putExtra("COURSE_DATA", gson.toJson(course))
+                                            putExtra("USER_DATA", gson.toJson(userDetails))
                                         }
-                                    }
+                                    context.startActivity(intent)
+                                }
+                            }
                         },
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
@@ -511,8 +488,7 @@ fun CourseDetailScreen(
                             .fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         elevation = ButtonDefaults.elevatedButtonElevation(
-                            defaultElevation = 6.dp,
-                            pressedElevation = 8.dp
+                            defaultElevation = 6.dp, pressedElevation = 8.dp
                         ),
                         enabled = !uiState.isProcessingPayment
                     ) {
@@ -525,7 +501,7 @@ fun CourseDetailScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                         }
                         Text(
-                            text = if (course.isPurchased==1) "Go to Course" else "Buy Now",
+                            text = if (course.isPurchased == true) "Go to Course" else "Buy Now",
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
@@ -547,14 +523,11 @@ fun CourseDetailScreen(
             // Video preview dialog
             if (showPreview && uiState.course?.image != null) {
                 VideoPreviewDialog(
-                    videoUrl = uiState.course!!.image!!,
-                    onDismiss = { showPreview = false }
-                )
+                    videoUrl = uiState.course!!.image!!, onDismiss = { showPreview = false })
             }
         }
     }
 }
-
 
 
 fun createOrderId(): String {
@@ -577,8 +550,7 @@ fun openPaymentGateway(context: Context, userDetails: Student, courseDetails: Co
         options.put("order_id", order_id)
         options.put("currency", currency)
         options.put(
-            "amount",
-            (courseDetails.course_discounted_price.toDouble() * 100).toInt()
+            "amount", (courseDetails.course_discounted_price.toDouble() * 100).toInt()
         ) // Amount in smallest currency unit
 
         val prefill = JSONObject()
@@ -602,8 +574,7 @@ fun SingleLineFlowRow(
     content: @Composable () -> Unit
 ) {
     Layout(
-        content = content,
-        modifier = modifier
+        content = content, modifier = modifier
     ) { measurables, constraints ->
         val placeables = measurables.map { measurable ->
             measurable.measure(constraints)
@@ -646,13 +617,11 @@ fun SingleLineFlowRow(
 
 @Composable
 fun VideoPreviewDialog(
-    videoUrl: String,
-    onDismiss: () -> Unit
+    videoUrl: String, onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface
+            shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surface
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
@@ -667,12 +636,10 @@ fun VideoPreviewDialog(
                     )
 
                     IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.align(Alignment.TopEnd)
+                        onClick = onDismiss, modifier = Modifier.align(Alignment.TopEnd)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close"
+                            imageVector = Icons.Default.Close, contentDescription = "Close"
                         )
                     }
                 }
@@ -689,16 +656,14 @@ fun VideoPreviewDialog(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Video Player",
-                        color = Color.White
+                        text = "Video Player", color = Color.White
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = onDismiss,
-                    modifier = Modifier.align(Alignment.End)
+                    onClick = onDismiss, modifier = Modifier.align(Alignment.End)
                 ) {
                     Text("Close")
                 }

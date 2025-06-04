@@ -95,7 +95,7 @@ class CategoryRepository(
         }
     }
 
-    suspend fun getSubCategoryByCategory(categoryId: String): SubCategoryResponse =
+    suspend fun getSubCategoryByCategory(categoryId: Int): SubCategoryResponse =
         withContext(Dispatchers.IO) {
           val response = apiService.getSubCategoryByCategory(categoryId)
 //            val response = apiService.getAllSubCategories()
@@ -178,7 +178,7 @@ class CategoryRepository(
         }
     }
 
-    suspend fun getSubjectByCategory(categoryId: String): SubjectResponse =
+    suspend fun getSubjectByCategory(categoryId: Int): SubjectResponse =
         withContext(Dispatchers.IO) {
             val response = apiService.getSubjectByCategory(categoryId)
             if (response.isSuccessful) {
@@ -188,7 +188,7 @@ class CategoryRepository(
             }
         }
 
-    suspend fun getSubjectBySubCategory(subCategoryId: String): SubjectResponse =
+    suspend fun getSubjectBySubCategory(subCategoryId: Int): SubjectResponse =
         withContext(Dispatchers.IO) {
             val response = apiService.getSubjectsBySubcategory(subCategoryId)
             if (response.isSuccessful) {
@@ -197,6 +197,8 @@ class CategoryRepository(
                 throw Exception("Failed to get categories: ${response.message()}")
             }
         }
+
+
 
 
 

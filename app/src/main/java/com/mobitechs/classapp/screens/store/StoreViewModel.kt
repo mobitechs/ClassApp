@@ -2,6 +2,7 @@ package com.mobitechs.classapp.screens.store
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobitechs.classapp.data.model.request.GetCourseByRequest
 import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.SubCategoryItem
@@ -23,7 +24,7 @@ data class StoreUiState(
     val categoriesLoading: Boolean = true,
     val categoriesError: String = "",
 
-    val selectedCategoryId: Int? = null,
+    val selectedCategoryId: Int? = 0,
     val selectedCategory: CategoryItem? = null,
 
     // Sub-categories section
@@ -37,8 +38,8 @@ data class StoreUiState(
     val subjectsError: String = "",
 
     // Selected filters
-    val selectedSubCategoryId: String? = null,
-    val selectedSubjectId: String? = null,
+    val selectedSubCategoryId: Int? = 0,
+    val selectedSubjectId: Int? = 0,
     val selectedPriceRange: PriceRange = PriceRange(0f, 10000f, false), // Changed to support slider
 
     // Course data
@@ -147,13 +148,13 @@ class StoreViewModel(
 
         // When a specific category is selected, load ALL subjects (not filtered by category)
         // Users can then filter subjects by selecting a subcategory
-        getSubjectsByCategory(categoryId.toString())
+        getSubjectsByCategory(categoryId)
     }
 
     /**
      * Selects a subcategory for filtering
      */
-    fun selectSubCategory(subCategoryId: String) {
+    fun selectSubCategory(subCategoryId: Int) {
         _uiState.update { state ->
             state.copy(
                 selectedSubCategoryId = subCategoryId,
@@ -174,7 +175,7 @@ class StoreViewModel(
     /**
      * Selects a subject for filtering
      */
-    fun selectSubject(subjectId: String) {
+    fun selectSubject(subjectId: Int) {
         _uiState.update { state ->
             state.copy(selectedSubjectId = subjectId)
         }
@@ -279,23 +280,23 @@ class StoreViewModel(
      */
     private fun applyFilters(
         courses: List<Course>,
-        subCategoryId: String?,
-        subjectId: String?,
+        subCategoryId: Int? = 0,
+        subjectId: Int? = 0,
         priceRange: PriceRange
     ): List<Course> {
         var filteredCourses = courses
 
         // Apply subcategory filter
-        if (!subCategoryId.isNullOrEmpty()) {
+        if (subCategoryId != 0) {
             filteredCourses = filteredCourses.filter {
-                it.course_subcategory_id.toString() == subCategoryId
+                it.sub_category_id == subCategoryId
             }
         }
 
         // Apply subject filter
-        if (!subjectId.isNullOrEmpty()) {
+        if (subjectId!=0) {
             filteredCourses = filteredCourses.filter {
-                it.course_subject_id.toString() == subjectId
+                it.subject_id == subjectId
             }
         }
 
@@ -422,7 +423,7 @@ class StoreViewModel(
 
         viewModelScope.launch {
             try {
-                val response = categoryRepository.getSubCategoryByCategory(categoryId.toString())
+                val response = categoryRepository.getSubCategoryByCategory(categoryId)
 
                 _uiState.update { state ->
                     state.copy(
@@ -479,7 +480,7 @@ class StoreViewModel(
     /**
      * Loads subjects for a specific subcategory independently
      */
-    private fun getSubjectsByCategory(categoryId: String) {
+    private fun getSubjectsByCategory(categoryId: Int) {
         _uiState.update { it.copy(subjectsLoading = true, subjectsError = "") }
 
         viewModelScope.launch {
@@ -507,7 +508,7 @@ class StoreViewModel(
     /**
      * Loads subjects for a specific subcategory independently
      */
-    private fun getSubjectsBySubcategory(subCategoryId: String) {
+    private fun getSubjectsBySubcategory(subCategoryId: Int) {
         _uiState.update { it.copy(subjectsLoading = true, subjectsError = "") }
 
         viewModelScope.launch {
@@ -600,40 +601,8 @@ class StoreViewModel(
 
         viewModelScope.launch {
             try {
-                val courses = courseRepository.getCoursesByCategory(categoryId = categoryId.toString())
-                _uiState.update { state ->
-                    state.copy(
-                        allCourses = courses.courses,
-                        filteredCourses = applyFilters(
-                            courses.courses,
-                            state.selectedSubCategoryId,
-                            state.selectedSubjectId,
-                            state.selectedPriceRange
-                        ),
-                        coursesLoading = false
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        coursesLoading = false,
-                        coursesError = e.message ?: "Failed to load courses"
-                        // Keep existing courses on error
-                    )
-                }
-            }
-        }
-    }
-
-    /**
-     * Loads courses by category independently
-     */
-    private fun getCoursesByCategorySubCategory(subCategoryId: String) { //
-        _uiState.update { it.copy(coursesLoading = true, coursesError = "") }
-
-        viewModelScope.launch {
-            try {
-                val courses = courseRepository.getCourseByCategorySubCategory(uiState.value.selectedCategoryId.toString(),subCategoryId)
+                var reqObj = GetCourseByRequest(categoryId = categoryId)
+                val courses = courseRepository.getCoursesFilterWise(reqObj)
                 _uiState.update { state ->
                     state.copy(
                         allCourses = courses.courses,
@@ -662,12 +631,50 @@ class StoreViewModel(
     /**
      * Loads courses by category independently
      */
-    private fun getCoursesByCategorySubCategorySubject(subjectId: String) { //
+    private fun getCoursesByCategorySubCategory(subCategoryId: Int) { //
         _uiState.update { it.copy(coursesLoading = true, coursesError = "") }
 
         viewModelScope.launch {
             try {
-                val courses = courseRepository.getCoursesByCategorySubCategorySubject(uiState.value.selectedCategoryId.toString(),uiState.value.selectedSubCategoryId.toString(),subjectId)
+
+                var reqObj = GetCourseByRequest(categoryId = _uiState.value.selectedCategoryId, subCategoryId = subCategoryId)
+                val courses = courseRepository.getCoursesFilterWise(reqObj)
+                _uiState.update { state ->
+                    state.copy(
+                        allCourses = courses.courses,
+                        filteredCourses = applyFilters(
+                            courses.courses,
+                            state.selectedSubCategoryId,
+                            state.selectedSubjectId,
+                            state.selectedPriceRange
+                        ),
+                        coursesLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        coursesLoading = false,
+                        coursesError = e.message ?: "Failed to load courses"
+                        // Keep existing courses on error
+                    )
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Loads courses by category independently
+     */
+    private fun getCoursesByCategorySubCategorySubject(subjectId: Int) {
+        _uiState.update { it.copy(coursesLoading = true, coursesError = "") }
+
+        viewModelScope.launch {
+            try {
+                var reqObj = GetCourseByRequest(categoryId =  _uiState.value.selectedCategoryId,subCategoryId = _uiState.value.selectedSubCategoryId, subjectId = subjectId)
+                val courses = courseRepository.getCoursesFilterWise(reqObj)
+
                 _uiState.update { state ->
                     state.copy(
                         allCourses = courses.courses,

@@ -206,6 +206,9 @@ fun HomeScreen(
                         onFavoriteClick = { courseId ->
 //                            viewModel.toggleFavorite(courseId)
                         },
+                        onWishlistClick = { courseId ->
+//                            viewModel.toggleFavorite(courseId)
+                        },
                         onSeeAllClick = { section ->
                             when (section) {
                                 "featured" -> navController.navigate("courses?type=featured")
@@ -233,7 +236,8 @@ fun HomeContent(
     uiState: HomeUiState,
     onCourseClick: (String) -> Unit,
     onCategoryClick: (String) -> Unit,
-    onFavoriteClick: (String) -> Unit,
+    onFavoriteClick: (Int) -> Unit,
+    onWishlistClick: (Int) -> Unit,
     onSeeAllClick: (String) -> Unit,
     onReferralClick: () -> Unit,
     onRetrySection: (String) -> Unit,
@@ -324,7 +328,8 @@ fun HomeContent(
                         CourseCardPopularFeatured(
                             course = course,
                             onClick = { navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")},
-                            onFavoriteClick = { onFavoriteClick(course.id.toString()) }
+                            onFavoriteClick = { onFavoriteClick(course.id) },
+                            onWishlistClick = { onWishlistClick(course.id) }
                         )
                     }
                 }
@@ -494,7 +499,8 @@ fun HomeContent(
                         CourseCardPopularFeatured(
                             course = course,
                             onClick = { navController.navigate("course_detail?courseJson=${Gson().toJson(course)}") },
-                            onFavoriteClick = { onFavoriteClick(course.id.toString()) }
+                            onFavoriteClick = { onFavoriteClick(course.id) },
+                            onWishlistClick = { onWishlistClick(course.id) }
                         )
                     }
                 }

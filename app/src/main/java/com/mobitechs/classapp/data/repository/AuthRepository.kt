@@ -3,9 +3,9 @@ package com.mobitechs.classapp.data.repository
 
 import com.mobitechs.classapp.data.api.ApiService
 import com.mobitechs.classapp.data.local.SharedPrefsManager
-import com.mobitechs.classapp.data.model.response.LoginRequest
+import com.mobitechs.classapp.data.model.request.LoginRequest
+import com.mobitechs.classapp.data.model.request.RegisterRequest
 import com.mobitechs.classapp.data.model.response.LoginResponse
-import com.mobitechs.classapp.data.model.response.RegisterRequest
 import com.mobitechs.classapp.data.model.response.Student
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

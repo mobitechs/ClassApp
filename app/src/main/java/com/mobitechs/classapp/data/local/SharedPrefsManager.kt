@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class SharedPrefsManager(
+class   SharedPrefsManager(
     private val context: Context,
     private val gson: Gson
 ) {

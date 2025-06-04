@@ -311,12 +311,28 @@ fun StoreScreen(
                             )
 
                             // Course grid with improved spacing
-                            CoursesGrid(
-                                courses = uiState.filteredCourses,
-                                onCourseClick = { course ->
-                                    navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")
+//
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                contentPadding = PaddingValues(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(uiState.filteredCourses) { course ->
+                                    CourseCardForStore(
+                                        course = course,
+                                        onCourseClick = { navController.navigate("course_detail?courseJson=${Gson().toJson(course)}") },
+                                        onFavoriteClick = {
+                                            //onFavoriteClick(course)
+                                        },
+                                        onWishlistClick = {
+//                                            onWishlistClick(course)
+                                        }
+
+                                    )
                                 }
-                            )
+                            }
                         }
                     }
                 }
@@ -335,7 +351,7 @@ fun StoreScreen(
                     FilterBottomSheetContent(
                         title = "Select Sub Category",
                         options = uiState.subCategories.map {
-                            FilterOption(it.id.toString(), it.name)
+                            FilterOption(it.id, it.name)
                         },
                         selectedOptionId = uiState.selectedSubCategoryId,
                         onOptionSelected = {
@@ -352,7 +368,7 @@ fun StoreScreen(
                     FilterBottomSheetContent(
                         title = "Select Subject",
                         options = uiState.subjects.map {
-                            FilterOption(it.id.toString(), it.name)
+                            FilterOption(it.id, it.name)
                         },
                         selectedOptionId = uiState.selectedSubjectId,
                         onOptionSelected = {
@@ -393,8 +409,8 @@ fun StoreScreen(
 @Composable
 fun AppliedFiltersSection(
     selectedCategory: CategoryItem?,
-    selectedSubCategoryId: String?,
-    selectedSubjectId: String?,
+    selectedSubCategoryId: Int? = 0,
+    selectedSubjectId: Int? = 0,
     selectedPriceRange: PriceRange,
     subCategories: List<SubCategoryItem>,
     subjects: List<SubjectItem>,
@@ -403,11 +419,11 @@ fun AppliedFiltersSection(
 ) {
     // Get the names for selected filters
     val selectedSubCategoryName = selectedSubCategoryId?.let { id ->
-        subCategories.find { it.id.toString() == id }?.name
+        subCategories.find { it.id == id }?.name
     }
 
     val selectedSubjectName = selectedSubjectId?.let { id ->
-        subjects.find { it.id.toString() == id }?.name
+        subjects.find { it.id == id }?.name
     }
 
     // Check if any filters are applied
@@ -757,8 +773,8 @@ enum class FilterType {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterChipsRow(
-    selectedSubCategoryId: String?,
-    selectedSubjectId: String?,
+    selectedSubCategoryId: Int? = 0,
+    selectedSubjectId: Int? = 0,
     selectedPriceRange: PriceRange,
     onFilterClick: (FilterType) -> Unit
 ) {
@@ -770,11 +786,11 @@ fun FilterChipsRow(
     ) {
         item {
             FilterChip(
-                selected = selectedSubCategoryId != null,
+                selected = selectedSubCategoryId != 0,
                 onClick = { onFilterClick(FilterType.SUBCATEGORY) },
                 label = {
                     Text(
-                        text = if (selectedSubCategoryId != null) "Type ✓" else "Type"
+                        text = if (selectedSubCategoryId != 0) "Type ✓" else "Type"
                     )
                 },
                 trailingIcon = {
@@ -788,11 +804,11 @@ fun FilterChipsRow(
 
         item {
             FilterChip(
-                selected = selectedSubjectId != null,
+                selected = selectedSubjectId != 0,
                 onClick = { onFilterClick(FilterType.SUBJECT) },
                 label = {
                     Text(
-                        text = if (selectedSubjectId != null) "Subject ✓" else "Subject"
+                        text = if (selectedSubjectId != 0) "Subject ✓" else "Subject"
                     )
                 },
                 trailingIcon = {
@@ -828,7 +844,7 @@ fun FilterChipsRow(
  * Data class for filter options
  */
 data class FilterOption(
-    val id: String,
+    val id: Int,
     val name: String
 )
 
@@ -840,8 +856,8 @@ data class FilterOption(
 fun FilterBottomSheetContent(
     title: String,
     options: List<FilterOption>,
-    selectedOptionId: String?,
-    onOptionSelected: (String) -> Unit
+    selectedOptionId: Int? =0,
+    onOptionSelected: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -926,31 +942,6 @@ fun FilterBottomSheetContent(
 
 
 
-/**
- * Grid of courses with improved card layout
- */
-@Composable
-fun CoursesGrid(
-    courses: List<Course>,
-//    onCourseClick: (String) -> Unit
-    onCourseClick: (Course) -> Unit
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(courses) { course ->
-            CourseCardForStore(
-                course = course,
-                onCourseClick = { onCourseClick(course) }
-//                onCourseClick = { onCourseClick(course.id.toString()) }
-            )
-        }
-    }
-}
 
 
 

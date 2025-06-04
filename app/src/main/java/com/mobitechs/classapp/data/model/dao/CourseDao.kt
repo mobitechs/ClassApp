@@ -12,22 +12,22 @@ interface CourseDao {
     @Query("SELECT * FROM courses WHERE is_active = 'Active' ORDER BY id DESC")
     fun getAllCourses(): List<Course>
 
-    @Query("SELECT * FROM courses WHERE course_category_id = :categoryId AND is_active = 'Active'")
+    @Query("SELECT * FROM courses WHERE category_id = :categoryId AND is_active = 'Active'")
     fun getCoursesByCategory(categoryId: Int): List<Course>
 
-    @Query("SELECT * FROM courses WHERE course_subcategory_id = :subcategoryId AND is_active = 'Active'")
+    @Query("SELECT * FROM courses WHERE sub_category_id = :subcategoryId AND is_active = 'Active'")
     fun getCoursesBySubCategory(subcategoryId: Int): List<Course>
 
-    @Query("SELECT * FROM courses WHERE course_subject_id = :subjectId AND is_active = 'Active'")
+    @Query("SELECT * FROM courses WHERE subject_id = :subjectId AND is_active = 'Active'")
     fun getCoursesBySubject(subjectId: Int): List<Course>
 
 //combine in one query with filters
 @Query("""
     SELECT * FROM courses 
     WHERE is_active = 'Active'
-    AND (:categoryId = 0 OR course_category_id = :categoryId)
-    AND (:subcategoryId = 0 OR course_subcategory_id = :subcategoryId)
-    AND (:subjectId = 0 OR course_subject_id = :subjectId)
+    AND (:categoryId = 0 OR category_id = :categoryId)
+    AND (:subcategoryId = 0 OR sub_category_id = :subcategoryId)
+    AND (:subjectId = 0 OR subject_id = :subjectId)
 """)
 fun getCourses(
     categoryId: Int = 0,
