@@ -12,6 +12,7 @@ import com.mobitechs.classapp.data.model.response.CategoryResponse
 import com.mobitechs.classapp.data.model.response.CommonResponse
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.CourseResponse
+import com.mobitechs.classapp.data.model.response.CourseResponse2
 import com.mobitechs.classapp.data.model.response.LoginResponse
 import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
 import com.mobitechs.classapp.data.model.response.NotificationsResponse
@@ -75,10 +76,10 @@ interface ApiService {
     suspend fun addToFavorite(@Body request: CommonCourseRequest): Response<CommonResponse>
 
     @GET("favourite-courses")
-    suspend fun getAllFavoriteCourses(): Response<CourseResponse>
+    suspend fun getAllFavoriteCourses(): Response<CourseResponse2>
 
 
-    @DELETE("remove-favourite-courses/{courseId}/{studentId}")
+    @DELETE("remove-favourite-courses/{studentId}/{courseId}")
     suspend fun removeFromFavorite(
         @Path("studentId") studentId: String,
         @Path("courseId") courseId: String
@@ -91,7 +92,7 @@ interface ApiService {
     @GET("whishlist-courses")
     suspend fun getAllWishlistCourses(): Response<CourseResponse>
 
-    @DELETE("remove-whishlist-courses/{courseId}/{studentId}")
+    @DELETE("remove-whishlist-courses/{studentId}/{courseId}")
     suspend fun removeFromWishlist(
         @Path("studentId") studentId: String,
         @Path("courseId") courseId: String
@@ -100,7 +101,7 @@ interface ApiService {
     @POST("like-courses")
     suspend fun likeCourse(@Body request: CommonCourseRequest): Response<CommonResponse>
 
-    @DELETE("unlike-courses/{courseId}/{studentId}")
+    @DELETE("unlike-courses/{studentId}/{courseId}")
     suspend fun dislikeCourse(
         @Path("studentId") studentId: String,
         @Path("courseId") courseId: String

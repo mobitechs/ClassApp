@@ -29,6 +29,7 @@ import com.mobitechs.classapp.screens.splash.SplashViewModel
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreViewModel
 import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
+import com.mobitechs.classapp.screens.profile.FavouriteViewModel
 
 /**
  * Factory class for creating ViewModels without dependency injection
@@ -109,6 +110,9 @@ class ViewModelFactory(
 
             modelClass.isAssignableFrom(PolicyTermConditionViewModel::class.java) -> {
                 PolicyTermConditionViewModel(policyTermConditionRepository) as T
+            }
+            modelClass.isAssignableFrom(FavouriteViewModel::class.java) -> {
+                FavouriteViewModel(courseRepository) as T
             }
 
 

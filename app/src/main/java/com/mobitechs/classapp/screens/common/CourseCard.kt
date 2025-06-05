@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.mobitechs.classapp.data.model.response.Course
+
+
 @Composable
 fun CourseCardPopularFeatured(
     course: Course,
@@ -465,23 +468,18 @@ fun CourseCardRectangular(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .height(120.dp),
+        onClick = onClick,
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Course thumbnail
+        Row(modifier = Modifier.fillMaxSize()) {
+            // Course image
             Box(
                 modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center
+                    .width(120.dp)
+                    .fillMaxHeight()
             ) {
-                // You can use AsyncImage here when you have the actual image URLs
                 AsyncImage(
                     model = course.image,
                     contentDescription = course.course_name,
@@ -490,106 +488,152 @@ fun CourseCardRectangular(
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
-
             // Course details
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(12.dp)
+            ) {
+                // Title with favorite and wishlist icons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Text(
+                        text = course.course_name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    // Icons container
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Favorite icon
+                        IconButton(
+                            onClick = onFavoriteClick,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (course.isFavorite)
+                                    Icons.Filled.Favorite
+                                else
+                                    Icons.Filled.FavoriteBorder,
+                                contentDescription = if (course.isFavorite)
+                                    "Remove from favorites"
+                                else
+                                    "Add to favorites",
+                                tint = if (course.isFavorite)
+                                    Color.Red
+                                else
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        // Wishlist icon
+                        IconButton(
+                            onClick = onWishlistClick,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (course.isWishlisted)
+                                    Icons.Filled.Bookmark
+                                else
+                                    Icons.Filled.BookmarkBorder,
+                                contentDescription = if (course.isWishlisted)
+                                    "Remove from wishlist"
+                                else
+                                    "Add to wishlist",
+                                tint = if (course.isWishlisted)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Category and subcategory
                 Text(
-                    text = course.course_name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
+                    text = "${course.category_name} • ${course.sub_category_name}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Text(
-                    text = "${course.course_description}",
-                    maxLines = 2,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Rating and price
+                // Rating and likes
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                   // horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Rating
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = Icons.Default.Star,
+                            imageVector = Icons.Filled.Star,
                             contentDescription = null,
                             tint = Color(0xFFFFC107),
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(14.dp)
                         )
-
-                        Spacer(modifier = Modifier.width(4.dp))
-
                         Text(
-                            text = "5.0",
+                            text = "4.${course.course_like % 10}",
                             style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Bold
+                            modifier = Modifier.padding(start = 4.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    // likes
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.ThumbUp,
                             contentDescription = "Likes",
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(12.dp)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${course.course_like}",
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = " ${course.course_like}",
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(4.dp))
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Price
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Discounted price
                     if (course.course_discounted_price != null) {
-                        // Original price with strikethrough
                         Text(
                             text = "₹${course.course_price}",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = 14.sp
-                            ),
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                            textDecoration = TextDecoration.LineThrough
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "₹${course.course_discounted_price}",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
                         )
                     } else {
-                        // Regular price (no discount)
                         Text(
                             text = if (course.course_price == "0") "FREE" else "₹${course.course_price}",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            ),
+                            style = MaterialTheme.typography.titleSmall,
                             color = if (course.course_price == "0")
                                 Color(0xFF388E3C)
                             else
-                                MaterialTheme.colorScheme.onSurface
+                                MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -597,7 +641,6 @@ fun CourseCardRectangular(
         }
     }
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -758,7 +801,6 @@ fun CourseGridItem(
 }
 
 
-
 @Composable
 fun CourseCardEmptyMessage(
     message: String,
@@ -793,4 +835,46 @@ fun CourseCardEmptyMessage(
             )
         }
     }
+}
+
+
+@Composable
+fun CourseCardEmptyMessageWithoutBox(
+    message: String,
+    description: String,
+    iconToShow: ImageVector,
+    modifier: Modifier = Modifier
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = iconToShow,
+            contentDescription = null,
+            modifier = Modifier.size(80.dp),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = message,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = description,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
+    }
+
 }

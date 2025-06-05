@@ -36,25 +36,25 @@ fun AppBottomNavigation(
                 title = "Home",
                 selectedIcon = Icons.Filled.Home,
                 unselectedIcon = Icons.Outlined.Home,
-                route = Screen.Home
+                route = Screen.HomeScreen
             ),
             NavigationItem(
                 title = "Batches",
                 selectedIcon = Icons.Filled.School,
                 unselectedIcon = Icons.Outlined.School,
-                route = Screen.Batches
+                route = Screen.BatchesScreen
             ),
             NavigationItem(
                 title = "Store",
                 selectedIcon = Icons.Filled.ShoppingCart,
                 unselectedIcon = Icons.Outlined.ShoppingCart,
-                route = Screen.Store
+                route = Screen.StoreScreen
             ),
             NavigationItem(
                 title = "Profile",
                 selectedIcon = Icons.Filled.Person,
                 unselectedIcon = Icons.Outlined.Person,
-                route = Screen.Profile
+                route = Screen.ProfileScreen
             )
         )
 

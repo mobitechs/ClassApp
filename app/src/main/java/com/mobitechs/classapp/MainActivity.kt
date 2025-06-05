@@ -22,6 +22,8 @@ import com.mobitechs.classapp.screens.auth.LoginScreen
 import com.mobitechs.classapp.screens.auth.RegisterScreen
 import com.mobitechs.classapp.screens.batches.BatchViewModel
 import com.mobitechs.classapp.screens.batches.BatchesScreen
+import com.mobitechs.classapp.screens.categoryDetails.CategoryWiseDetailsScreen
+import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
 import com.mobitechs.classapp.screens.freeContent.FreeContentScreen
 import com.mobitechs.classapp.screens.freeContent.FreeContentViewModel
 import com.mobitechs.classapp.screens.home.AppBottomNavigation
@@ -29,7 +31,7 @@ import com.mobitechs.classapp.screens.home.HomeScreen
 import com.mobitechs.classapp.screens.home.HomeViewModel
 import com.mobitechs.classapp.screens.notification.NotificationScreen
 import com.mobitechs.classapp.screens.notification.NotificationViewModel
-import com.mobitechs.classapp.screens.offlineDownload.OfflineDownloadScreen
+import com.mobitechs.classapp.screens.offlineDownload.MyDownloadScreen
 import com.mobitechs.classapp.screens.offlineDownload.OfflineDownloadViewModel
 import com.mobitechs.classapp.screens.payment.PaymentHistoryScreen
 import com.mobitechs.classapp.screens.payment.PaymentHistoryViewModel
@@ -37,6 +39,9 @@ import com.mobitechs.classapp.screens.policyTermCondition.FeedbackScreen
 import com.mobitechs.classapp.screens.policyTermCondition.PolicyTermConditionViewModel
 import com.mobitechs.classapp.screens.policyTermCondition.PrivacyPolicyScreen
 import com.mobitechs.classapp.screens.policyTermCondition.TermConditionScreen
+import com.mobitechs.classapp.screens.profile.FavouriteViewModel
+import com.mobitechs.classapp.screens.profile.MyFavouriteScreen
+import com.mobitechs.classapp.screens.profile.MyWishlistScreen
 import com.mobitechs.classapp.screens.profile.ProfileScreen
 import com.mobitechs.classapp.screens.profile.ProfileViewModel
 import com.mobitechs.classapp.screens.search.SearchScreen
@@ -47,8 +52,6 @@ import com.mobitechs.classapp.screens.store.CourseDetailScreen
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreScreen
 import com.mobitechs.classapp.screens.store.StoreViewModel
-import com.mobitechs.classapp.screens.categoryDetails.CategoryWiseDetailsScreen
-import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
 import com.mobitechs.classapp.ui.theme.ClassConnectTheme
 
 
@@ -74,7 +77,7 @@ class MainActivity : ComponentActivity() {
             app.freeContentRepository,
             app.offlineDownloadRepository,
             app.searchRepository,
-            app.policyTermConditionRepository,
+            app.policyTermConditionRepository
         )
 
         setContent {
@@ -93,10 +96,10 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
 
     // Bottom navigation visible only on main screens
     val showBottomBar = currentRoute in listOf(
-        Screen.Home.route,
-        Screen.Batches.route,
-        Screen.Store.route,
-        Screen.Profile.route
+        Screen.HomeScreen.route,
+        Screen.BatchesScreen.route,
+        Screen.StoreScreen.route,
+        Screen.ProfileScreen.route
     )
 
     Scaffold(
@@ -119,48 +122,48 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Splash.route,
+            startDestination = Screen.SplashScreen.route,
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable(Screen.Splash.route) {
+            composable(Screen.SplashScreen.route) {
                 val splashViewModel: SplashViewModel = viewModel(factory = viewModelFactory)
                 SplashScreen(
                     viewModel = splashViewModel,
                     onNavigateToHome = {
-                        navController.navigate(Screen.Home.route) {
-                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        navController.navigate(Screen.HomeScreen.route) {
+                            popUpTo(Screen.SplashScreen.route) { inclusive = true }
                         }
                     },
                     onNavigateToLogin = {
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        navController.navigate(Screen.LoginScreen.route) {
+                            popUpTo(Screen.SplashScreen.route) { inclusive = true }
                         }
                     }
                 )
             }
 
             // Auth screens
-            composable(Screen.Login.route) {
+            composable(Screen.LoginScreen.route) {
                 val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
                 LoginScreen(
                     viewModel = authViewModel,
-                    onNavigateToRegister = { navController.navigate(Screen.Register.route) },
-                    onNavigateToHome = { navController.navigate(Screen.Home.route) }
+                    onNavigateToRegister = { navController.navigate(Screen.RegisterScreen.route) },
+                    onNavigateToHome = { navController.navigate(Screen.HomeScreen.route) }
                 )
             }
 
-            composable(Screen.Register.route) {
+            composable(Screen.RegisterScreen.route) {
                 val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
                 RegisterScreen(
                     viewModel = authViewModel,
-                    onNavigateToLogin = { navController.navigate(Screen.Login.route) },
-                    onNavigateToHome = { navController.navigate(Screen.Home.route) }
+                    onNavigateToLogin = { navController.navigate(Screen.LoginScreen.route) },
+                    onNavigateToHome = { navController.navigate(Screen.HomeScreen.route) }
                 )
             }
 
 
             // Main screens
-            composable(Screen.Home.route) {
+            composable(Screen.HomeScreen.route) {
                 val homeViewModel: HomeViewModel = viewModel(factory = viewModelFactory)
                 HomeScreen(
                     viewModel = homeViewModel,
@@ -168,7 +171,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            composable(Screen.Batches.route) {
+            composable(Screen.BatchesScreen.route) {
                 val batchViewModel: BatchViewModel = viewModel(factory = viewModelFactory)
                 BatchesScreen(
                     viewModel = batchViewModel,
@@ -176,7 +179,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            composable(Screen.Store.route) {
+            composable(Screen.StoreScreen.route) {
                 val storeViewModel: StoreViewModel = viewModel(factory = viewModelFactory)
                 StoreScreen(
                     viewModel = storeViewModel,
@@ -184,7 +187,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            composable(Screen.Profile.route) {
+            composable(Screen.ProfileScreen.route) {
                 val profileViewModel: ProfileViewModel = viewModel(factory = viewModelFactory)
                 ProfileScreen(
                     viewModel = profileViewModel,
@@ -247,7 +250,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
             }
 
 
-            composable(Screen.FreeContent.route) {
+            composable(Screen.FreeContentScreen.route) {
                 val viewModel: FreeContentViewModel = viewModel(factory = viewModelFactory)
                 FreeContentScreen(
                     viewModel = viewModel,
@@ -255,7 +258,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            composable(Screen.PaymentHistory.route) {
+            composable(Screen.PaymentHistoryScreen.route) {
                 val viewModel: PaymentHistoryViewModel = viewModel(factory = viewModelFactory)
                 PaymentHistoryScreen(
                     viewModel = viewModel,
@@ -263,15 +266,15 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            composable(Screen.OfflineDownload.route) {
+            composable(Screen.MyDownloadScreen.route) {
                 val viewModel: OfflineDownloadViewModel = viewModel(factory = viewModelFactory)
-                OfflineDownloadScreen(
+                MyDownloadScreen(
                     viewModel = viewModel,
                     navController = navController
                 )
             }
 
-            composable(Screen.Notification.route) {
+            composable(Screen.NotificationScreen.route) {
                 val viewModel: NotificationViewModel = viewModel(factory = viewModelFactory)
                 NotificationScreen(
                     viewModel = viewModel,
@@ -279,7 +282,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            composable(Screen.Search.route) {
+            composable(Screen.SearchScreen.route) {
                 val viewModel: SearchViewModel = viewModel(factory = viewModelFactory)
                 SearchScreen(
                     viewModel = viewModel,
@@ -287,7 +290,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            composable(Screen.PrivacyPolicy.route) {
+            composable(Screen.PrivacyPolicyScreen.route) {
                 val viewModel: PolicyTermConditionViewModel = viewModel(factory = viewModelFactory)
                 PrivacyPolicyScreen(
                     viewModel = viewModel,
@@ -295,7 +298,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            composable(Screen.TermCondition.route) {
+            composable(Screen.TermConditionScreen.route) {
                 val viewModel: PolicyTermConditionViewModel = viewModel(factory = viewModelFactory)
                 TermConditionScreen(
                     viewModel = viewModel,
@@ -303,7 +306,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            composable(Screen.Feedback.route) {
+            composable(Screen.FeedbackScreen.route) {
                 val viewModel: PolicyTermConditionViewModel = viewModel(factory = viewModelFactory)
                 FeedbackScreen(
                     viewModel = viewModel,
@@ -336,6 +339,21 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
+            composable(Screen.MyFavouriteScreen.route) {
+                val viewModel: FavouriteViewModel = viewModel(factory = viewModelFactory)
+                MyFavouriteScreen(
+                    viewModel = viewModel,
+                    navController = navController
+                )
+            }
+            composable(Screen.MyWishlistScreen.route) {
+                val viewModel: FavouriteViewModel = viewModel(factory = viewModelFactory)
+                MyWishlistScreen(
+                    viewModel = viewModel,
+                    navController = navController
+                )
+            }
+
 
         }
     }
@@ -344,22 +362,29 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
 
 // Define navigation destinations
 sealed class Screen(val route: String) {
-    object Splash : Screen("splash")
-    object Login : Screen("login")
-    object Register : Screen("register")
-    object Home : Screen("home")
-    object Batches : Screen("batches")
-    object Store : Screen("store")
-    object Profile : Screen("profile")
-    object FreeContent : Screen("freeContent")
-    object PaymentHistory : Screen("paymentHistory")
-    object OfflineDownload : Screen("offlineDownload")
-    object Search : Screen("search")
-    object Notification : Screen("notification")
-    object PrivacyPolicy : Screen("privacyPolicy")
-    object TermCondition : Screen("termCondition")
-    object Feedback : Screen("feedback")
+    object SplashScreen : Screen("splashScreen")
+    object LoginScreen : Screen("loginScreen")
+    object RegisterScreen : Screen("registerScreen")
+    object HomeScreen : Screen("homeScreen")
+    object BatchesScreen : Screen("batchesScreen")
+
+    object StoreScreen : Screen("storeScreen")
     object CategoryScreen : Screen("categoryScreen")
+    object SearchScreen : Screen("searchScreen")
+    object FreeContentScreen : Screen("freeContentScreen")
+
+    object ProfileScreen : Screen("profileScreen")
+    object MyDownloadScreen : Screen("myDownloadScreen")
+    object MyFavouriteScreen : Screen("MyFavouriteScreen")
+    object MyWishlistScreen : Screen("myWishlistScreen")
+
+    object PaymentHistoryScreen : Screen("paymentHistoryScreen")
+
+    object NotificationScreen : Screen("notificationScreen")
+    object PrivacyPolicyScreen : Screen("privacyPolicyScreen")
+    object TermConditionScreen : Screen("termConditionScreen")
+    object FeedbackScreen : Screen("feedbackScreen")
+
     object VideoPlayerScreen : Screen("videoPlayerScreen")
-    // Add other screens as needed
+
 }

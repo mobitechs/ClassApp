@@ -10,6 +10,7 @@ import com.mobitechs.classapp.data.model.request.GetCourseByRequest
 import com.mobitechs.classapp.data.model.response.CommonResponse
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.CourseResponse
+import com.mobitechs.classapp.data.model.response.CourseResponse2
 import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
 import com.mobitechs.classapp.data.model.response.OfferBannerResponse
 import com.mobitechs.classapp.data.model.response.SubjectResponse
@@ -100,7 +101,7 @@ class CourseRepository(
     }
 
 
-    suspend fun getAllFavoriteCourses(): CourseResponse = withContext(Dispatchers.IO) {
+    suspend fun getAllFavoriteCourses(): CourseResponse2 = withContext(Dispatchers.IO) {
         val response = apiService.getAllFavoriteCourses()
         if (response.isSuccessful) {
             return@withContext response.body() ?: throw Exception("Empty response body")

@@ -67,6 +67,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.gson.Gson
+import com.mobitechs.classapp.Screen
 import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.mobitechs.classapp.screens.common.BannerCarousel
 import com.mobitechs.classapp.screens.common.CourseCardPopularFeatured
@@ -147,7 +148,7 @@ fun HomeScreen(
                     },
                     actions = {
                         IconButton(
-                            onClick = { navController.navigate("search") }
+                            onClick = { navController.navigate(Screen.SearchScreen.route) }
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Search,
@@ -155,7 +156,7 @@ fun HomeScreen(
                             )
                         }
                         IconButton(
-                            onClick = { navController.navigate("notification") }
+                            onClick = { navController.navigate(Screen.NotificationScreen.route) }
                         ) {
                             BadgedBox(
                                 badge = {
@@ -209,7 +210,7 @@ fun HomeScreen(
                                 "featured" -> navController.navigate("courses?type=featured")
                                 "popular" -> navController.navigate("courses?type=popular")
                                 "offers" -> navController.navigate("courses?type=offers")
-                                "categories" -> navController.navigate("categoryScreen")
+                                "categories" -> navController.navigate(Screen.CategoryScreen.route)
                             }
                         },
                         onReferralClick = {

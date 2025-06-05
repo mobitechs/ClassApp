@@ -124,31 +124,31 @@ fun SideMenu(
         ProfileMenuItem(
             title = "Profile",
             icon = Icons.Default.Person,
-            onClick = { onMenuItemClick(Screen.Profile.route) }
+            onClick = { onMenuItemClick(Screen.ProfileScreen.route) }
         )
 
         ProfileMenuItem(
             title = "Offline Downloads",
             icon = Icons.Default.CloudDownload,
-            onClick = { onMenuItemClick("offlineDownload") }
+            onClick = { onMenuItemClick(Screen.MyDownloadScreen.route) }
         )
 
         ProfileMenuItem(
             title = "Free Content",
             icon = Icons.Default.FreeBreakfast,
-            onClick = { onMenuItemClick("freeContent") }
+            onClick = { onMenuItemClick(Screen.FreeContentScreen.route) }
         )
 
         ProfileMenuItem(
             title = "Payment History",
             icon = Icons.Default.Payment,
-            onClick = { onMenuItemClick("paymentHistory") }
+            onClick = { onMenuItemClick(Screen.PaymentHistoryScreen.route) }
         )
 
         ProfileMenuItem(
             title = "Add Feedback",
             icon = Icons.Default.Feedback,
-            onClick = { onMenuItemClick("feedback") }
+            onClick = { onMenuItemClick(Screen.FeedbackScreen.route) }
         )
 
         ProfileMenuItem(
@@ -160,13 +160,13 @@ fun SideMenu(
         ProfileMenuItem(
             title = "Privacy Policy",
             icon = Icons.Default.Security,
-            onClick = { onMenuItemClick("privacyPolicy") }
+            onClick = { onMenuItemClick(Screen.PrivacyPolicyScreen.route) }
         )
 
         ProfileMenuItem(
             title = "Terms and Conditions",
             icon = Icons.Default.Policy,
-            onClick = { onMenuItemClick("termCondition") },
+            onClick = { onMenuItemClick(Screen.TermConditionScreen.route) },
         )
 
         Spacer(modifier = Modifier.weight(1f))

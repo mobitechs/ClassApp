@@ -56,6 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.mobitechs.classapp.Screen
 import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.screens.common.ProfileMenuItem
 import com.mobitechs.classapp.screens.home.ErrorView
@@ -133,22 +134,22 @@ fun ProfileScreen(
                                     ProfileMenuItemData(
                                         title = "My Payment History",
                                         icon = Icons.Default.Payment,
-                                        route = "payment_history"
+                                        route = Screen.PaymentHistoryScreen.route
                                     ),
                                     ProfileMenuItemData(
                                         title = "My Favorite Courses",
                                         icon = Icons.Default.Favorite,
-                                        route = "favorite_courses"
+                                        route = Screen.MyFavouriteScreen.route
                                     ),
                                     ProfileMenuItemData(
                                         title = "My Downloaded Courses",
                                         icon = Icons.Default.Download,
-                                        route = "downloaded_courses"
+                                        route = Screen.MyDownloadScreen.route
                                     ),
                                     ProfileMenuItemData(
                                         title = "My Wishlist",
                                         icon = Icons.Default.Bookmark,
-                                        route = "wishlist",
+                                        route = Screen.MyWishlistScreen.route,
                                         showDivider = false
                                     )
                                 ),
@@ -178,12 +179,12 @@ fun ProfileScreen(
                                     ProfileMenuItemData(
                                         title = "Free Content",
                                         icon = Icons.Default.Star,
-                                        route = "free_content"
+                                        route = "freeContentScreen"
                                     ),
                                     ProfileMenuItemData(
                                         title = "Add Feedback",
                                         icon = Icons.Default.Feedback,
-                                        route = "feedback"
+                                        route = "feedbackScreen"
                                     ),
                                     ProfileMenuItemData(
                                         title = "Rate Us",
@@ -193,12 +194,12 @@ fun ProfileScreen(
                                     ProfileMenuItemData(
                                         title = "Privacy Policy",
                                         icon = Icons.Default.Security,
-                                        route = "privacy_policy"
+                                        route = "privacyPolicyScreen"
                                     ),
                                     ProfileMenuItemData(
                                         title = "Terms and Conditions",
                                         icon = Icons.Default.Description,
-                                        route = "terms",
+                                        route = "termConditionScreen",
                                         showDivider = false
                                     )
                                 ),
