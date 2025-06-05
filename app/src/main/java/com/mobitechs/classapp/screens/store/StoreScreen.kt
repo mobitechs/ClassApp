@@ -101,6 +101,8 @@ import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SecondaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.StoreCategoryItem
+import com.mobitechs.classapp.utils.ToastObserver
+import com.mobitechs.classapp.utils.openCourseDetailsScreen
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import kotlin.math.roundToInt
@@ -124,6 +126,8 @@ fun StoreScreen(
 
     // Track which filter is being edited
     var currentFilterType by remember { mutableStateOf<FilterType?>(null) }
+
+    ToastObserver(viewModel)
 
     // Main layout with Scaffold
     Scaffold(
@@ -311,7 +315,6 @@ fun StoreScreen(
                             )
 
                             // Course grid with improved spacing
-//
                             LazyVerticalGrid(
                                 columns = GridCells.Fixed(2),
                                 contentPadding = PaddingValues(8.dp),
@@ -322,12 +325,13 @@ fun StoreScreen(
                                 items(uiState.filteredCourses) { course ->
                                     CourseCardForStore(
                                         course = course,
-                                        onCourseClick = { navController.navigate("course_detail?courseJson=${Gson().toJson(course)}") },
+                                        onCourseClick = {openCourseDetailsScreen(navController,course)},
+
                                         onFavoriteClick = {
-                                            //onFavoriteClick(course)
+                                            viewModel.handleFavoriteClick(course.id,course.isFavorite)
                                         },
                                         onWishlistClick = {
-//                                            onWishlistClick(course)
+                                            viewModel.handleWishlistClick(course.id,course.isWishlisted)
                                         }
 
                                     )

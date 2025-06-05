@@ -70,7 +70,7 @@ class CourseRepository(
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
-                throw Exception("Failed to get featured courses: ${response.message()}")
+                throw Exception("Failed to get courses: ${response.message()}")
             }
         }
 
@@ -85,7 +85,7 @@ class CourseRepository(
             // Filter courses that have a discounted price
             return@withContext response.body() ?: throw Exception("Empty response body")
         } else {
-            throw Exception("Failed to get courses with offers: ${response.message()}")
+            throw Exception("Failed to get Offer Banner: ${response.message()}")
         }
     }
 
@@ -95,10 +95,28 @@ class CourseRepository(
             // Filter courses that have a discounted price
             return@withContext response.body() ?: throw Exception("Empty response body")
         } else {
-            throw Exception("Failed to get courses with offers: ${response.message()}")
+            throw Exception("Failed to get Notice board: ${response.message()}")
         }
     }
 
+
+    suspend fun getAllFavoriteCourses(): CourseResponse = withContext(Dispatchers.IO) {
+        val response = apiService.getAllFavoriteCourses()
+        if (response.isSuccessful) {
+            return@withContext response.body() ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Failed to get Favorite courses: ${response.message()}")
+        }
+    }
+
+    suspend fun getAllWishlistCourses(): CourseResponse = withContext(Dispatchers.IO) {
+        val response = apiService.getAllWishlistCourses()
+        if (response.isSuccessful) {
+            return@withContext response.body() ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Failed to get wishListed courses: ${response.message()}")
+        }
+    }
 
     suspend fun addToFavorite(courseId: Int): CommonResponse =
         withContext(Dispatchers.IO) {
@@ -107,7 +125,7 @@ class CourseRepository(
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
-                throw Exception("Failed to get categories: ${response.message()}")
+                throw Exception("Failed to add to favorite: ${response.message()}")
             }
         }
 
@@ -118,7 +136,7 @@ class CourseRepository(
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
-                throw Exception("Failed to get categories: ${response.message()}")
+                throw Exception("Failed to remove from favorite: ${response.message()}")
             }
         }
 
@@ -129,7 +147,7 @@ class CourseRepository(
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
-                throw Exception("Failed to get categories: ${response.message()}")
+                throw Exception("Failed to add to wishlist: ${response.message()}")
             }
         }
 
@@ -140,14 +158,14 @@ class CourseRepository(
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
-                throw Exception("Failed to get categories: ${response.message()}")
+                throw Exception("Failed to remove from wishlist: ${response.message()}")
             }
         }
 
-    suspend fun courseLike(courseId: Int): CommonResponse =
+    suspend fun likeCourse(courseId: Int): CommonResponse =
         withContext(Dispatchers.IO) {
             val userId = sharedPrefsManager.getUser()?.id.toString()
-            val response = apiService.courseLike(CommonCourseRequest(userId.toString(),courseId.toString()))
+            val response = apiService.likeCourse(CommonCourseRequest(userId.toString(),courseId.toString()))
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
@@ -155,10 +173,10 @@ class CourseRepository(
             }
         }
 
-    suspend fun courseDislike(courseId: Int): CommonResponse =
+    suspend fun dislikeCourse(courseId: Int): CommonResponse =
         withContext(Dispatchers.IO) {
             val userId = sharedPrefsManager.getUser()?.id.toString()
-            val response = apiService.courseDislike(CommonCourseRequest(userId.toString(),courseId.toString()))
+            val response = apiService.dislikeCourse(userId.toString(),courseId.toString())
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {

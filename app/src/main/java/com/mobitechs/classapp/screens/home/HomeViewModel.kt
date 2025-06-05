@@ -11,6 +11,8 @@ import com.mobitechs.classapp.data.repository.AuthRepository
 import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.NotificationRepository
+import com.mobitechs.classapp.screens.store.CourseActionsViewModel
+import com.mobitechs.classapp.screens.store.updateCourse
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,11 +51,11 @@ data class HomeUiState(
 )
 
 class HomeViewModel(
-    private val courseRepository: CourseRepository,
+    override val courseRepository: CourseRepository,
     private val categoryRepository: CategoryRepository,
     private val notificationRepository: NotificationRepository,
     private val authRepository: AuthRepository
-) : ViewModel() {
+) : CourseActionsViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState(isInitialLoading = true))
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -229,6 +231,21 @@ class HomeViewModel(
                 // Set initial loading to false after all components have started loading
                 _uiState.update { it.copy(isInitialLoading = false) }
             }
+        }
+    }
+
+    override fun updateCourseInState(
+        courseId: Int,
+        transform: (Course) -> Course
+    ) {
+        _uiState.update { state ->
+            state.copy(
+                // Update popular courses list
+                popularCourses = state.popularCourses.updateCourse(courseId, transform),
+                // Update featured courses list
+                featuredCourses = state.featuredCourses.updateCourse(courseId, transform),
+
+            )
         }
     }
 

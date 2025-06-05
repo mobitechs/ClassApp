@@ -77,6 +77,8 @@ import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
 import com.mobitechs.classapp.screens.store.getCategoryIcon
+import com.mobitechs.classapp.utils.ToastObserver
+import com.mobitechs.classapp.utils.openCourseDetailsScreen
 import kotlinx.coroutines.launch
 
 
@@ -95,7 +97,7 @@ fun HomeScreen(
     val gson by lazy { Gson() }
     val sharedPrefsManager by lazy { SharedPrefsManager(context, gson) }
     val user = sharedPrefsManager.getUser()
-
+    ToastObserver(viewModel)
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -194,21 +196,14 @@ fun HomeScreen(
                 } else {
                     // Always show HomeContent, each section handles its own loading/error state
                     HomeContent(
+                        viewModel = viewModel,
                         navController = navController,
                         uiState = uiState,
-                        onCourseClick = { courseId ->
-                            navController.navigate("course_details/$courseId")
-                        },
-                        onCategoryClick = { categoryId ->
-//                            navController.navigate("category/$categoryId")
-                            navController.navigate("categoryScreen")
-                        },
-                        onFavoriteClick = { courseId ->
-//                            viewModel.toggleFavorite(courseId)
-                        },
-                        onWishlistClick = { courseId ->
-//                            viewModel.toggleFavorite(courseId)
-                        },
+//                        onCategoryClick = { categoryId ->
+////                            navController.navigate("category/$categoryId")
+//                            navController.navigate("categoryScreen") 
+//                        },
+
                         onSeeAllClick = { section ->
                             when (section) {
                                 "featured" -> navController.navigate("courses?type=featured")
@@ -232,12 +227,9 @@ fun HomeScreen(
 
 @Composable
 fun HomeContent(
+    viewModel: HomeViewModel,
     navController: NavController,
     uiState: HomeUiState,
-    onCourseClick: (String) -> Unit,
-    onCategoryClick: (String) -> Unit,
-    onFavoriteClick: (Int) -> Unit,
-    onWishlistClick: (Int) -> Unit,
     onSeeAllClick: (String) -> Unit,
     onReferralClick: () -> Unit,
     onRetrySection: (String) -> Unit,
@@ -327,9 +319,15 @@ fun HomeContent(
                     items(uiState.popularCourses) { course ->
                         CourseCardPopularFeatured(
                             course = course,
-                            onClick = { navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")},
-                            onFavoriteClick = { onFavoriteClick(course.id) },
-                            onWishlistClick = { onWishlistClick(course.id) }
+                            onClick = {
+                                openCourseDetailsScreen(navController,course)
+                            },
+                            onFavoriteClick = {
+                                viewModel.handleFavoriteClick(course.id,course.isFavorite)
+                            },
+                            onWishlistClick = {
+                                viewModel.handleWishlistClick(course.id,course.isWishlisted)
+                            }
                         )
                     }
                 }
@@ -498,9 +496,13 @@ fun HomeContent(
                     items(uiState.featuredCourses) { course ->
                         CourseCardPopularFeatured(
                             course = course,
-                            onClick = { navController.navigate("course_detail?courseJson=${Gson().toJson(course)}") },
-                            onFavoriteClick = { onFavoriteClick(course.id) },
-                            onWishlistClick = { onWishlistClick(course.id) }
+                            onClick = {openCourseDetailsScreen(navController,course)},
+                            onFavoriteClick = {
+                                viewModel.handleFavoriteClick(course.id,course.isFavorite)
+                            },
+                            onWishlistClick = {
+                                viewModel.handleWishlistClick(course.id,course.isWishlisted)
+                            }
                         )
                     }
                 }

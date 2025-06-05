@@ -74,8 +74,11 @@ interface ApiService {
     @POST("favourite-courses")
     suspend fun addToFavorite(@Body request: CommonCourseRequest): Response<CommonResponse>
 
+    @GET("favourite-courses")
+    suspend fun getAllFavoriteCourses(): Response<CourseResponse>
 
-    @DELETE("remove-favourite-courses/{studentId}/{courseId}")
+
+    @DELETE("remove-favourite-courses/{courseId}/{studentId}")
     suspend fun removeFromFavorite(
         @Path("studentId") studentId: String,
         @Path("courseId") courseId: String
@@ -85,17 +88,23 @@ interface ApiService {
     @POST("whishlist-courses")
     suspend fun addToWishlist(@Body request: CommonCourseRequest): Response<CommonResponse>
 
-    @DELETE("remove-whishlist-courses/{studentId}/{courseId}")
+    @GET("whishlist-courses")
+    suspend fun getAllWishlistCourses(): Response<CourseResponse>
+
+    @DELETE("remove-whishlist-courses/{courseId}/{studentId}")
     suspend fun removeFromWishlist(
         @Path("studentId") studentId: String,
         @Path("courseId") courseId: String
     ): Response<CommonResponse>
 
     @POST("like-courses")
-    suspend fun courseLike(@Body request: CommonCourseRequest): Response<CommonResponse>
+    suspend fun likeCourse(@Body request: CommonCourseRequest): Response<CommonResponse>
 
-    @POST("unlike-courses")
-    suspend fun courseDislike(@Body request: CommonCourseRequest): Response<CommonResponse>
+    @DELETE("unlike-courses/{courseId}/{studentId}")
+    suspend fun dislikeCourse(
+        @Path("studentId") studentId: String,
+        @Path("courseId") courseId: String
+    ): Response<CommonResponse>
 
 
     @GET("categories")

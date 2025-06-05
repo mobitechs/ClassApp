@@ -7,6 +7,8 @@ import com.mobitechs.classapp.data.model.response.SubCategoryItem
 import com.mobitechs.classapp.data.model.response.SubjectItem
 import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
+import com.mobitechs.classapp.screens.store.CourseActionsViewModel
+import com.mobitechs.classapp.screens.store.updateCourse
 import com.mobitechs.classapp.utils.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,9 +54,9 @@ data class SubCategoryUiState(
 
 
 class SubCategoryViewModel(
-    private val courseRepository: CourseRepository,
+    override val courseRepository: CourseRepository,
     private val categoryRepository: CategoryRepository,
-) : BaseViewModel() {
+) : CourseActionsViewModel() {
 
     private val _uiState = MutableStateFlow(SubCategoryUiState(isInitialLoading = true))
     val uiState: StateFlow<SubCategoryUiState> = _uiState.asStateFlow()
@@ -65,7 +67,7 @@ class SubCategoryViewModel(
 
     fun setSelectedCategory(categoryId: Int) {
         _uiState.update { it.copy(selectedCategoryId = categoryId) }
-        loadSubCategory()
+        loadCategoryWiseData()
     }
 
     fun setSelectedSubcategory(subcategoryId: Int) {
@@ -76,7 +78,7 @@ class SubCategoryViewModel(
         _uiState.update { it.copy(selectedSubjectId = subjectId) }
     }
 
-    fun loadSubCategory() {
+    fun loadCategoryWiseData() {
         _uiState.update {
             it.copy(
                 isInitialLoading = true,
@@ -272,139 +274,16 @@ class SubCategoryViewModel(
         }
     }
 
-    fun addToFavorite(courseId: Int) {
-        viewModelScope.launch {
-            try {
-                val response = courseRepository.addToFavorite(courseId)
-                showToast(response.message)
-                if(response.status_code == 200){
-                    // Update all course lists
-                    _uiState.update { state ->
-                        val updateCourseList = { courses: List<Course> ->
-                            courses.map { course ->
-                                if (course.id == courseId.toInt()) {
-                                    course.copy(isFavorite = true)
-                                } else {
-                                    course
-                                }
-                            }
-                        }
-
-                        state.copy(
-                            popularCourses = updateCourseList(state.popularCourses),
-                            subcategoryCourses = updateCourseList(state.subcategoryCourses),
-                            subjectCourses = updateCourseList(state.subjectCourses),
-                            allCourses = updateCourseList(state.allCourses)
-                        )
-                    }
-                }
-
-            } catch (e: Exception) {
-                // Handle error silently.
-                showToast(e.message ?: "Failed to update favorites")
-            }
-        }
-    }
-
-    fun removeFromFavorite(courseId: Int) {
-        viewModelScope.launch {
-            try {
-                val response = courseRepository.removeFromFavorite(courseId)
-                showToast(response.message)
-                if(response.status_code == 200){
-                    _uiState.update { state ->
-                        val updateCourseList = { courses: List<Course> ->
-                            courses.map { course ->
-                                if (course.id == courseId.toInt()) {
-                                    course.copy(isFavorite = false)
-                                } else {
-                                    course
-                                }
-                            }
-                        }
-
-                        state.copy(
-                            popularCourses = updateCourseList(state.popularCourses),
-                            subcategoryCourses = updateCourseList(state.subcategoryCourses),
-                            subjectCourses = updateCourseList(state.subjectCourses),
-                            allCourses = updateCourseList(state.allCourses)
-                        )
-                    }
-                }
 
 
-            } catch (e: Exception) {
-                // Handle error silently.
-                showToast(e.message ?: "Failed to update favorites")
-            }
-        }
-    }
-
-    fun addToWishlist(courseId: Int) {
-        viewModelScope.launch {
-            try {
-                val response = courseRepository.addToWishlist(courseId)
-                showToast(response.message)
-                if(response.status_code == 200){
-                    // Update all course lists
-                    _uiState.update { state ->
-                        val updateCourseList = { courses: List<Course> ->
-                            courses.map { course ->
-                                if (course.id == courseId.toInt()) {
-                                    course.copy(isWishlisted = true)
-                                } else {
-                                    course
-                                }
-                            }
-                        }
-
-                        state.copy(
-                            popularCourses = updateCourseList(state.popularCourses),
-                            subcategoryCourses = updateCourseList(state.subcategoryCourses),
-                            subjectCourses = updateCourseList(state.subjectCourses),
-                            allCourses = updateCourseList(state.allCourses)
-                        )
-                    }
-                }
-
-            } catch (e: Exception) {
-                // Handle error silently.
-                showToast(e.message ?: "Failed to update favorites")
-            }
-        }
-    }
-
-    fun removeFromWishlist(courseId: Int) {
-        viewModelScope.launch {
-            try {
-                val response = courseRepository.removeFromWishlist(courseId)
-                showToast(response.message)
-                if(response.status_code == 200){
-                    _uiState.update { state ->
-                        val updateCourseList = { courses: List<Course> ->
-                            courses.map { course ->
-                                if (course.id == courseId.toInt()) {
-                                    course.copy(isWishlisted = false)
-                                } else {
-                                    course
-                                }
-                            }
-                        }
-
-                        state.copy(
-                            popularCourses = updateCourseList(state.popularCourses),
-                            subcategoryCourses = updateCourseList(state.subcategoryCourses),
-                            subjectCourses = updateCourseList(state.subjectCourses),
-                            allCourses = updateCourseList(state.allCourses)
-                        )
-                    }
-                }
-
-
-            } catch (e: Exception) {
-                // Handle error silently.
-                showToast(e.message ?: "Failed to update favorites")
-            }
+    override fun updateCourseInState(courseId: Int, transform: (Course) -> Course) {
+        _uiState.update { state ->
+            state.copy(
+                popularCourses = state.popularCourses.updateCourse(courseId, transform),
+                subcategoryCourses = state.subcategoryCourses.updateCourse(courseId, transform),
+                subjectCourses = state.subjectCourses.updateCourse(courseId, transform),
+                allCourses = state.allCourses.updateCourse(courseId, transform),
+            )
         }
     }
 

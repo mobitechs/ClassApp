@@ -47,6 +47,7 @@ import com.mobitechs.classapp.screens.common.CourseCardPopularFeatured
 import com.mobitechs.classapp.screens.common.CourseCardRectangular
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.utils.ToastObserver
+import com.mobitechs.classapp.utils.openCourseDetailsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -146,28 +147,12 @@ fun CategoryWiseDetailsScreen(
                     items(uiState.popularCourses) { course ->
                         CourseCardPopularFeatured(
                             course = course,
-                            onClick = {
-                                navController.navigate(
-                                    "course_detail?courseJson=${
-                                        Gson().toJson(
-                                            course
-                                        )
-                                    }"
-                                )
-                            },
+                            onClick = {openCourseDetailsScreen(navController,course)},
                             onFavoriteClick = {
-                                if (course.isFavorite) {
-                                    viewModel.removeFromFavorite(course.id)
-                                } else {
-                                    viewModel.addToFavorite(course.id)
-                                }
+                                viewModel.handleFavoriteClick(course.id,course.isFavorite)
                             },
                             onWishlistClick = {
-                                if (course.isWishlisted) {
-                                   viewModel.removeFromWishlist(course.id)
-                                } else {
-                                    viewModel.addToWishlist(course.id)
-                                }
+                                viewModel.handleWishlistClick(course.id,course.isWishlisted)
                             }
                         )
                     }
@@ -229,28 +214,12 @@ fun CategoryWiseDetailsScreen(
                                 items(uiState.subcategoryCourses) { course ->
                                     CourseCardPopularFeatured(
                                         course = course,
-                                        onClick = {
-                                            navController.navigate(
-                                                "course_detail?courseJson=${
-                                                    Gson().toJson(
-                                                        course
-                                                    )
-                                                }"
-                                            )
-                                        },
+                                        onClick = {openCourseDetailsScreen(navController,course)},
                                         onFavoriteClick = {
-                                            if (course.isFavorite) {
-                                                viewModel.removeFromFavorite(course.id)
-                                            } else {
-                                                viewModel.addToFavorite(course.id)
-                                            }
+                                            viewModel.handleFavoriteClick(course.id,course.isFavorite)
                                         },
                                         onWishlistClick = {
-                                            if (course.isWishlisted) {
-                                                viewModel.removeFromWishlist(course.id)
-                                            } else {
-                                                viewModel.addToWishlist(course.id)
-                                            }
+                                            viewModel.handleWishlistClick(course.id,course.isWishlisted)
                                         }
                                     )
                                 }
@@ -315,28 +284,12 @@ fun CategoryWiseDetailsScreen(
                                 items(uiState.subjectCourses) { course ->
                                     CourseCardPopularFeatured(
                                         course = course,
-                                        onClick = {
-                                            navController.navigate(
-                                                "course_detail?courseJson=${
-                                                    Gson().toJson(
-                                                        course
-                                                    )
-                                                }"
-                                            )
-                                        },
+                                        onClick = {openCourseDetailsScreen(navController,course)},
                                         onFavoriteClick = {
-                                            if (course.isFavorite) {
-                                                viewModel.removeFromFavorite(course.id)
-                                            } else {
-                                                viewModel.addToFavorite(course.id)
-                                            }
+                                            viewModel.handleFavoriteClick(course.id,course.isFavorite)
                                         },
                                         onWishlistClick = {
-                                            if (course.isWishlisted) {
-                                                viewModel.removeFromWishlist(course.id)
-                                            } else {
-                                                viewModel.addToWishlist(course.id)
-                                            }
+                                            viewModel.handleWishlistClick(course.id,course.isWishlisted)
                                         }
                                     )
                                 }
@@ -381,28 +334,12 @@ fun CategoryWiseDetailsScreen(
                         uiState.allCourses.forEach { course ->
                             CourseCardRectangular(
                                 course = course,
-                                onClick = {
-                                    navController.navigate(
-                                        "course_detail?courseJson=${
-                                            Gson().toJson(
-                                                course
-                                            )
-                                        }"
-                                    )
-                                },
+                                onClick = {openCourseDetailsScreen(navController,course)},
                                 onFavoriteClick = {
-                                    if (course.isFavorite) {
-                                        viewModel.removeFromFavorite(course.id)
-                                    } else {
-                                        viewModel.addToFavorite(course.id)
-                                    }
+                                    viewModel.handleFavoriteClick(course.id,course.isFavorite)
                                 },
                                 onWishlistClick = {
-                                    if (course.isWishlisted) {
-                                        viewModel.removeFromWishlist(course.id)
-                                    } else {
-                                        viewModel.addToWishlist(course.id)
-                                    }
+                                    viewModel.handleWishlistClick(course.id,course.isWishlisted)
                                 }
                             )
                         }

@@ -75,9 +75,9 @@ data class PriceRange(
  * ViewModel for the Store screen with independent data loading operations
  */
 class StoreViewModel(
-    private val courseRepository: CourseRepository,
+    override val courseRepository: CourseRepository,
     private val categoryRepository: CategoryRepository
-) : ViewModel() {
+) : CourseActionsViewModel() {
 
     // Private mutable state flow
     private val _uiState = MutableStateFlow(StoreUiState())
@@ -699,5 +699,21 @@ class StoreViewModel(
         }
     }
 
+
+
+
+    override fun updateCourseInState(
+        courseId: Int,
+        transform: (Course) -> Course
+    ) {
+        _uiState.update { state ->
+            state.copy(
+                // Update popular courses list
+                filteredCourses = state.filteredCourses.updateCourse(courseId, transform),
+                allCourses = state.allCourses.updateCourse(courseId, transform),
+
+                )
+        }
+    }
 
 }
