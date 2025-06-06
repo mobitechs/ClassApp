@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.utils.BaseViewModel
-import com.mobitechs.classapp.utils.showToast
 import kotlinx.coroutines.launch
 
 
@@ -40,6 +39,8 @@ abstract class CourseActionsViewModel : BaseViewModel() {
             dislikeCourse(courseId)
         }
     }
+
+
 
 
      fun addToFavorite(courseId: Int) {
@@ -152,12 +153,20 @@ abstract class CourseActionsViewModel : BaseViewModel() {
 }
 
 
-fun List<Course>.updateCourse(courseId: Int, transform: (Course) -> Course): List<Course> {
+fun List<Course>.updateCourseList(courseId: Int, transform: (Course) -> Course): List<Course> {
     return this.map { course ->
         if (course.id == courseId) {
             transform(course)
         } else {
             course
         }
+    }
+}
+
+fun Course.updateSingleCourse(courseId: Int, transform: (Course) -> Course): Course {
+    return if (this.id == courseId) {
+        transform(this)
+    } else {
+        this
     }
 }

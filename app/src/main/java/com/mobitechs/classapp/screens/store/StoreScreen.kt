@@ -1,9 +1,6 @@
 package com.mobitechs.classapp.screens.store
 
-import android.R.attr.layout
-import android.R.layout
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,7 +23,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -45,7 +41,6 @@ import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -60,10 +55,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -76,34 +69,22 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import com.google.gson.Gson
 import com.mobitechs.classapp.data.model.response.CategoryItem
-import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.SubCategoryItem
 import com.mobitechs.classapp.data.model.response.SubjectItem
 import com.mobitechs.classapp.screens.common.CourseCardForStore
 import com.mobitechs.classapp.screens.common.PrimaryButton
-import com.mobitechs.classapp.screens.common.SecondaryButton
-import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.StoreCategoryItem
 import com.mobitechs.classapp.utils.ToastObserver
 import com.mobitechs.classapp.utils.openCourseDetailsScreen
 import kotlinx.coroutines.launch
-import java.net.URLEncoder
 import kotlin.math.roundToInt
 
 /**
@@ -301,6 +282,7 @@ fun StoreScreen(
                                         CircularProgressIndicator()
                                     }
                                 }
+
                                 uiState.coursesError.isNotEmpty() -> {
                                     RetrySection(
                                         message = uiState.coursesError,
@@ -308,9 +290,11 @@ fun StoreScreen(
                                         modifier = Modifier.fillMaxSize()
                                     )
                                 }
+
                                 uiState.filteredCourses.isEmpty() -> {
                                     EmptyCoursesList()
                                 }
+
                                 else -> {
                                     // Course grid with improved spacing
                                     LazyVerticalGrid(
@@ -323,12 +307,23 @@ fun StoreScreen(
                                         items(uiState.filteredCourses) { course ->
                                             CourseCardForStore(
                                                 course = course,
-                                                onCourseClick = {openCourseDetailsScreen(navController,course)},
+                                                onCourseClick = {
+                                                    openCourseDetailsScreen(
+                                                        navController,
+                                                        course
+                                                    )
+                                                },
                                                 onFavoriteClick = {
-                                                    viewModel.handleFavoriteClick(course.id,course.is_favourited)
+                                                    viewModel.handleFavoriteClick(
+                                                        course.id,
+                                                        course.is_favourited
+                                                    )
                                                 },
                                                 onWishlistClick = {
-                                                    viewModel.handleWishlistClick(course.id,course.is_in_wishlist)
+                                                    viewModel.handleWishlistClick(
+                                                        course.id,
+                                                        course.is_in_wishlist
+                                                    )
                                                 }
                                             )
                                         }
@@ -549,7 +544,10 @@ fun FilterTag(
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false) // This ensures text doesn't push out the icon
+                modifier = Modifier.weight(
+                    1f,
+                    fill = false
+                ) // This ensures text doesn't push out the icon
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -565,6 +563,7 @@ fun FilterTag(
         }
     }
 }
+
 /**
  * Price slider content for bottom sheet
  */

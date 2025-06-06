@@ -1,10 +1,9 @@
 package com.mobitechs.classapp.screens.store
 
-
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mobitechs.classapp.data.model.PaymentResponse
+import com.mobitechs.classapp.data.model.PaymentData
+import com.mobitechs.classapp.data.model.response.Content
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
@@ -15,126 +14,100 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class CourseDetailUiState(
-    val isLoading: Boolean = false,
-    val error: String = "",
     val course: Course? = null,
+    val courseContent: List<Content> = emptyList(),
+    val isLoading: Boolean = false,
+    val isContentLoading: Boolean = false,
+    val error: String = "",
     val isProcessingPayment: Boolean = false,
-    val paymentData: PaymentResponse? = null,
-    val isCoursePreloaded: Boolean = false // ✅ NEW
+    val paymentData: PaymentData? = null
 )
 
-class CourseDetailViewModel(
-    private val courseRepository: CourseRepository,
-    private val paymentRepository: PaymentRepository,
-    private val savedStateHandle: SavedStateHandle? = null
-) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CourseDetailUiState(isLoading = true))
+
+class CourseDetailViewModel(
+    override val courseRepository: CourseRepository,
+    private val paymentRepository: PaymentRepository
+) : CourseActionsViewModel() {
+
+    private val _uiState = MutableStateFlow(CourseDetailUiState())
     val uiState: StateFlow<CourseDetailUiState> = _uiState.asStateFlow()
 
-    private val courseId: String = savedStateHandle?.get<String>("courseId") ?: ""
-
-
-    init {
-        if (courseId.isNotEmpty()) {
-            loadCourseDetails()
-        }
-
-    }
-
-    fun setCourseId(id: String) {
-        if (id.isNotEmpty() && id != courseId) {
-            loadCourseDetails(id)
-        }
-    }
-
     fun setCourse(course: Course) {
-        _uiState.update {
-            it.copy(course = course, isLoading = false, isCoursePreloaded = true)
-        }
+        _uiState.update { it.copy(course = course) }
     }
 
-    private fun loadCourseDetails(id: String = courseId) {
-        _uiState.update { it.copy(isLoading = true, error = "") }
+    fun loadCourseDetails(courseId: Int) {
+        _uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             try {
-                val course = courseRepository.getCourseDetails(id)
-
+                val course = courseRepository.getCourseDetails(courseId)
                 _uiState.update {
                     it.copy(
+                        course = course,
                         isLoading = false,
-                        course = course
+                        error = ""
                     )
                 }
+                // Load content after loading course details
+                loadCourseContent(courseId)
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Unknown error occurred"
+                        error = e.message ?: "Failed to load course details"
                     )
                 }
             }
         }
     }
 
-//    fun toggleFavorite() {
-//        uiState.value.course?.id?.let { courseId ->
-//            viewModelScope.launch {
-//                try {
-//                    val result = courseRepository.toggleFavorite(courseId.toString())
-//
-//                    // Update the course in the state
-//                    _uiState.update { state ->
-//                        val updatedCourse = state.course?.copy(is_favourited = result)
-//                        state.copy(course = updatedCourse)
-//                    }
-//                } catch (e: Exception) {
-//                    // Handle error silently
-//                }
-//            }
-//        }
-//    }
+    fun loadCourseContent(courseId: Int) {
+        _uiState.update { it.copy(isContentLoading = true) }
 
-//    fun toggleWishlist() {
-//        uiState.value.course?.id?.let { courseId ->
-//            viewModelScope.launch {
-//                try {
-//                    val result = courseRepository.toggleWishlist(courseId.toString())
-//
-//                    // Update the course in the state
-//                    _uiState.update { state ->
-//                        val updatedCourse = state.course?.copy(is_in_wishlist = result)
-//                        state.copy(course = updatedCourse)
-//                    }
-//                } catch (e: Exception) {
-//                    // Handle error silently
-//                }
-//            }
-//        }
-//    }
+        viewModelScope.launch {
+            try {
+                // Replace with actual API call when available
+                val content = courseRepository.getCourseContent(courseId)
+
+                _uiState.update {
+                    it.copy(
+                        courseContent = content.content,
+                        isContentLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isContentLoading = false,
+                        error = e.message ?: "Failed to load course content"
+                    )
+                }
+            }
+        }
+    }
 
     fun initiatePayment() {
-        uiState.value.course?.id?.let { courseId ->
-            _uiState.update { it.copy(isProcessingPayment = true, error = "") }
+        val course = uiState.value.course ?: return
 
-            viewModelScope.launch {
-                try {
-                    val paymentResponse = paymentRepository.initiatePayment(courseId.toString())
+        _uiState.update { it.copy(isProcessingPayment = true) }
 
-                    _uiState.update {
-                        it.copy(
-                            isProcessingPayment = false,
-                            paymentData = paymentResponse
-                        )
-                    }
-                } catch (e: Exception) {
-                    _uiState.update {
-                        it.copy(
-                            isProcessingPayment = false,
-                            error = e.message ?: "Failed to initiate payment"
-                        )
-                    }
+        viewModelScope.launch {
+            try {
+                val paymentData = paymentRepository.initiatePayment(course.id.toString())
+//                _uiState.update {
+//                    it.copy(
+//                        paymentData = paymentData,
+//                        isProcessingPayment = false
+//                    )
+//                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isProcessingPayment = false,
+                        error = e.message ?: "Payment initialization failed"
+                    )
                 }
             }
         }
@@ -181,7 +154,7 @@ class CourseDetailViewModel(
 
                 if (result.status == "success") {
                     // Update the course as purchased
-                    loadCourseDetails()
+                    //loadCourseDetails()
                 } else {
                     _uiState.update {
                         it.copy(
@@ -198,6 +171,19 @@ class CourseDetailViewModel(
                     )
                 }
             }
+        }
+    }
+
+    override fun updateCourseInState(
+        courseId: Int,
+        transform: (Course) -> Course
+    ) {
+        _uiState.update { state ->
+            state.copy(
+                // Update popular courses list
+                course = state.course?.updateSingleCourse(courseId, transform)
+
+            )
         }
     }
 }

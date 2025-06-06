@@ -1,12 +1,11 @@
 package com.mobitechs.classapp.screens.profile
 
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.screens.store.CourseActionsViewModel
-import com.mobitechs.classapp.screens.store.updateCourse
+import com.mobitechs.classapp.screens.store.updateCourseList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -96,8 +95,8 @@ class FavouriteViewModel(
         _uiState.update { state ->
             state.copy(
                 // Update popular courses list
-                favouriteCourses = state.favouriteCourses.updateCourse(courseId, transform),
-                filteredCourses = state.filteredCourses.updateCourse(courseId, transform),
+                favouriteCourses = state.favouriteCourses.updateCourseList(courseId, transform),
+                filteredCourses = state.filteredCourses.updateCourseList(courseId, transform),
 
                 )
         }

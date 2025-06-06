@@ -1,8 +1,5 @@
 package com.mobitechs.classapp.screens.home
 
-import android.util.Log
-import androidx.compose.ui.unit.Constraints
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.request.GetCourseByRequest
 import com.mobitechs.classapp.data.model.response.CategoryItem
@@ -14,13 +11,11 @@ import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.NotificationRepository
 import com.mobitechs.classapp.screens.store.CourseActionsViewModel
-import com.mobitechs.classapp.screens.store.updateCourse
+import com.mobitechs.classapp.screens.store.updateCourseList
 import com.mobitechs.classapp.utils.Constants
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -246,9 +241,9 @@ class HomeViewModel(
         _uiState.update { state ->
             state.copy(
                 // Update popular courses list
-                popularCourses = state.popularCourses.updateCourse(courseId, transform),
+                popularCourses = state.popularCourses.updateCourseList(courseId, transform),
                 // Update featured courses list
-                featuredCourses = state.featuredCourses.updateCourse(courseId, transform),
+                featuredCourses = state.featuredCourses.updateCourseList(courseId, transform),
 
             )
         }

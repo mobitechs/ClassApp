@@ -75,6 +75,8 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.utils.showToast
 import kotlinx.coroutines.delay
@@ -93,9 +95,17 @@ fun VideoPlayerScreen(
     val context = LocalContext.current
     val activity = context as Activity
     val configuration = LocalConfiguration.current
+
     val gson = Gson()
 
-    val course = remember { Gson().fromJson(courseJson, Course::class.java) }
+    val course: Course? = try {
+        courseJson?.let {
+            val decodedJson = URLDecoder.decode(it, "UTF-8")
+            gson.fromJson(decodedJson, Course::class.java)
+        }
+    } catch (e: Exception) {
+        null
+    }
 
 
     val isPlaying by viewModel.isPlaying.collectAsState()

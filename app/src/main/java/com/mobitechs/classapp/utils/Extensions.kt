@@ -32,3 +32,9 @@ fun openSeeAllCategory(navController: NavController,courses : List<CategoryItem>
 fun openCategoryWiseDetailsScreen(navController: NavController, categoryId:String, categoryName:String) {
     navController.navigate("categoryWiseDetailsScreen?categoryId=${categoryId}/categoryName=${categoryName}")
 }
+
+fun openVideoPlayer(navController: NavController, course:Course, videoUrl:String) {
+    val coursesJson = Gson().toJson(course)
+    val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
+    navController.navigate("video_player?courseJson=$encodedJson/videoUrl=$videoUrl")
+}

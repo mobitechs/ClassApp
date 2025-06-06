@@ -8,8 +8,7 @@ import com.mobitechs.classapp.data.model.response.SubjectItem
 import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.screens.store.CourseActionsViewModel
-import com.mobitechs.classapp.screens.store.updateCourse
-import com.mobitechs.classapp.utils.BaseViewModel
+import com.mobitechs.classapp.screens.store.updateCourseList
 import com.mobitechs.classapp.utils.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -281,10 +280,10 @@ class SubCategoryViewModel(
     override fun updateCourseInState(courseId: Int, transform: (Course) -> Course) {
         _uiState.update { state ->
             state.copy(
-                popularCourses = state.popularCourses.updateCourse(courseId, transform),
-                subcategoryCourses = state.subcategoryCourses.updateCourse(courseId, transform),
-                subjectCourses = state.subjectCourses.updateCourse(courseId, transform),
-                allCourses = state.allCourses.updateCourse(courseId, transform),
+                popularCourses = state.popularCourses.updateCourseList(courseId, transform),
+                subcategoryCourses = state.subcategoryCourses.updateCourseList(courseId, transform),
+                subjectCourses = state.subjectCourses.updateCourseList(courseId, transform),
+                allCourses = state.allCourses.updateCourseList(courseId, transform),
             )
         }
     }

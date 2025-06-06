@@ -1,6 +1,5 @@
 package com.mobitechs.classapp.screens.store
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.request.GetCourseByRequest
 import com.mobitechs.classapp.data.model.response.CategoryItem
@@ -713,8 +712,8 @@ class StoreViewModel(
         _uiState.update { state ->
             state.copy(
                 // Update popular courses list
-                filteredCourses = state.filteredCourses.updateCourse(courseId, transform),
-                allCourses = state.allCourses.updateCourse(courseId, transform),
+                filteredCourses = state.filteredCourses.updateCourseList(courseId, transform),
+                allCourses = state.allCourses.updateCourseList(courseId, transform),
 
                 )
         }

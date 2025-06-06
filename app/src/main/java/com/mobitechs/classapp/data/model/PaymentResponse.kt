@@ -18,3 +18,10 @@ data class PaymentItem(
     val icon: String? = null,
     val parentId: String? = null
 )
+
+
+data class PaymentData(
+    val orderId: String,
+    val amount: String,
+    val currency: String
+)

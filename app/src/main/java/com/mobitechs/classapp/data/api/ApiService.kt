@@ -11,6 +11,7 @@ import com.mobitechs.classapp.data.model.request.RegisterRequest
 import com.mobitechs.classapp.data.model.response.CategoryResponse
 import com.mobitechs.classapp.data.model.response.CommonResponse
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.data.model.response.CourseContentResponse
 import com.mobitechs.classapp.data.model.response.CourseResponse
 import com.mobitechs.classapp.data.model.response.LoginResponse
 import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
@@ -58,11 +59,21 @@ interface ApiService {
     suspend fun getNoticeboard(): Response<NoticeBoardResponse>
 
 
-    //Courses
+//Courses ---------------------------------------------------------------------------------------
     @POST("courses-with-filters")
     suspend fun getCourses(@Body request: GetCourseByRequest): Response<CourseResponse>
 
+    @GET("courses/{id}")
+    suspend fun getCourseDetails(@Path("id") courseId: Int): Response<Course>
 
+    @GET("courses/{id}")
+    suspend fun getCourseContent(@Path("id") courseId: Int): Response<CourseContentResponse>
+
+    @GET("free-content")
+    suspend fun getFreeContent(): Response<CourseContentResponse>
+
+
+//Courses Fav ---------------------------------------------------------------------------------------
     @POST("favourite-courses")
     suspend fun addToFavorite(@Body request: CommonCourseRequest): Response<CommonResponse>
 
@@ -76,7 +87,7 @@ interface ApiService {
         @Path("courseId") courseId: String
     ): Response<CommonResponse>
 
-
+//Courses wishlist---------------------------------------------------------------------------------------
     @POST("whishlist-courses")
     suspend fun addToWishlist(@Body request: CommonCourseRequest): Response<CommonResponse>
 
@@ -89,6 +100,7 @@ interface ApiService {
         @Path("courseId") courseId: String
     ): Response<CommonResponse>
 
+//Courses like---------------------------------------------------------------------------------------
     @POST("like-courses")
     suspend fun likeCourse(@Body request: CommonCourseRequest): Response<CommonResponse>
 
@@ -98,7 +110,7 @@ interface ApiService {
         @Path("courseId") courseId: String
     ): Response<CommonResponse>
 
-
+//Category ---------------------------------------------------------------------------------------
     @GET("categories")
     suspend fun getCategories(): Response<CategoryResponse>
 
@@ -118,10 +130,7 @@ interface ApiService {
     suspend fun getSubjectsBySubcategory(@Path("subCategoryId") categoryId: Int): Response<SubjectResponse>
 
 
-    @GET("courses/{id}")
-    suspend fun getCourseDetails(@Path("id") courseId: String): Response<Course>
-
-    // Batches endpoints
+//Batches endpoints  ---------------------------------------------------------------------------------------
     @GET("batches")
     suspend fun getUserBatches(): Response<List<Batch>>
 
@@ -137,6 +146,7 @@ interface ApiService {
     ): Response<List<StudyMaterial>>
 
 
+//payment ---------------------------------------------------------------------------------------
     @GET("initiatePayment/{paymentId}")
     suspend fun initiatePayment(@Path("paymentId") paymentId: String): Response<PaymentResponse>
 

@@ -9,6 +9,7 @@ import com.mobitechs.classapp.data.model.request.CommonCourseRequest
 import com.mobitechs.classapp.data.model.request.GetCourseByRequest
 import com.mobitechs.classapp.data.model.response.CommonResponse
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.data.model.response.CourseContentResponse
 import com.mobitechs.classapp.data.model.response.CourseResponse
 import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
 import com.mobitechs.classapp.data.model.response.OfferBannerResponse
@@ -24,7 +25,7 @@ class CourseRepository(
 ) {
 
 
-    suspend fun getCourseDetails(courseId: String): Course = withContext(Dispatchers.IO) {
+    suspend fun getCourseDetails(courseId: Int): Course = withContext(Dispatchers.IO) {
         val response = apiService.getCourseDetails(courseId)
         if (response.isSuccessful) {
             return@withContext response.body() ?: throw Exception("Empty response body")
@@ -43,6 +44,25 @@ class CourseRepository(
                 throw Exception("Failed to get courses: ${response.message()}")
             }
         }
+
+    suspend fun getCourseContent(courseId: Int): CourseContentResponse = withContext(Dispatchers.IO) {
+//        val response = apiService.getCourseContent(courseId)
+        val response = apiService.getFreeContent() // temporary because api is not ready (getCourseContent)
+        if (response.isSuccessful) {
+            return@withContext response.body() ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Failed to get course details: ${response.message()}")
+        }
+    }
+
+    suspend fun getFreeContent(): CourseContentResponse = withContext(Dispatchers.IO) {
+        val response = apiService.getFreeContent()
+        if (response.isSuccessful) {
+            return@withContext response.body() ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Failed to get course details: ${response.message()}")
+        }
+    }
 
 
     suspend fun getOfferBanners(): OfferBannerResponse = withContext(Dispatchers.IO) {
