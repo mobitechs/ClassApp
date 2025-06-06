@@ -9,12 +9,7 @@ data class CourseResponse(
     val status: Boolean,
     val status_code: Int
 )
-data class CourseResponse2(
-    val fav_course: List<Course>,
-    val message: String,
-    val status: Boolean,
-    val status_code: Int
-)
+
 
 @Entity(tableName = "courses")
 data class Course(
@@ -38,9 +33,9 @@ data class Course(
     val subject_id: Int?,
     val subject_name: String?,
 
-    val isFavorite: Boolean,
+    val is_favourited: Boolean,
     val isPurchased: Boolean,
-    val isWishlisted: Boolean,
+    val is_in_wishlist: Boolean,
     val is_liked: Boolean,
 
     val is_active: String?,

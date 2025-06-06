@@ -96,9 +96,9 @@ fun CourseCardPopularFeatured(
                             .clickable { onFavoriteClick() }
                     ) {
                         Icon(
-                            imageVector = if (course.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (course.isFavorite) "Remove from favorites" else "Add to favorites",
-                            tint = if (course.isFavorite) Color.Red else Color.White,
+                            imageVector = if (course.is_favourited) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (course.is_favourited) "Remove from favorites" else "Add to favorites",
+                            tint = if (course.is_favourited) Color.Red else Color.White,
                             modifier = Modifier
                                 .size(22.dp)
                                 .align(Alignment.Center)
@@ -130,9 +130,9 @@ fun CourseCardPopularFeatured(
                         modifier = Modifier.size(28.dp)
                     ) {
                         Icon(
-                            imageVector = if (course.isWishlisted) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                            contentDescription = if (course.isWishlisted) "Remove from wishlist" else "Add to wishlist",
-                            tint = if (course.isWishlisted)
+                            imageVector = if (course.is_in_wishlist) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                            contentDescription = if (course.is_in_wishlist) "Remove from wishlist" else "Add to wishlist",
+                            tint = if (course.is_in_wishlist)
                                 MaterialTheme.colorScheme.primary
                             else
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
@@ -279,9 +279,9 @@ fun CourseCardForStore(
                             .clickable { onFavoriteClick() }
                     ) {
                         Icon(
-                            imageVector = if (course.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (course.isFavorite) "Remove from favorites" else "Add to favorites",
-                            tint = if (course.isFavorite) Color.Red else Color.White,
+                            imageVector = if (course.is_favourited) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (course.is_favourited) "Remove from favorites" else "Add to favorites",
+                            tint = if (course.is_favourited) Color.Red else Color.White,
                             modifier = Modifier
                                 .size(20.dp)
                                 .align(Alignment.Center)
@@ -382,9 +382,9 @@ fun CourseCardForStore(
                         modifier = Modifier.size(24.dp)
                     ) {
                         Icon(
-                            imageVector = if (course.isWishlisted) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                            contentDescription = if (course.isWishlisted) "Remove from wishlist" else "Add to wishlist",
-                            tint = if (course.isWishlisted)
+                            imageVector = if (course.is_in_wishlist) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                            contentDescription = if (course.is_in_wishlist) "Remove from wishlist" else "Add to wishlist",
+                            tint = if (course.is_in_wishlist)
                                 MaterialTheme.colorScheme.primary
                             else
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
@@ -520,15 +520,15 @@ fun CourseCardRectangular(
                             modifier = Modifier.size(24.dp)
                         ) {
                             Icon(
-                                imageVector = if (course.isFavorite)
+                                imageVector = if (course.is_favourited)
                                     Icons.Filled.Favorite
                                 else
                                     Icons.Filled.FavoriteBorder,
-                                contentDescription = if (course.isFavorite)
+                                contentDescription = if (course.is_favourited)
                                     "Remove from favorites"
                                 else
                                     "Add to favorites",
-                                tint = if (course.isFavorite)
+                                tint = if (course.is_favourited)
                                     Color.Red
                                 else
                                     MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
@@ -542,15 +542,15 @@ fun CourseCardRectangular(
                             modifier = Modifier.size(24.dp)
                         ) {
                             Icon(
-                                imageVector = if (course.isWishlisted)
+                                imageVector = if (course.is_in_wishlist)
                                     Icons.Filled.Bookmark
                                 else
                                     Icons.Filled.BookmarkBorder,
-                                contentDescription = if (course.isWishlisted)
+                                contentDescription = if (course.is_in_wishlist)
                                     "Remove from wishlist"
                                 else
                                     "Add to wishlist",
-                                tint = if (course.isWishlisted)
+                                tint = if (course.is_in_wishlist)
                                     MaterialTheme.colorScheme.primary
                                 else
                                     MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
@@ -689,9 +689,9 @@ fun CourseGridItem(
                             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
                     ) {
                         Icon(
-                            imageVector = if (course.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (course.isFavorite) "Remove from favorites" else "Add to favorites",
-                            tint = if (course.isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface,
+                            imageVector = if (course.is_favourited) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (course.is_favourited) "Remove from favorites" else "Add to favorites",
+                            tint = if (course.is_favourited) Color.Red else MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -705,9 +705,9 @@ fun CourseGridItem(
                             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
                     ) {
                         Icon(
-                            imageVector = if (course.isWishlisted) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                            contentDescription = if (course.isWishlisted) "Remove from wishlist" else "Add to wishlist",
-                            tint = if (course.isWishlisted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            imageVector = if (course.is_in_wishlist) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                            contentDescription = if (course.is_in_wishlist) "Remove from wishlist" else "Add to wishlist",
+                            tint = if (course.is_in_wishlist) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(18.dp)
                         )
                     }

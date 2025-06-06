@@ -41,6 +41,7 @@ import com.mobitechs.classapp.screens.policyTermCondition.PrivacyPolicyScreen
 import com.mobitechs.classapp.screens.policyTermCondition.TermConditionScreen
 import com.mobitechs.classapp.screens.profile.FavouriteViewModel
 import com.mobitechs.classapp.screens.profile.MyFavouriteScreen
+import com.mobitechs.classapp.screens.profile.MyWishListViewModel
 import com.mobitechs.classapp.screens.profile.MyWishlistScreen
 import com.mobitechs.classapp.screens.profile.ProfileScreen
 import com.mobitechs.classapp.screens.profile.ProfileViewModel
@@ -347,7 +348,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
             composable(Screen.MyWishlistScreen.route) {
-                val viewModel: FavouriteViewModel = viewModel(factory = viewModelFactory)
+                val viewModel: MyWishListViewModel = viewModel(factory = viewModelFactory)
                 MyWishlistScreen(
                     viewModel = viewModel,
                     navController = navController

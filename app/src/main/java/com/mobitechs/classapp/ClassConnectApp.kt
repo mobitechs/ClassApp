@@ -1,8 +1,8 @@
 package com.mobitechs.classapp
 
-
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.api.ApiService
 import com.mobitechs.classapp.data.api.AuthInterceptor
@@ -21,13 +21,15 @@ import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.data.repository.UserRepository
 import com.razorpay.Checkout
-import kotlin.getValue
-import androidx.work.*
-import com.mobitechs.classapp.utils.SyncWorker
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
+
 
 class ClassConnectApp : Application() {
+
+    companion object {
+        private const val TAG = "ClassConnectApp"
+        private const val PREFS_FRESH_INSTALL = "fresh_install_prefs"
+        private const val KEY_INSTALL_ID = "install_id"
+    }
 
     // Lazily instantiated dependencies
     val gson by lazy { Gson() }
@@ -45,8 +47,8 @@ class ClassConnectApp : Application() {
     // Repositories
     val authRepository by lazy { AuthRepository(apiService, sharedPrefsManager) }
     val userRepository by lazy { UserRepository(apiService, sharedPrefsManager) }
-    val courseRepository by lazy { CourseRepository(apiService,sharedPrefsManager,database.courseDao()) }
-    val categoryRepository by lazy { CategoryRepository(apiService,sharedPrefsManager,database.categoryDao(),database.subCategoryDao(),database.subjectDao()) }
+    val courseRepository by lazy { CourseRepository(apiService, sharedPrefsManager, database.courseDao()) }
+    val categoryRepository by lazy { CategoryRepository(apiService, sharedPrefsManager, database.categoryDao(), database.subCategoryDao(), database.subjectDao()) }
     val notificationRepository by lazy { NotificationRepository(apiService) }
     val paymentRepository by lazy { PaymentRepository(apiService) }
     val freeContentRepository by lazy { FreeContentRepository(apiService) }
@@ -58,63 +60,108 @@ class ClassConnectApp : Application() {
     override fun onCreate() {
         super.onCreate()
         appContext = applicationContext
+
+        // Check for fresh install and clear data if needed
+        checkAndHandleFreshInstall()
+
         // Initialize Razorpay SDK
         Checkout.preload(applicationContext)
-
-        // Schedule daily sync
-        scheduleDailySync()
-
     }
 
-    private fun scheduleDailySync() {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(true)
-            .build()
+    private fun checkAndHandleFreshInstall() {
+        try {
+            val prefs = getSharedPreferences(PREFS_FRESH_INSTALL, Context.MODE_PRIVATE)
+            val packageInfo = packageManager.getPackageInfo(packageName, 0)
 
-        val syncWorkRequest = PeriodicWorkRequestBuilder<SyncWorker>(
-            1, TimeUnit.DAYS
-        )
-            .setConstraints(constraints)
-            .setInitialDelay(calculateInitialDelay(), TimeUnit.MILLISECONDS)
-            .build()
+            // Use first install time as unique identifier
+            val currentInstallId = packageInfo.firstInstallTime.toString()
+            val savedInstallId = prefs.getString(KEY_INSTALL_ID, null)
 
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "daily_sync",
-            ExistingPeriodicWorkPolicy.KEEP,
-            syncWorkRequest
-        )
+            if (savedInstallId == null || savedInstallId != currentInstallId) {
+                Log.d(TAG, "Fresh install detected. Clearing all data...")
 
-        // Also run an immediate one-time sync on app launch
-        val immediateSyncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
-            .setConstraints(constraints)
-            .build()
+                // This is a fresh install or reinstall
+                clearAllAppData()
 
-        WorkManager.getInstance(this).enqueueUniqueWork(
-            "immediate_sync",
-            ExistingWorkPolicy.REPLACE,
-            immediateSyncRequest
-        )
-    }
+                // Save the new install ID
+                prefs.edit().putString(KEY_INSTALL_ID, currentInstallId).apply()
 
-    private fun calculateInitialDelay(): Long {
-        // Schedule for 2 AM
-        val currentTime = System.currentTimeMillis()
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = currentTime
-            set(Calendar.HOUR_OF_DAY, 2)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-
-            // If 2 AM has passed today, schedule for tomorrow
-            if (timeInMillis <= currentTime) {
-                add(Calendar.DAY_OF_MONTH, 1)
+                Log.d(TAG, "All data cleared for fresh install")
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking fresh install", e)
         }
-
-        return calendar.timeInMillis - currentTime
     }
 
+    private fun clearAllAppData() {
+        // Clear all SharedPreferences
+        clearAllSharedPreferences()
 
+        // Clear all databases
+        clearAllDatabases()
+
+        // Clear cache
+        clearCache()
+
+        // Clear internal storage
+        clearInternalStorage()
+    }
+
+    private fun clearAllSharedPreferences() {
+        try {
+            val prefsDir = java.io.File(applicationInfo.dataDir, "shared_prefs")
+            if (prefsDir.exists() && prefsDir.isDirectory) {
+                prefsDir.listFiles()?.forEach { file ->
+                    // Don't clear the fresh install tracking preferences
+                    if (file.name != "$PREFS_FRESH_INSTALL.xml") {
+                        val prefName = file.name.removeSuffix(".xml")
+                        getSharedPreferences(prefName, Context.MODE_PRIVATE)
+                            .edit()
+                            .clear()
+                            .apply()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error clearing shared preferences", e)
+        }
+    }
+
+    private fun clearAllDatabases() {
+        try {
+            // Clear Room database
+            AppDatabase.destroyInstance()
+
+            // Delete all database files
+            val databaseList = databaseList()
+            for (database in databaseList) {
+                deleteDatabase(database)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error clearing databases", e)
+        }
+    }
+
+    private fun clearCache() {
+        try {
+            cacheDir.deleteRecursively()
+            codeCacheDir?.deleteRecursively()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error clearing cache", e)
+        }
+    }
+
+    private fun clearInternalStorage() {
+        try {
+            filesDir.listFiles()?.forEach { file ->
+                if (file.isDirectory) {
+                    file.deleteRecursively()
+                } else {
+                    file.delete()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error clearing internal storage", e)
+        }
+    }
 }

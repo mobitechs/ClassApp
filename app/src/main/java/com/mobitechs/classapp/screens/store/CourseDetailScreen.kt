@@ -153,10 +153,10 @@ fun CourseDetailScreen(
 //                        viewModel.toggleFavorite()
                 }) {
                     Icon(
-                        imageVector = if (uiState.course?.isFavorite == true) Icons.Default.Favorite
+                        imageVector = if (uiState.course?.is_favourited == true) Icons.Default.Favorite
                         else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (uiState.course?.isFavorite == true) Color.Red
+                        tint = if (uiState.course?.is_favourited == true) Color.Red
                         else MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -166,10 +166,10 @@ fun CourseDetailScreen(
 //                        viewModel.toggleWishlist()
                 }) {
                     Icon(
-                        imageVector = if (uiState.course?.isWishlisted == true) Icons.Default.Bookmark
+                        imageVector = if (uiState.course?.is_in_wishlist == true) Icons.Default.Bookmark
                         else Icons.Default.BookmarkBorder,
                         contentDescription = "Wishlist",
-                        tint = if (uiState.course?.isWishlisted == true) MaterialTheme.colorScheme.primary
+                        tint = if (uiState.course?.is_in_wishlist == true) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.onSurface
                     )
                 }

@@ -305,5 +305,9 @@ class AuthViewModel(
     }
 
 
+    fun logout() {
+        authRepository.logout()
+        // Navigation to login screen will be handled by the calling composable
+    }
 }
 

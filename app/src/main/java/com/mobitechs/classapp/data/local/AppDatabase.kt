@@ -16,7 +16,6 @@ import com.mobitechs.classapp.data.model.response.*
         NotificationItem::class,
         Notice::class,
         OfferBanner::class
-
     ],
     version = 1,
     exportSchema = false
@@ -46,6 +45,11 @@ abstract class AppDatabase : RoomDatabase() {
                 INSTANCE = instance
                 instance
             }
+        }
+
+        fun destroyInstance() {
+            INSTANCE?.close()
+            INSTANCE = null
         }
     }
 }

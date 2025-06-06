@@ -48,6 +48,12 @@ fun LoginScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+
+    // Clear shared preferences when LoginScreen appears
+//    LaunchedEffect(Unit) {
+//        viewModel.logout()
+//    }
+
     // Handle one-time events
     LaunchedEffect(uiState.onNavigateToHome) {
         if (uiState.onNavigateToHome) {

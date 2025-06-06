@@ -1,7 +1,6 @@
 package com.mobitechs.classapp.screens.profile
 
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.repository.CourseRepository
@@ -13,38 +12,38 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class FavouriteUiState(
+data class WishListUiState(
     val isLoading: Boolean = false,
-    val favouriteCourses: List<Course> = emptyList(),
+    val courses: List<Course> = emptyList(),
     val filteredCourses: List<Course> = emptyList(),
     val error: String = "",
     val searchQuery: String = ""
 )
 
-class FavouriteViewModel(
+class MyWishListViewModel(
     override val courseRepository: CourseRepository
 ) : CourseActionsViewModel() {
 
-    private val _uiState = MutableStateFlow(FavouriteUiState())
-    val uiState: StateFlow<FavouriteUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(WishListUiState())
+    val uiState: StateFlow<WishListUiState> = _uiState.asStateFlow()
 
     init {
-        loadFavouriteCourses()
+        loadWishListCourses()
     }
 
-    fun loadFavouriteCourses() {
+    fun loadWishListCourses() {
         _uiState.update { it.copy(isLoading = true, error = "") }
 
         viewModelScope.launch {
             try {
                 // Use the dedicated favourite courses endpoint
-                val favouriteCourses = courseRepository.getAllFavoriteCourses()
+                val courses = courseRepository.getAllWishlistCourses()
 
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        favouriteCourses = favouriteCourses.courses,
-                        filteredCourses = favouriteCourses.courses
+                        courses = courses.courses,
+                        filteredCourses = courses.courses
                     )
                 }
             } catch (e: Exception) {
@@ -62,12 +61,12 @@ class FavouriteViewModel(
         _uiState.update { it.copy(searchQuery = query) }
 
         if (query.isEmpty()) {
-            _uiState.update { it.copy(filteredCourses = it.favouriteCourses) }
+            _uiState.update { it.copy(filteredCourses = it.courses) }
             return
         }
 
         val lowercaseQuery = query.lowercase()
-        val filtered = _uiState.value.favouriteCourses.filter { course ->
+        val filtered = _uiState.value.courses.filter { course ->
             // Search in course name
             course.course_name.lowercase().contains(lowercaseQuery) ||
                     // Search in category name
@@ -86,9 +85,6 @@ class FavouriteViewModel(
     }
 
 
-
-
-
     override fun updateCourseInState(
         courseId: Int,
         transform: (Course) -> Course
@@ -96,7 +92,7 @@ class FavouriteViewModel(
         _uiState.update { state ->
             state.copy(
                 // Update popular courses list
-                favouriteCourses = state.favouriteCourses.updateCourse(courseId, transform),
+                courses = state.courses.updateCourse(courseId, transform),
                 filteredCourses = state.filteredCourses.updateCourse(courseId, transform),
 
                 )

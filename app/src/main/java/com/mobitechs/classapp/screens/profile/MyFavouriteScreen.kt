@@ -147,10 +147,10 @@ fun MyFavouriteScreen(
                                     openCourseDetailsScreen(navController, course)
                                 },
                                 onFavoriteClick = {
-                                    viewModel.handleFavoriteClick(course.id, course.isFavorite)
+                                    viewModel.handleFavoriteClick(course.id, course.is_favourited)
                                 },
                                 onWishlistClick = {
-                                    viewModel.handleWishlistClick(course.id, course.isWishlisted)
+                                    viewModel.handleWishlistClick(course.id, course.is_in_wishlist)
                                 }
                             )
                         }

@@ -86,7 +86,7 @@ class CourseDetailViewModel(
 //
 //                    // Update the course in the state
 //                    _uiState.update { state ->
-//                        val updatedCourse = state.course?.copy(isFavorite = result)
+//                        val updatedCourse = state.course?.copy(is_favourited = result)
 //                        state.copy(course = updatedCourse)
 //                    }
 //                } catch (e: Exception) {
@@ -104,7 +104,7 @@ class CourseDetailViewModel(
 //
 //                    // Update the course in the state
 //                    _uiState.update { state ->
-//                        val updatedCourse = state.course?.copy(isWishlisted = result)
+//                        val updatedCourse = state.course?.copy(is_in_wishlist = result)
 //                        state.copy(course = updatedCourse)
 //                    }
 //                } catch (e: Exception) {

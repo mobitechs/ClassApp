@@ -175,7 +175,7 @@ fun SideMenu(
         ProfileMenuItem(
             title = "Logout",
             icon = Icons.Default.Logout,
-            onClick = { onMenuItemClick("login") },
+            onClick = { onMenuItemClick(Screen.LoginScreen.route) },
             showDivider = false,
             iconTint = MaterialTheme.colorScheme.error
         )

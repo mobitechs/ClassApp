@@ -40,12 +40,12 @@ fun getCourses(
     @Query("SELECT * FROM courses WHERE id = :courseId")
     suspend fun getCourseById(courseId: Int): Course?
 
-    @Query("SELECT * FROM courses WHERE isFavorite = 1")
+    @Query("SELECT * FROM courses WHERE is_favourited = 1")
     fun getFavoriteCourses(): List<Course>
 
 
 
 
-    @Query("UPDATE courses SET isFavorite = :isFavorite WHERE id = :courseId")
-    suspend fun updateFavoriteStatus(courseId: Int, isFavorite: Boolean)
+    @Query("UPDATE courses SET is_favourited = :is_favourited WHERE id = :courseId")
+    suspend fun updateFavoriteStatus(courseId: Int, is_favourited: Boolean)
 }

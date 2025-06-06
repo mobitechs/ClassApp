@@ -245,7 +245,7 @@ fun ProfileScreen(
                         Button(
                             onClick = {
                                 viewModel.logout()
-                                navController.navigate("login") {
+                                navController.navigate(Screen.LoginScreen.route) {
                                     popUpTo(navController.graph.startDestinationId) {
                                         inclusive = true
                                     }

@@ -39,7 +39,7 @@ import com.mobitechs.classapp.utils.openCourseDetailsScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyWishlistScreen(
-    viewModel: FavouriteViewModel,
+    viewModel: MyWishListViewModel,
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -104,7 +104,7 @@ fun MyWishlistScreen(
                 uiState.error.isNotEmpty() -> {
                     ErrorView(
                         message = uiState.error,
-                        onRetry = { viewModel.loadFavouriteCourses() }
+                        onRetry = { viewModel.loadWishListCourses() }
                     )
                 }
 
@@ -137,10 +137,10 @@ fun MyWishlistScreen(
                                     openCourseDetailsScreen(navController, course)
                                 },
                                 onFavoriteClick = {
-                                    viewModel.handleFavoriteClick(course.id, course.isFavorite)
+                                    viewModel.handleFavoriteClick(course.id, course.is_favourited)
                                 },
                                 onWishlistClick = {
-                                    viewModel.handleWishlistClick(course.id, course.isWishlisted)
+                                    viewModel.handleWishlistClick(course.id, course.is_in_wishlist)
                                 }
                             )
                         }

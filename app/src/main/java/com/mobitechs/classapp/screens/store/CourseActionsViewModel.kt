@@ -16,8 +16,8 @@ abstract class CourseActionsViewModel : BaseViewModel() {
     abstract fun updateCourseInState(courseId: Int, transform: (Course) -> Course)
 
 
-    fun handleFavoriteClick(courseId: Int, isFavorite: Boolean) {
-        if (isFavorite) {
+    fun handleFavoriteClick(courseId: Int, is_favourited: Boolean) {
+        if (is_favourited) {
             removeFromFavorite(courseId)
         } else {
             addToFavorite(courseId)
@@ -25,8 +25,8 @@ abstract class CourseActionsViewModel : BaseViewModel() {
     }
 
 
-    fun handleWishlistClick(courseId: Int, isWishlisted: Boolean) {
-        if (isWishlisted) {
+    fun handleWishlistClick(courseId: Int, is_in_wishlist: Boolean) {
+        if (is_in_wishlist) {
             removeFromWishlist(courseId)
         } else {
             addToWishlist(courseId)
@@ -50,7 +50,7 @@ abstract class CourseActionsViewModel : BaseViewModel() {
 
                 if (response.status_code == 200) {
                     updateCourseInState(courseId) { course ->
-                        course.copy(isFavorite = true)
+                        course.copy(is_favourited = true)
                     }
                 }
             } catch (e: Exception) {
@@ -68,7 +68,7 @@ abstract class CourseActionsViewModel : BaseViewModel() {
 
                 if (response.status_code == 200) {
                     updateCourseInState(courseId) { course ->
-                        course.copy(isFavorite = false)
+                        course.copy(is_favourited = false)
                     }
                 }
             } catch (e: Exception) {
@@ -86,7 +86,7 @@ abstract class CourseActionsViewModel : BaseViewModel() {
 
                 if (response.status_code == 200) {
                     updateCourseInState(courseId) { course ->
-                        course.copy(isWishlisted = true)
+                        course.copy(is_in_wishlist = true)
                     }
                 }
             } catch (e: Exception) {
@@ -104,7 +104,7 @@ abstract class CourseActionsViewModel : BaseViewModel() {
 
                 if (response.status_code == 200) {
                     updateCourseInState(courseId) { course ->
-                        course.copy(isWishlisted = false)
+                        course.copy(is_in_wishlist = false)
                     }
                 }
             } catch (e: Exception) {

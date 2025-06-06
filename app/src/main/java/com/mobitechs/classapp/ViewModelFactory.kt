@@ -17,19 +17,20 @@ import com.mobitechs.classapp.data.repository.UserRepository
 import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.batches.BatchViewModel
+import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
 import com.mobitechs.classapp.screens.freeContent.FreeContentViewModel
 import com.mobitechs.classapp.screens.home.HomeViewModel
 import com.mobitechs.classapp.screens.notification.NotificationViewModel
 import com.mobitechs.classapp.screens.offlineDownload.OfflineDownloadViewModel
 import com.mobitechs.classapp.screens.payment.PaymentHistoryViewModel
 import com.mobitechs.classapp.screens.policyTermCondition.PolicyTermConditionViewModel
+import com.mobitechs.classapp.screens.profile.FavouriteViewModel
+import com.mobitechs.classapp.screens.profile.MyWishListViewModel
 import com.mobitechs.classapp.screens.profile.ProfileViewModel
 import com.mobitechs.classapp.screens.search.SearchViewModel
 import com.mobitechs.classapp.screens.splash.SplashViewModel
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreViewModel
-import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
-import com.mobitechs.classapp.screens.profile.FavouriteViewModel
 
 /**
  * Factory class for creating ViewModels without dependency injection
@@ -60,7 +61,12 @@ class ViewModelFactory(
             }
 
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
-                HomeViewModel(courseRepository, categoryRepository, notificationRepository,authRepository) as T
+                HomeViewModel(
+                    courseRepository,
+                    categoryRepository,
+                    notificationRepository,
+                    authRepository
+                ) as T
             }
 
             modelClass.isAssignableFrom(BatchViewModel::class.java) -> {
@@ -111,8 +117,13 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(PolicyTermConditionViewModel::class.java) -> {
                 PolicyTermConditionViewModel(policyTermConditionRepository) as T
             }
+
             modelClass.isAssignableFrom(FavouriteViewModel::class.java) -> {
                 FavouriteViewModel(courseRepository) as T
+            }
+
+            modelClass.isAssignableFrom(MyWishListViewModel::class.java) -> {
+                MyWishListViewModel(courseRepository) as T
             }
 
 
