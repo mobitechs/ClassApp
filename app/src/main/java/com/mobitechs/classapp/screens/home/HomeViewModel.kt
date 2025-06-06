@@ -1,8 +1,10 @@
 package com.mobitechs.classapp.screens.home
 
 import android.util.Log
+import androidx.compose.ui.unit.Constraints
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobitechs.classapp.data.model.request.GetCourseByRequest
 import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.Notice
@@ -13,6 +15,7 @@ import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.NotificationRepository
 import com.mobitechs.classapp.screens.store.CourseActionsViewModel
 import com.mobitechs.classapp.screens.store.updateCourse
+import com.mobitechs.classapp.utils.Constants
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -149,7 +152,8 @@ class HomeViewModel(
 
         viewModelScope.launch {
             try {
-                val popularCourses = courseRepository.getPopularCourses()
+                var reqObj = GetCourseByRequest(sort = Constants.KEY_SORT_POPULAR)
+                val popularCourses = courseRepository.getCoursesFilterWise(reqObj)
                 _uiState.update {
                     it.copy(
                         popularCourses = popularCourses.courses,
@@ -172,7 +176,8 @@ class HomeViewModel(
 
         viewModelScope.launch {
             try {
-                val featuredCourses = courseRepository.getFeaturedCourses()
+                var reqObj = GetCourseByRequest(sort = Constants.KEY_SORT_FEATURED)
+                val featuredCourses = courseRepository.getCoursesFilterWise(reqObj)
                 _uiState.update {
                     it.copy(
                         featuredCourses = featuredCourses.courses,

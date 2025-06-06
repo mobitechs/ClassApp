@@ -34,36 +34,6 @@ class CourseRepository(
     }
 
 
-    suspend fun getLatestCourses(): CourseResponse = withContext(Dispatchers.IO) {
-        val response = apiService.getLatestCourses()
-        if (response.isSuccessful) {
-            Log.d("Course API", "Latest Course Already called API today")
-            return@withContext response.body() ?: throw Exception("Empty response body")
-        } else {
-            throw Exception("Failed to get featured courses: ${response.message()}")
-        }
-    }
-
-    suspend fun getFeaturedCourses(): CourseResponse = withContext(Dispatchers.IO) {
-        val response = apiService.getFeaturedCourses()
-        if (response.isSuccessful) {
-            Log.d("Course API", "featured Course Already called API today")
-            return@withContext response.body() ?: throw Exception("Empty response body")
-        } else {
-            throw Exception("Failed to get featured courses: ${response.message()}")
-        }
-    }
-
-    suspend fun getPopularCourses(): CourseResponse = withContext(Dispatchers.IO) {
-        val response = apiService.getPopularCourses()
-        if (response.isSuccessful) {
-            Log.d("Course API", "popular Course Already called API today")
-            return@withContext response.body() ?: throw Exception("Empty response body")
-        } else {
-            throw Exception("Failed to get featured courses: ${response.message()}")
-        }
-    }
-
     suspend fun getCoursesFilterWise(reqObj: GetCourseByRequest): CourseResponse =
         withContext(Dispatchers.IO) {
             val response = apiService.getCourses(reqObj)
@@ -73,10 +43,6 @@ class CourseRepository(
                 throw Exception("Failed to get courses: ${response.message()}")
             }
         }
-
-
-
-
 
 
     suspend fun getOfferBanners(): OfferBannerResponse = withContext(Dispatchers.IO) {

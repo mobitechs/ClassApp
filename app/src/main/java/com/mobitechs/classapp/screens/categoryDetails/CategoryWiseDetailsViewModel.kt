@@ -10,6 +10,7 @@ import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.screens.store.CourseActionsViewModel
 import com.mobitechs.classapp.screens.store.updateCourse
 import com.mobitechs.classapp.utils.BaseViewModel
+import com.mobitechs.classapp.utils.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -161,7 +162,8 @@ class SubCategoryViewModel(
 
         viewModelScope.launch {
             try {
-                val popularCourses = courseRepository.getPopularCourses()
+                var reqObj = GetCourseByRequest(sort = Constants.KEY_SORT_POPULAR)
+                val popularCourses = courseRepository.getCoursesFilterWise(reqObj)
                 _uiState.update {
                     it.copy(
                         popularCourses = popularCourses.courses,

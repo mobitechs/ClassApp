@@ -9,6 +9,7 @@ import com.mobitechs.classapp.data.model.response.SubCategoryItem
 import com.mobitechs.classapp.data.model.response.SubjectItem
 import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
+import com.mobitechs.classapp.utils.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -541,7 +542,9 @@ class StoreViewModel(
 
         viewModelScope.launch {
             try {
-                val courseResponse = courseRepository.getLatestCourses()
+                var reqObj = GetCourseByRequest(sort = Constants.KEY_SORT_NEW)
+                val courseResponse = courseRepository.getCoursesFilterWise(reqObj)
+
                 _uiState.update { state ->
                     state.copy(
                         allCourses = courseResponse.courses,
@@ -568,7 +571,8 @@ class StoreViewModel(
 
         viewModelScope.launch {
             try {
-                val coursesResponse = courseRepository.getPopularCourses()
+                var reqObj = GetCourseByRequest(sort = Constants.KEY_SORT_POPULAR)
+                val coursesResponse = courseRepository.getCoursesFilterWise(reqObj)
                 _uiState.update { state ->
                     state.copy(
                         allCourses = coursesResponse.courses,

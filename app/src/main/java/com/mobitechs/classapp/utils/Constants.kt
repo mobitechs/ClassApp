@@ -93,6 +93,12 @@ object Constants {
     const val KEY_tbl_notifications = "notifications"
     const val KEY_tbl_notices = "notices"
 
+    const val KEY_SORT_NEW = "newest"
+    const val KEY_SORT_POPULAR = "newest"
+    const val KEY_SORT_FEATURED = "newest"
+    const val KEY_SORT_PRICE_ASC = "priceAsc"
+    const val KEY_SORT_PRICE_DESC = "priceDesc"
+
 
 
 

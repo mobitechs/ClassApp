@@ -62,14 +62,6 @@ interface ApiService {
     @POST("courses-with-filters")
     suspend fun getCourses(@Body request: GetCourseByRequest): Response<CourseResponse>
 
-    @GET("courses?sort=newest")
-    suspend fun getLatestCourses(): Response<CourseResponse>
-
-    @GET("courses?sort=newest")
-    suspend fun getPopularCourses(): Response<CourseResponse>
-
-    @GET("courses?sort=newest")
-    suspend fun getFeaturedCourses(): Response<CourseResponse>
 
     @POST("favourite-courses")
     suspend fun addToFavorite(@Body request: CommonCourseRequest): Response<CommonResponse>
