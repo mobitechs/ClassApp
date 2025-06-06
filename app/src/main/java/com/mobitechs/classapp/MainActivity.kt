@@ -52,6 +52,7 @@ import com.mobitechs.classapp.screens.splash.SplashScreen
 import com.mobitechs.classapp.screens.splash.SplashViewModel
 import com.mobitechs.classapp.screens.store.CourseDetailScreen
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
+import com.mobitechs.classapp.screens.store.PdfViewerScreen
 import com.mobitechs.classapp.screens.store.SeeAllCoursesScreen
 import com.mobitechs.classapp.screens.store.StoreScreen
 import com.mobitechs.classapp.screens.store.StoreViewModel
@@ -250,6 +251,25 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 val videoUrl = backStackEntry.arguments?.getString("videoUrl")
                 val viewModel: VideoPlayerViewModel = viewModel(factory = viewModelFactory)
                 VideoPlayerScreen(courseJson, videoUrl, navController, viewModel)
+            }
+
+            composable(
+                "PDFReader?courseJson={courseJson}/url={url}",
+                arguments = listOf(
+                    navArgument("courseJson") {
+                        type = NavType.StringType
+                        defaultValue = "null" // Handle null case
+                    },
+                    navArgument("url") {
+                        type = NavType.StringType
+                        defaultValue = "null" // Handle null case
+                    }
+                )
+            ) { backStackEntry ->
+                val courseJson = backStackEntry.arguments?.getString("courseJson")
+                val url = backStackEntry.arguments?.getString("url")
+                val viewModel: VideoPlayerViewModel = viewModel(factory = viewModelFactory)
+                PdfViewerScreen(courseJson, url, navController, viewModel)
             }
 
 

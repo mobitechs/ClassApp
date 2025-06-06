@@ -38,3 +38,8 @@ fun openVideoPlayer(navController: NavController, course:Course, videoUrl:String
     val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
     navController.navigate("video_player?courseJson=$encodedJson/videoUrl=$videoUrl")
 }
+fun openPDFReader(navController: NavController, course:Course, videoUrl:String) {
+    val coursesJson = Gson().toJson(course)
+    val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
+    navController.navigate("PDFReader?courseJson=$encodedJson/url=$videoUrl")
+}

@@ -41,6 +41,8 @@ import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.screens.home.ErrorView
 import com.mobitechs.classapp.screens.payment.PaymentActivity
 import com.mobitechs.classapp.utils.Constants
+import com.mobitechs.classapp.utils.ToastObserver
+import com.mobitechs.classapp.utils.openPDFReader
 import com.mobitechs.classapp.utils.openVideoPlayer
 import com.razorpay.Checkout
 import org.json.JSONObject
@@ -52,6 +54,8 @@ fun CourseDetailScreen(
     navController: NavController,
     viewModel: CourseDetailViewModel
 ) {
+
+    ToastObserver(viewModel)
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var showPreview by remember { mutableStateOf(false) }
@@ -807,7 +811,8 @@ fun handleContentClick(
         }
 
         "PDF" -> {
-            navController.navigate("pdf_viewer?pdfUrl=${content.content_url}")
+//            navController.navigate("pdf_viewer?pdfUrl=${content.content_url}")
+            openPDFReader(navController,course,content.content_url)
         }
 
         else -> {

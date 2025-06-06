@@ -97,7 +97,6 @@ fun VideoPlayerScreen(
     val configuration = LocalConfiguration.current
 
     val gson = Gson()
-
     val course: Course? = try {
         courseJson?.let {
             val decodedJson = URLDecoder.decode(it, "UTF-8")
