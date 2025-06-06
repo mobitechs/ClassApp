@@ -116,8 +116,8 @@ class StoreViewModel(
                     selectedCategoryId = null,
                     selectedCategory = null,
                     // Reset filters when changing categories
-                    selectedSubCategoryId = null,
-                    selectedSubjectId = null
+                    selectedSubCategoryId = 0,
+                    selectedSubjectId = 0
                 )
             }
             getLatestCourses() // Load popular courses default courses
@@ -136,8 +136,8 @@ class StoreViewModel(
                 selectedCategoryId = categoryId,
                 selectedCategory = selectedCategory,
                 // Reset filters when changing categories
-                selectedSubCategoryId = null,
-                selectedSubjectId = null
+                selectedSubCategoryId = 0,
+                selectedSubjectId = 0
             )
         }
 
@@ -160,7 +160,7 @@ class StoreViewModel(
             state.copy(
                 selectedSubCategoryId = subCategoryId,
                 // Also clear subject filter as it depends on subcategory
-                selectedSubjectId = null
+                selectedSubjectId = 0
             )
         }
 
@@ -213,8 +213,8 @@ class StoreViewModel(
     fun clearSubCategoryFilter() {
         _uiState.update { state ->
             state.copy(
-                selectedSubCategoryId = null,
-                selectedSubjectId = null // Also clear subject when clearing subcategory
+                selectedSubCategoryId = 0,
+                selectedSubjectId = 0// Also clear subject when clearing subcategory
             )
         }
         applyFiltersAndUpdateState()
@@ -222,7 +222,7 @@ class StoreViewModel(
 
     fun clearSubjectFilter() {
         _uiState.update { state ->
-            state.copy(selectedSubjectId = null)
+            state.copy(selectedSubjectId = 0)
         }
         applyFiltersAndUpdateState()
     }
@@ -244,8 +244,8 @@ class StoreViewModel(
             state.copy(
                 selectedCategoryId = null,
                 selectedCategory = null,
-                selectedSubCategoryId = null,
-                selectedSubjectId = null,
+                selectedSubCategoryId = 0,
+                selectedSubjectId = 0,
                 selectedPriceRange = PriceRange(0f, 10000f, false)
             )
         }

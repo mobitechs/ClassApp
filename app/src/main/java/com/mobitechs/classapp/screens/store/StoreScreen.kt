@@ -1,6 +1,5 @@
 package com.mobitechs.classapp.screens.store
 
-
 import android.R.attr.layout
 import android.R.layout
 import androidx.compose.foundation.BorderStroke
@@ -131,12 +130,12 @@ fun StoreScreen(
 
     // Main layout with Scaffold
     Scaffold(
-        // Top app bar with title, back button and search icon
+        // Top app bar with title showing selected filters
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = uiState.selectedCategory?.name ?: "New Courses",
+                        text = "Store",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold
                         )
@@ -164,7 +163,6 @@ fun StoreScreen(
         // Main content
         Row(
             modifier = Modifier
-//                .background(Color.Red)
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
@@ -214,9 +212,7 @@ fun StoreScreen(
             ) {
                 // Filter section with better visual separation
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     // Filter chips with improved layout
                     FilterChipsRow(
@@ -270,71 +266,73 @@ fun StoreScreen(
                         .weight(1f)
                         .fillMaxWidth()
                 ) {
-                    if (uiState.coursesLoading) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    } else if (uiState.coursesError.isNotEmpty()) {
-                        RetrySection(
-                            message = uiState.coursesError,
-                            onRetry = { viewModel.retryLoadCourses() },
-                            modifier = Modifier.fillMaxSize()
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        // Always show Applied Filters Section at the top
+                        AppliedFiltersSection(
+                            selectedCategory = uiState.selectedCategory,
+                            selectedSubCategoryId = uiState.selectedSubCategoryId,
+                            selectedSubjectId = uiState.selectedSubjectId,
+                            selectedPriceRange = uiState.selectedPriceRange,
+                            subCategories = uiState.subCategories,
+                            subjects = uiState.subjects,
+                            onClearFilter = { filterType ->
+                                when (filterType) {
+                                    FilterType.CATEGORY -> viewModel.clearCategoryFilter()
+                                    FilterType.SUBCATEGORY -> viewModel.clearSubCategoryFilter()
+                                    FilterType.SUBJECT -> viewModel.clearSubjectFilter()
+                                    FilterType.PRICE -> viewModel.clearPriceFilter()
+                                }
+                            },
+                            onResetAllFilters = { viewModel.resetAllFilters() }
                         )
-                    } else if (uiState.filteredCourses.isEmpty()) {
-                        EmptyCoursesList()
-                    } else {
-                        Column {
-                            // Section title for current category or all courses
-//                            SectionTitle(
-//                                title = if (uiState.selectedCategory != null)
-//                                    "${uiState.selectedCategory?.name} Courses"
-//                                else
-//                                    "All Courses"
-//                            )
 
-                            // Applied Filters Section with Reset Button
-                            AppliedFiltersSection(
-                                selectedCategory = uiState.selectedCategory,
-                                selectedSubCategoryId = uiState.selectedSubCategoryId,
-                                selectedSubjectId = uiState.selectedSubjectId,
-                                selectedPriceRange = uiState.selectedPriceRange,
-                                subCategories = uiState.subCategories,
-                                subjects = uiState.subjects,
-                                onClearFilter = { filterType ->
-                                    when (filterType) {
-                                        FilterType.CATEGORY -> viewModel.clearCategoryFilter()
-                                        FilterType.SUBCATEGORY -> viewModel.clearSubCategoryFilter()
-                                        FilterType.SUBJECT -> viewModel.clearSubjectFilter()
-                                        FilterType.PRICE -> viewModel.clearPriceFilter()
+                        // Course content area
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                        ) {
+                            when {
+                                uiState.coursesLoading -> {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator()
                                     }
-                                },
-                                onResetAllFilters = { viewModel.resetAllFilters() }
-                            )
-
-                            // Course grid with improved spacing
-                            LazyVerticalGrid(
-                                columns = GridCells.Fixed(2),
-                                contentPadding = PaddingValues(8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                                modifier = Modifier.fillMaxSize()
-                            ) {
-                                items(uiState.filteredCourses) { course ->
-                                    CourseCardForStore(
-                                        course = course,
-                                        onCourseClick = {openCourseDetailsScreen(navController,course)},
-
-                                        onFavoriteClick = {
-                                            viewModel.handleFavoriteClick(course.id,course.is_favourited)
-                                        },
-                                        onWishlistClick = {
-                                            viewModel.handleWishlistClick(course.id,course.is_in_wishlist)
-                                        }
-
+                                }
+                                uiState.coursesError.isNotEmpty() -> {
+                                    RetrySection(
+                                        message = uiState.coursesError,
+                                        onRetry = { viewModel.retryLoadCourses() },
+                                        modifier = Modifier.fillMaxSize()
                                     )
+                                }
+                                uiState.filteredCourses.isEmpty() -> {
+                                    EmptyCoursesList()
+                                }
+                                else -> {
+                                    // Course grid with improved spacing
+                                    LazyVerticalGrid(
+                                        columns = GridCells.Fixed(2),
+                                        contentPadding = PaddingValues(8.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                                        modifier = Modifier.fillMaxSize()
+                                    ) {
+                                        items(uiState.filteredCourses) { course ->
+                                            CourseCardForStore(
+                                                course = course,
+                                                onCourseClick = {openCourseDetailsScreen(navController,course)},
+                                                onFavoriteClick = {
+                                                    viewModel.handleFavoriteClick(course.id,course.is_favourited)
+                                                },
+                                                onWishlistClick = {
+                                                    viewModel.handleWishlistClick(course.id,course.is_in_wishlist)
+                                                }
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -413,8 +411,8 @@ fun StoreScreen(
 @Composable
 fun AppliedFiltersSection(
     selectedCategory: CategoryItem?,
-    selectedSubCategoryId: Int? = 0,
-    selectedSubjectId: Int? = 0,
+    selectedSubCategoryId: Int?,
+    selectedSubjectId: Int?,
     selectedPriceRange: PriceRange,
     subCategories: List<SubCategoryItem>,
     subjects: List<SubjectItem>,
@@ -422,13 +420,13 @@ fun AppliedFiltersSection(
     onResetAllFilters: () -> Unit
 ) {
     // Get the names for selected filters
-    val selectedSubCategoryName = selectedSubCategoryId?.let { id ->
-        subCategories.find { it.id == id }?.name
-    }
+    val selectedSubCategoryName = if (selectedSubCategoryId != null && selectedSubCategoryId != 0) {
+        subCategories.find { it.id == selectedSubCategoryId }?.name
+    } else null
 
-    val selectedSubjectName = selectedSubjectId?.let { id ->
-        subjects.find { it.id == id }?.name
-    }
+    val selectedSubjectName = if (selectedSubjectId != null && selectedSubjectId != 0) {
+        subjects.find { it.id == selectedSubjectId }?.name
+    } else null
 
     // Check if any filters are applied
     val hasFilters = selectedCategory != null ||
@@ -442,17 +440,23 @@ fun AppliedFiltersSection(
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            // Header row with "Applied Filters" and "Reset All" button
+            // Header row with current selection display and "Reset All" button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Applied Filters:",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
+                val currentSelection = "Applied Filter"
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = currentSelection,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                }
 
                 // Reset All Filters Button
                 OutlinedButton(
@@ -478,6 +482,7 @@ fun AppliedFiltersSection(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Filter chips
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -541,7 +546,10 @@ fun FilterTag(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false) // This ensures text doesn't push out the icon
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -557,7 +565,6 @@ fun FilterTag(
         }
     }
 }
-
 /**
  * Price slider content for bottom sheet
  */
@@ -746,7 +753,6 @@ fun CategoriesSidebar(
     }
 }
 
-
 /**
  * Helper function to get an icon for a category
  */
@@ -777,8 +783,8 @@ enum class FilterType {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterChipsRow(
-    selectedSubCategoryId: Int? = 0,
-    selectedSubjectId: Int? = 0,
+    selectedSubCategoryId: Int?,
+    selectedSubjectId: Int?,
     selectedPriceRange: PriceRange,
     onFilterClick: (FilterType) -> Unit
 ) {
@@ -790,11 +796,11 @@ fun FilterChipsRow(
     ) {
         item {
             FilterChip(
-                selected = selectedSubCategoryId != 0,
+                selected = selectedSubCategoryId != null && selectedSubCategoryId != 0,
                 onClick = { onFilterClick(FilterType.SUBCATEGORY) },
                 label = {
                     Text(
-                        text = if (selectedSubCategoryId != 0) "Type ✓" else "Type"
+                        text = if (selectedSubCategoryId != null && selectedSubCategoryId != 0) "Type ✓" else "Type"
                     )
                 },
                 trailingIcon = {
@@ -808,11 +814,11 @@ fun FilterChipsRow(
 
         item {
             FilterChip(
-                selected = selectedSubjectId != 0,
+                selected = selectedSubjectId != null && selectedSubjectId != 0,
                 onClick = { onFilterClick(FilterType.SUBJECT) },
                 label = {
                     Text(
-                        text = if (selectedSubjectId != 0) "Subject ✓" else "Subject"
+                        text = if (selectedSubjectId != null && selectedSubjectId != 0) "Subject ✓" else "Subject"
                     )
                 },
                 trailingIcon = {
@@ -860,7 +866,7 @@ data class FilterOption(
 fun FilterBottomSheetContent(
     title: String,
     options: List<FilterOption>,
-    selectedOptionId: Int? =0,
+    selectedOptionId: Int?,
     onOptionSelected: (Int) -> Unit
 ) {
     Column(
@@ -943,11 +949,6 @@ fun FilterBottomSheetContent(
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
-
-
-
-
-
 
 /**
  * Empty state when no courses match filters
