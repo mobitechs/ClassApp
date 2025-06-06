@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mobitechs.classapp.Screen.SeeAllCoursesScreen
 import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerScreen
 import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.screens.auth.AuthViewModel
@@ -51,6 +52,7 @@ import com.mobitechs.classapp.screens.splash.SplashScreen
 import com.mobitechs.classapp.screens.splash.SplashViewModel
 import com.mobitechs.classapp.screens.store.CourseDetailScreen
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
+import com.mobitechs.classapp.screens.store.SeeAllCoursesScreen
 import com.mobitechs.classapp.screens.store.StoreScreen
 import com.mobitechs.classapp.screens.store.StoreViewModel
 import com.mobitechs.classapp.ui.theme.ClassConnectTheme
@@ -340,6 +342,34 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
+
+
+
+            composable(
+                "seeAllCoursesScreen?courseListJson={courseListJson}/courseType={courseType}",
+                arguments = listOf(
+                    navArgument("courseListJson") {
+                        type = NavType.StringType
+                        defaultValue = "null" // Handle null case
+                    },
+                    navArgument("courseType") {
+                        type = NavType.StringType
+                        defaultValue = "null" // Handle null case
+                    }
+                )
+            ) { backStackEntry ->
+                val coursesJson = backStackEntry.arguments?.getString("courseListJson") ?: "[]"
+                val courseType = backStackEntry.arguments?.getString("courseType") ?: "popular"
+                val homeViewModel: HomeViewModel = viewModel(factory = viewModelFactory)
+
+                SeeAllCoursesScreen(
+                    navController = navController,
+                    coursesJson = coursesJson,
+                    courseType = courseType,
+                    homeViewModel = homeViewModel
+                )
+            }
+
             composable(Screen.MyFavouriteScreen.route) {
                 val viewModel: FavouriteViewModel = viewModel(factory = viewModelFactory)
                 MyFavouriteScreen(
@@ -371,6 +401,7 @@ sealed class Screen(val route: String) {
 
     object StoreScreen : Screen("storeScreen")
     object CategoryScreen : Screen("categoryScreen")
+    object SeeAllCoursesScreen : Screen("seeAllCoursesScreen")
     object SearchScreen : Screen("searchScreen")
     object FreeContentScreen : Screen("freeContentScreen")
 

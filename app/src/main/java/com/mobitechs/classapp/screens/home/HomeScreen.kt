@@ -79,7 +79,9 @@ import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
 import com.mobitechs.classapp.screens.store.getCategoryIcon
 import com.mobitechs.classapp.utils.ToastObserver
+import com.mobitechs.classapp.utils.openCategoryWiseDetailsScreen
 import com.mobitechs.classapp.utils.openCourseDetailsScreen
+import com.mobitechs.classapp.utils.openSeeAllCourse
 import kotlinx.coroutines.launch
 
 
@@ -200,15 +202,15 @@ fun HomeScreen(
                         viewModel = viewModel,
                         navController = navController,
                         uiState = uiState,
-//                        onCategoryClick = { categoryId ->
-////                            navController.navigate("category/$categoryId")
-//                            navController.navigate("categoryScreen") 
-//                        },
-
                         onSeeAllClick = { section ->
                             when (section) {
-                                "featured" -> navController.navigate("courses?type=featured")
-                                "popular" -> navController.navigate("courses?type=popular")
+                                "featured" -> {
+                                    openSeeAllCourse(navController,uiState.featuredCourses,"featured")
+                                }
+                                "popular" -> {
+                                    openSeeAllCourse(navController,uiState.popularCourses,"popular")
+                                }
+
                                 "offers" -> navController.navigate("courses?type=offers")
                                 "categories" -> navController.navigate(Screen.CategoryScreen.route)
                             }
@@ -401,7 +403,9 @@ fun HomeContent(
                         name = category.name,
                         isSelected = false,
                         onCategorySelected = {
-                            navController.navigate("categoryWiseDetailsScreen?categoryId=${category.id}/categoryName=${category.name}")
+//                            navController.navigate("categoryWiseDetailsScreen?categoryId=${category.id}/categoryName=${category.name}")
+                            openCategoryWiseDetailsScreen(navController,
+                                category.id.toString(),category.name)
 
                         }
                     )
