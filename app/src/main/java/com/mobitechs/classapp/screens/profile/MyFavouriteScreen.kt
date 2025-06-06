@@ -1,6 +1,9 @@
 package com.mobitechs.classapp.screens.profile
 
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,8 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mobitechs.classapp.screens.common.CourseCardEmptyMessageWithoutBox
@@ -64,6 +65,7 @@ fun MyFavouriteScreen(
         topBar = {
             if (isSearchActive) {
                 SearchAppBar(
+                    searchFor = "Search by name, category, subject...",
                     searchQuery = searchQuery,
                     onSearchQueryChange = {
                         searchQuery = it
@@ -140,19 +142,38 @@ fun MyFavouriteScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(uiState.filteredCourses) { course ->
-                            CourseCardRectangular(
-                                course = course,
-                                onClick = {
-                                    openCourseDetailsScreen(navController, course)
-                                },
-                                onFavoriteClick = {
-                                    viewModel.handleFavoriteClick(course.id, course.is_favourited)
-                                },
-                                onWishlistClick = {
-                                    viewModel.handleWishlistClick(course.id, course.is_in_wishlist)
-                                }
-                            )
+                        items(
+                            items = uiState.filteredCourses,
+                            key = { course -> course.id } // Important for animation
+                        ) { course ->
+                            var isVisible by remember { mutableStateOf(true) }
+
+                            AnimatedVisibility(
+                                visible = isVisible,
+                                exit = shrinkVertically() + fadeOut()
+                            ) {
+                                CourseCardRectangular(
+                                    course = course,
+                                    onClick = {
+                                        openCourseDetailsScreen(navController, course)
+                                    },
+                                    onFavoriteClick = {
+                                        // Trigger animation before removing
+                                        isVisible = false
+                                        // Delay the actual removal slightly for smooth animation
+                                        viewModel.handleFavoriteClick(
+                                            course.id,
+                                            course.is_favourited
+                                        )
+                                    },
+                                    onWishlistClick = {
+                                        viewModel.handleWishlistClick(
+                                            course.id,
+                                            course.is_in_wishlist
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -164,6 +185,7 @@ fun MyFavouriteScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchAppBar(
+    searchFor: String,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onCloseSearch: () -> Unit
@@ -174,7 +196,7 @@ fun SearchAppBar(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
                 placeholder = {
-                    Text("Search by name, category, subject...")
+                    Text(searchFor)
                 },
                 singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
@@ -205,8 +227,6 @@ fun SearchAppBar(
         }
     )
 }
-
-
 
 
 @Composable

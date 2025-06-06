@@ -15,7 +15,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.mobitechs.classapp.Screen.SeeAllCoursesScreen
 import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerScreen
 import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.screens.auth.AuthViewModel
@@ -42,6 +41,7 @@ import com.mobitechs.classapp.screens.policyTermCondition.PrivacyPolicyScreen
 import com.mobitechs.classapp.screens.policyTermCondition.TermConditionScreen
 import com.mobitechs.classapp.screens.profile.FavouriteViewModel
 import com.mobitechs.classapp.screens.profile.MyFavouriteScreen
+import com.mobitechs.classapp.screens.categoryDetails.SeeAllCategoriesScreen
 import com.mobitechs.classapp.screens.profile.MyWishListViewModel
 import com.mobitechs.classapp.screens.profile.MyWishlistScreen
 import com.mobitechs.classapp.screens.profile.ProfileScreen
@@ -369,6 +369,23 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                     homeViewModel = homeViewModel
                 )
             }
+            composable(
+                "SeeAllCategoriesScreen?categoryListJson={categoryListJson}",
+                arguments = listOf(
+                    navArgument("categoryListJson") {
+                        type = NavType.StringType
+                        defaultValue = "null" // Handle null case
+                    }
+                )
+            ) { backStackEntry ->
+                val categoryListJson =
+                    backStackEntry.arguments?.getString("categoryListJson") ?: "[]"
+
+                SeeAllCategoriesScreen(
+                    navController = navController,
+                    categoryJson = categoryListJson
+                )
+            }
 
             composable(Screen.MyFavouriteScreen.route) {
                 val viewModel: FavouriteViewModel = viewModel(factory = viewModelFactory)
@@ -402,6 +419,7 @@ sealed class Screen(val route: String) {
     object StoreScreen : Screen("storeScreen")
     object CategoryScreen : Screen("categoryScreen")
     object SeeAllCoursesScreen : Screen("seeAllCoursesScreen")
+    object SeeAllCategoriesScreen : Screen("seeAllCategoriesScreen")
     object SearchScreen : Screen("searchScreen")
     object FreeContentScreen : Screen("freeContentScreen")
 

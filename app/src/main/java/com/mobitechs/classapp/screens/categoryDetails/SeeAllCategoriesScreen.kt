@@ -1,13 +1,11 @@
-package com.mobitechs.classapp.screens.store
+package com.mobitechs.classapp.screens.categoryDetails
 
-
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.School
@@ -19,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,49 +28,43 @@ import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mobitechs.classapp.data.model.response.CategoryItem
-import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.screens.common.CourseCardEmptyMessageWithoutBox
-import com.mobitechs.classapp.screens.common.CourseCardRectangular
+import com.mobitechs.classapp.screens.common.Grid
+import com.mobitechs.classapp.screens.common.HomeCategoryItem
 import com.mobitechs.classapp.screens.home.HomeViewModel
 import com.mobitechs.classapp.screens.profile.SearchAppBar
-import com.mobitechs.classapp.utils.openCourseDetailsScreen
+import com.mobitechs.classapp.screens.store.getCategoryIcon
+import com.mobitechs.classapp.utils.openCategoryWiseDetailsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SeeAllCoursesScreen(
+fun SeeAllCategoriesScreen(
     navController: NavController,
-    coursesJson: String,
-    courseType: String,
-    homeViewModel: HomeViewModel
+    categoryJson: String
 ) {
-    // Deserialize the courses from JSON
-    val gson = Gson()
-    val courseListType = object : TypeToken<List<Course>>() {}.type
 
-    val courses: List<Course> = try {
-        val decodedJson = java.net.URLDecoder.decode(coursesJson, "UTF-8")
-        gson.fromJson(decodedJson, courseListType)
+
+    val gson = Gson()
+    val categoryList: List<CategoryItem> = try {
+        // Decode the URL-encoded JSON first
+        val decodedJson = java.net.URLDecoder.decode(categoryJson, "UTF-8")
+        gson.fromJson(decodedJson, object : TypeToken<List<CategoryItem>>() {}.type)
     } catch (e: Exception) {
         emptyList()
     }
-
 
 
     var searchQuery by remember { mutableStateOf("") }
     var isSearchActive by remember { mutableStateOf(false) }
 
     // Filter courses based on search query
-    val filteredCourses = remember(searchQuery, courses) {
+    val filteredCategory = remember(searchQuery, categoryList) {
         if (searchQuery.isEmpty()) {
-            courses
+            categoryList
         } else {
             val query = searchQuery.trim().lowercase()
-            courses.filter { course ->
-                course.course_name.lowercase().contains(query) ||
-                        course.course_description?.lowercase()?.contains(query) == true ||
-                        course.category_name?.lowercase()?.contains(query) == true ||
-                        course.sub_category_name?.lowercase()?.contains(query) == true ||
-                        course.subject_name?.lowercase()?.contains(query) == true
+            categoryList.filter { item ->
+                item.name.lowercase().contains(query)
             }
         }
     }
@@ -80,7 +73,7 @@ fun SeeAllCoursesScreen(
         topBar = {
             if (isSearchActive) {
                 SearchAppBar(
-                    searchFor =  "Search by name, category, subject...",
+                    searchFor =  "Search by category name...",
                     searchQuery = searchQuery,
                     onSearchQueryChange = { searchQuery = it },
                     onCloseSearch = {
@@ -92,11 +85,7 @@ fun SeeAllCoursesScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = when(courseType) {
-                                "popular" -> "Popular Courses"
-                                "featured" -> "Featured Courses"
-                                else -> "All Courses"
-                            }
+                            text = "Categories"
                         )
                     },
                     navigationIcon = {
@@ -124,35 +113,43 @@ fun SeeAllCoursesScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (filteredCourses.isEmpty()) {
+            if (filteredCategory.isEmpty()) {
                 CourseCardEmptyMessageWithoutBox(
                     message = if (searchQuery.isNotEmpty())
-                        "No courses found matching \"$searchQuery\""
+                        "No categories found matching \"$searchQuery\""
                     else
-                        "No ${courseType} courses available",
+                        "Categories not available",
                     description = if (searchQuery.isNotEmpty())
                         "Try searching with different keywords"
                     else
-                        "Check back later for new courses",
+                        "Check back later for new categories",
                     Icons.Default.School
                 )
             } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    items(filteredCourses) { course ->
-                        CourseCardRectangular(
-                            course = course,
-                            onClick = {
-                                openCourseDetailsScreen(navController, course)
-                            },
-                            onFavoriteClick = {
-                                homeViewModel.handleFavoriteClick(course.id, course.is_favourited)
-                            },
-                            onWishlistClick = {
-                                homeViewModel.handleWishlistClick(course.id, course.is_in_wishlist)
+                    Grid(
+                        items = filteredCategory,  // Changed from categoryList to filteredCategory
+                        columns = 2,
+                        horizontalSpacing = 1.dp,  // Same as HomeScreen
+                        verticalSpacing = 1.dp,    // Same as HomeScreen
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                    ) { category ->
+                        HomeCategoryItem(
+                            icon = getCategoryIcon(category.name),
+                            name = category.name,
+                            isSelected = false,
+                            onCategorySelected = {
+                                openCategoryWiseDetailsScreen(
+                                    navController,
+                                    category.id.toString(),
+                                    category.name
+                                )
                             }
                         )
                     }

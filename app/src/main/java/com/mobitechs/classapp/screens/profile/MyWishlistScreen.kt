@@ -2,6 +2,9 @@ package com.mobitechs.classapp.screens.profile
 
 
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -52,6 +55,7 @@ fun MyWishlistScreen(
         topBar = {
             if (isSearchActive) {
                 SearchAppBar(
+                    searchFor =  "Search by name, category, subject...",
                     searchQuery = searchQuery,
                     onSearchQueryChange = {
                         searchQuery = it
@@ -130,19 +134,38 @@ fun MyWishlistScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(uiState.filteredCourses) { course ->
-                            CourseCardRectangular(
-                                course = course,
-                                onClick = {
-                                    openCourseDetailsScreen(navController, course)
-                                },
-                                onFavoriteClick = {
-                                    viewModel.handleFavoriteClick(course.id, course.is_favourited)
-                                },
-                                onWishlistClick = {
-                                    viewModel.handleWishlistClick(course.id, course.is_in_wishlist)
-                                }
-                            )
+                        items(
+                            items = uiState.filteredCourses,
+                            key = { course -> course.id } // Important for animation
+                        ) { course ->
+                            var isVisible by remember { mutableStateOf(true) }
+
+                            AnimatedVisibility(
+                                visible = isVisible,
+                                exit = shrinkVertically() + fadeOut()
+                            ) {
+                                CourseCardRectangular(
+                                    course = course,
+                                    onClick = {
+                                        openCourseDetailsScreen(navController, course)
+                                    },
+                                    onFavoriteClick = {
+                                        viewModel.handleFavoriteClick(
+                                            course.id,
+                                            course.is_favourited
+                                        )
+                                    },
+                                    onWishlistClick = {
+                                        // Trigger animation before removing
+                                        isVisible = false
+                                        // Delay the actual removal slightly for smooth animation
+                                        viewModel.handleWishlistClick(
+                                            course.id,
+                                            course.is_in_wishlist
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }

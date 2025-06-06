@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.navigation.NavController
 import com.google.gson.Gson
+import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -21,6 +22,13 @@ fun openSeeAllCourse(navController: NavController,courses : List<Course>, course
     val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
     navController.navigate("seeAllCoursesScreen?courseListJson=$encodedJson/courseType=$courseType")
 }
+
+fun openSeeAllCategory(navController: NavController,courses : List<CategoryItem>) {
+    val coursesJson = Gson().toJson(courses)
+    val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
+    navController.navigate("SeeAllCategoriesScreen?categoryListJson=$encodedJson")
+}
+
 fun openCategoryWiseDetailsScreen(navController: NavController, categoryId:String, categoryName:String) {
     navController.navigate("categoryWiseDetailsScreen?categoryId=${categoryId}/categoryName=${categoryName}")
 }

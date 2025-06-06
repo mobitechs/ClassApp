@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -81,6 +83,7 @@ import com.mobitechs.classapp.screens.store.getCategoryIcon
 import com.mobitechs.classapp.utils.ToastObserver
 import com.mobitechs.classapp.utils.openCategoryWiseDetailsScreen
 import com.mobitechs.classapp.utils.openCourseDetailsScreen
+import com.mobitechs.classapp.utils.openSeeAllCategory
 import com.mobitechs.classapp.utils.openSeeAllCourse
 import kotlinx.coroutines.launch
 
@@ -212,7 +215,9 @@ fun HomeScreen(
                                 }
 
                                 "offers" -> navController.navigate("courses?type=offers")
-                                "categories" -> navController.navigate(Screen.CategoryScreen.route)
+                                "categories" -> {
+                                    openSeeAllCategory(navController,uiState.categories)
+                                }
                             }
                         },
                         onReferralClick = {
@@ -342,7 +347,7 @@ fun HomeContent(
         Spacer(modifier = Modifier.height(24.dp))
         SectionTitle(
             title = "Categories",
-            //onSeeAllClick = { onSeeAllClick("categories") }
+            onSeeAllClick = { onSeeAllClick("categories") }
         )
 
         when {
@@ -371,26 +376,8 @@ fun HomeContent(
 
             uiState.categories.isNotEmpty() -> {
 
-//                LazyVerticalGrid(
-//                    columns = GridCells.Fixed(2),
-//                    contentPadding = PaddingValues(horizontal = 16.dp),
-//                    modifier = Modifier
-//                        .height(250.dp) // Increased from 200.dp
-//                        .fillMaxWidth(),
-//                    userScrollEnabled = false
-//                ) {
-//                    items(uiState.categories) { category ->
-//                        HomeCategoryItem(
-//                            icon = getCategoryIcon(category.name),
-//                            name = category.name,
-//                            isSelected = false,
-//                            onCategorySelected = { onCategoryClick(category.id.toString()) }
-//                        )
-//                    }
-//                }
-
                 Grid(
-                    items = uiState.categories,
+                    items = uiState.categories.take(4), // Show only first 4 categories,
                     columns = 2,
                     horizontalSpacing = 1.dp,
                     verticalSpacing = 1.dp,
@@ -403,7 +390,6 @@ fun HomeContent(
                         name = category.name,
                         isSelected = false,
                         onCategorySelected = {
-//                            navController.navigate("categoryWiseDetailsScreen?categoryId=${category.id}/categoryName=${category.name}")
                             openCategoryWiseDetailsScreen(navController,
                                 category.id.toString(),category.name)
 
@@ -417,7 +403,7 @@ fun HomeContent(
         Spacer(modifier = Modifier.height(24.dp))
         SectionTitle(
             title = "Notice Board",
-            onSeeAllClick = { onSeeAllClick("offers") }
+//            onSeeAllClick = { onSeeAllClick("offers") }
         )
 
         when {
