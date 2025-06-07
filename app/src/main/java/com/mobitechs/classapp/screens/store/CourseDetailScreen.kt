@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -59,7 +60,9 @@ fun CourseDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var showPreview by remember { mutableStateOf(false) }
-    var selectedTab by remember { mutableStateOf(0) }
+
+    // Use rememberSaveable to persist tab selection across navigation
+    var selectedTab by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("Details", "Content")
 
     val gson by lazy { Gson() }
@@ -801,17 +804,14 @@ fun handleContentClick(
 
     when (content.content_type.uppercase()) {
         "VIDEO" -> {
-//            navController.navigate("video_player?videoUrl=${content.content_url}")
             openVideoPlayer(navController,course,content.content_url)
         }
 
         "AUDIO" -> {
-//            navController.navigate("audio_player?audioUrl=${content.content_url}")
             openVideoPlayer(navController,course,content.content_url)
         }
 
         "PDF" -> {
-//            navController.navigate("pdf_viewer?pdfUrl=${content.content_url}")
             openPDFReader(navController,course,content.content_url)
         }
 

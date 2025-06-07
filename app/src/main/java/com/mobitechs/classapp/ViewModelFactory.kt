@@ -111,7 +111,7 @@ class ViewModelFactory(
             }
 
             modelClass.isAssignableFrom(SearchViewModel::class.java) -> {
-                SearchViewModel(searchRepository) as T
+                SearchViewModel(searchRepository,courseRepository) as T
             }
 
             modelClass.isAssignableFrom(PolicyTermConditionViewModel::class.java) -> {

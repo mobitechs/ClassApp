@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -45,7 +43,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -83,6 +80,7 @@ import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
 import com.mobitechs.classapp.screens.store.getCategoryIcon
 import com.mobitechs.classapp.utils.ToastObserver
+import com.mobitechs.classapp.utils.getFirstName
 import com.mobitechs.classapp.utils.openCategoryWiseDetailsScreen
 import com.mobitechs.classapp.utils.openCourseDetailsScreen
 import com.mobitechs.classapp.utils.openSeeAllCategory
@@ -134,8 +132,9 @@ fun HomeScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Hello Pratik",
+                            text = "Hello ${getFirstName(user?.name ?: "")}",
                             maxLines = 1,
+                            style = MaterialTheme.typography.titleMedium,
                             overflow = TextOverflow.Ellipsis
                         )
                     },
@@ -210,15 +209,24 @@ fun HomeScreen(
                         onSeeAllClick = { section ->
                             when (section) {
                                 "featured" -> {
-                                    openSeeAllCourse(navController,uiState.featuredCourses,"featured")
+                                    openSeeAllCourse(
+                                        navController,
+                                        uiState.featuredCourses,
+                                        "featured"
+                                    )
                                 }
+
                                 "popular" -> {
-                                    openSeeAllCourse(navController,uiState.popularCourses,"popular")
+                                    openSeeAllCourse(
+                                        navController,
+                                        uiState.popularCourses,
+                                        "popular"
+                                    )
                                 }
 
                                 "offers" -> navController.navigate("courses?type=offers")
                                 "categories" -> {
-                                    openSeeAllCategory(navController,uiState.categories)
+                                    openSeeAllCategory(navController, uiState.categories)
                                 }
                             }
                         },
@@ -253,7 +261,7 @@ fun HomeContent(
         SectionTitle(
             title = "Special Offers",
 
-        )
+            )
         //
         Spacer(modifier = Modifier.height(16.dp))
         when {
@@ -330,13 +338,13 @@ fun HomeContent(
                         CourseCardPopularFeatured(
                             course = course,
                             onClick = {
-                                openCourseDetailsScreen(navController,course)
+                                openCourseDetailsScreen(navController, course)
                             },
                             onFavoriteClick = {
-                                viewModel.handleFavoriteClick(course.id,course.is_favourited)
+                                viewModel.handleFavoriteClick(course.id, course.is_favourited)
                             },
                             onWishlistClick = {
-                                viewModel.handleWishlistClick(course.id,course.is_in_wishlist)
+                                viewModel.handleWishlistClick(course.id, course.is_in_wishlist)
                             }
                         )
                     }
@@ -392,8 +400,10 @@ fun HomeContent(
                         name = category.name,
                         isSelected = false,
                         onCategorySelected = {
-                            openCategoryWiseDetailsScreen(navController,
-                                category.id.toString(),category.name)
+                            openCategoryWiseDetailsScreen(
+                                navController,
+                                category.id.toString(), category.name
+                            )
 
                         }
                     )
@@ -488,12 +498,12 @@ fun HomeContent(
                     items(uiState.featuredCourses) { course ->
                         CourseCardPopularFeatured(
                             course = course,
-                            onClick = {openCourseDetailsScreen(navController,course)},
+                            onClick = { openCourseDetailsScreen(navController, course) },
                             onFavoriteClick = {
-                                viewModel.handleFavoriteClick(course.id,course.is_favourited)
+                                viewModel.handleFavoriteClick(course.id, course.is_favourited)
                             },
                             onWishlistClick = {
-                                viewModel.handleWishlistClick(course.id,course.is_in_wishlist)
+                                viewModel.handleWishlistClick(course.id, course.is_in_wishlist)
                             }
                         )
                     }
@@ -649,6 +659,7 @@ fun SectionErrorView(
         }
     }
 }
+
 @Composable
 fun SocialMediaIcon(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
