@@ -8,6 +8,15 @@ import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import kotlin.math.absoluteValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
+
+
 
 fun showToast(context: Context, msg: String) {
     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
@@ -49,8 +58,191 @@ fun openVideoPlayer(navController: NavController, course:Course, videoUrl:String
     val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
     navController.navigate("video_player?courseJson=$encodedJson/videoUrl=$videoUrl")
 }
+
 fun openPDFReader(navController: NavController, course:Course, videoUrl:String) {
     val coursesJson = Gson().toJson(course)
     val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
     navController.navigate("PDFReader?courseJson=$encodedJson/url=$videoUrl")
+}
+
+
+fun getUniqueIcon(id: Int, name: String): String  {
+    return try {
+        val allIconFields = Icons.Default::class.java.declaredFields
+            .filter { it.type == ImageVector::class.java }
+
+        val index = ((id * 31) + name.hashCode()).absoluteValue % allIconFields.size
+        allIconFields[index].name
+    } catch (e: Exception) {
+        "Category"  // Default field name
+    }
+}
+
+
+
+// while setting color to container
+fun Int?.toComposeColor(default: Color = Color.Gray): Color {
+    return this?.let { Color(it) } ?: default
+}
+
+//---------------------------------------------------------------------------------------
+
+
+fun getAllAvailableIconNames(): List<String> {
+    return try {
+        val iconNames = Icons.Default::class.java.declaredFields
+            .filter { field ->
+                field.type == ImageVector::class.java &&
+                        java.lang.reflect.Modifier.isPublic(field.modifiers)
+            }
+            .map { it.name }
+            .distinct() // Ensure no duplicates
+
+        if (iconNames.isEmpty()) {
+            getFallbackIconNames()
+        } else {
+            iconNames
+        }
+    } catch (e: Exception) {
+        getFallbackIconNames()
+    }
+}
+
+fun getFallbackIconNames(): List<String> {
+    return listOf(
+        "School", "Book", "Science", "Calculate", "Computer",
+        "Language", "History", "MusicNote", "Palette", "SportsSoccer",
+        "Home", "Person", "Settings", "Star", "Favorite",
+        "ThumbUp", "ShoppingCart", "Work", "Email", "Phone",
+        "LocationOn", "Search", "Info", "Help", "Assignment",
+        "Dashboard", "Category", "Folder", "Description", "Assessment"
+    )
+}
+
+fun hsvToColor(hue: Float, saturation: Float, value: Float): Color {
+    val c = value * saturation
+    val x = c * (1 - kotlin.math.abs((hue / 60f) % 2 - 1))
+    val m = value - c
+
+    val (r, g, b) = when ((hue / 60f).toInt()) {
+        0 -> Triple(c, x, 0f)
+        1 -> Triple(x, c, 0f)
+        2 -> Triple(0f, c, x)
+        3 -> Triple(0f, x, c)
+        4 -> Triple(x, 0f, c)
+        5 -> Triple(c, 0f, x)
+        else -> Triple(0f, 0f, 0f)
+    }
+
+    return Color(
+        red = (r + m).coerceIn(0f, 1f),
+        green = (g + m).coerceIn(0f, 1f),
+        blue = (b + m).coerceIn(0f, 1f)
+    )
+}
+
+
+//------------------------------------------------------------------------------------
+fun updateCategoriesWithUIData(categoryList: List<CategoryItem>): List<CategoryItem> {
+    // Define icons explicitly to avoid reflection issues
+    val iconList = listOf(
+        "Home", "School", "Book", "Science", "Calculate",
+        "Computer", "Language", "History", "MusicNote", "Palette",
+        "SportsSoccer", "Star", "Favorite", "ThumbUp", "ShoppingCart",
+        "Person", "Work", "Email", "Phone", "LocationOn",
+        "Search", "Info", "Help", "Assignment", "Dashboard",
+        "Category", "Folder", "Build", "AccountCircle", "Settings",
+        "CheckCircle", "Schedule", "Lightbulb", "Group", "Map",
+        "Restaurant", "Flight", "Hotel", "LocalHospital", "School"
+    ).distinct() // Remove any duplicates
+
+    val totalCategories = categoryList.size
+
+    return categoryList.mapIndexed { index, category ->
+        // Assign icon based on index - guaranteed different for each category
+        val iconName = iconList[index % iconList.size]
+
+        // Generate unique colors (this part is already working)
+        val hue = (360f / totalCategories) * index
+        val hueWithVariation = (hue + (index * 13) % 20) % 360f
+
+        val iconColor = hsvToColor(
+            hue = hueWithVariation,
+            saturation = 0.75f - (index % 3) * 0.1f,
+            value = 0.55f - (index % 2) * 0.1f
+        )
+
+        val backgroundColor = hsvToColor(
+            hue = hueWithVariation,
+            saturation = 0.15f + (index % 3) * 0.05f,
+            value = 0.95f - (index % 2) * 0.03f
+        )
+
+        category.copy(
+            iconName = iconName,
+            iconColor = iconColor.toArgb(),
+            backgroundColor = backgroundColor.toArgb(),
+            courseCount = (50..300).random()
+        )
+    }
+}
+
+// Updated helper function with better error handling
+fun getIconFromFieldName(fieldName: String?): ImageVector {
+    if (fieldName.isNullOrEmpty()) return Icons.Default.Category
+
+    // Map of common icon names to their actual icons
+    val iconMap = mapOf(
+        "Home" to Icons.Default.Home,
+        "School" to Icons.Default.School,
+        "Book" to Icons.Default.Book,
+        "Science" to Icons.Default.Science,
+        "Calculate" to Icons.Default.Calculate,
+        "Computer" to Icons.Default.Computer,
+        "Language" to Icons.Default.Language,
+        "History" to Icons.Default.History,
+        "MusicNote" to Icons.Default.MusicNote,
+        "Palette" to Icons.Default.Palette,
+        "SportsSoccer" to Icons.Default.SportsSoccer,
+        "Star" to Icons.Default.Star,
+        "Favorite" to Icons.Default.Favorite,
+        "ThumbUp" to Icons.Default.ThumbUp,
+        "ShoppingCart" to Icons.Default.ShoppingCart,
+        "Person" to Icons.Default.Person,
+        "Work" to Icons.Default.Work,
+        "Email" to Icons.Default.Email,
+        "Phone" to Icons.Default.Phone,
+        "LocationOn" to Icons.Default.LocationOn,
+        "Search" to Icons.Default.Search,
+        "Info" to Icons.Default.Info,
+        "Help" to Icons.Default.Help,
+        "Assignment" to Icons.Default.Assignment,
+        "Dashboard" to Icons.Default.Dashboard,
+        "Category" to Icons.Default.Category,
+        "Folder" to Icons.Default.Folder,
+        "Build" to Icons.Default.Build,
+        "AccountCircle" to Icons.Default.AccountCircle,
+        "Settings" to Icons.Default.Settings,
+        "CheckCircle" to Icons.Default.CheckCircle,
+        "Schedule" to Icons.Default.Schedule,
+        "Lightbulb" to Icons.Default.Lightbulb,
+        "Group" to Icons.Default.Group,
+        "Map" to Icons.Default.Map,
+        "Restaurant" to Icons.Default.Restaurant,
+        "Flight" to Icons.Default.Flight,
+        "Hotel" to Icons.Default.Hotel,
+        "LocalHospital" to Icons.Default.LocalHospital
+    )
+
+    // First try to get from map
+    iconMap[fieldName]?.let { return it }
+
+    // If not in map, try reflection as fallback
+    return try {
+        val field = Icons.Default::class.java.getDeclaredField(fieldName)
+        field.isAccessible = true
+        field.get(Icons.Default) as? ImageVector ?: Icons.Default.Category
+    } catch (e: Exception) {
+        Icons.Default.Category
+    }
 }

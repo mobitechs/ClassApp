@@ -14,6 +14,8 @@ import com.mobitechs.classapp.data.model.response.CategoryResponse
 import com.mobitechs.classapp.data.model.response.SubCategoryResponse
 import com.mobitechs.classapp.data.model.response.SubjectResponse
 import com.mobitechs.classapp.utils.Constants
+import com.mobitechs.classapp.utils.showToast
+import com.mobitechs.classapp.utils.updateCategoriesWithUIData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -40,11 +42,14 @@ class CategoryRepository(
             val response = apiService.getCategories()
             if (response.isSuccessful) {
                 val categoryResponse = response.body() ?: throw Exception("Empty response body")
+                //add random icon background color
+                val updatedCategories = updateCategoriesWithUIData(categoryResponse.categories)
+
                 // Save to Room DB
-                categoryDao.insertCategories(categoryResponse.categories)
+                categoryDao.insertCategories(updatedCategories)
                 sharedPrefsManager.setLastSyncDate(Constants.KEY_tbl_categories)
 
-                return@withContext categoryResponse
+                return@withContext categoryResponse.copy(categories = updatedCategories)
             } else {
                 throw Exception("Failed to get categories: ${response.message()}")
                 // you can cache data from room db here and return
@@ -56,13 +61,13 @@ class CategoryRepository(
 
 //Sub categories ----------------------------------------------------------------------------------
 
-    suspend fun getAllSubCategories2(categoryId: Int = 0): SubCategoryResponse = withContext(Dispatchers.IO) {
+    suspend fun getAllSubCategories(): SubCategoryResponse = withContext(Dispatchers.IO) {
         // Check if already called API today
         if (sharedPrefsManager.isAlreadySyncedToday(Constants.KEY_tbl_sub_categories)) {
             Log.d("subCat API", "subCat Already called API today")
             // Get from Room DB
             return@withContext SubCategoryResponse(
-                subCategories = subcategoryDao.getSubCategories(categoryId),
+                subCategories = subcategoryDao.getAllSubCategories(),
                 message = "SubCategories from RoomDb",
                 status = true,
                 status_code = 200
@@ -73,7 +78,7 @@ class CategoryRepository(
             if (response.isSuccessful) {
                 val subCategoryResponse = response.body() ?: throw Exception("Empty response body")
 
-                // Save to Room DB
+                // Save to Room DB // first delete old subcategories too
                 subcategoryDao.insertSubCategories(subCategoryResponse.subCategories)
                 sharedPrefsManager.setLastSyncDate(Constants.KEY_tbl_sub_categories)
                 return@withContext subCategoryResponse
@@ -83,7 +88,7 @@ class CategoryRepository(
         }
     }
 
-    suspend fun getAllSubCategories(): SubCategoryResponse = withContext(Dispatchers.IO) {
+    suspend fun getAllSubCategories2(): SubCategoryResponse = withContext(Dispatchers.IO) {
 
         val response = apiService.getAllSubCategories()
         if (response.isSuccessful) {
@@ -97,13 +102,20 @@ class CategoryRepository(
 
     suspend fun getSubCategoryByCategory(categoryId: Int): SubCategoryResponse =
         withContext(Dispatchers.IO) {
-          val response = apiService.getSubCategoryByCategory(categoryId)
-//            val response = apiService.getAllSubCategories()
-            if (response.isSuccessful) {
-                return@withContext response.body() ?: throw Exception("Empty response body")
-            } else {
-                throw Exception("Failed to get categories: ${response.message()}")
-            }
+
+            return@withContext SubCategoryResponse(
+                subCategories = subcategoryDao.getSubCategoriesByCategory(categoryId),
+                message = "SubCategories by category from RoomDb",
+                status = true,
+                status_code = 200
+            )
+
+//          val response = apiService.getSubCategoryByCategory(categoryId)
+//            if (response.isSuccessful) {
+//                return@withContext response.body() ?: throw Exception("Empty response body")
+//            } else {
+//                throw Exception("Failed to get categories: ${response.message()}")
+//            }
         }
 
 
@@ -138,13 +150,13 @@ class CategoryRepository(
         }
     }
 
-    suspend fun getAllSubject3(): SubjectResponse = withContext(Dispatchers.IO) {
+    suspend fun getAllSubject(): SubjectResponse = withContext(Dispatchers.IO) {
         // Check if already called API today
         if (sharedPrefsManager.isAlreadySyncedToday(Constants.KEY_tbl_subjects)) {
             Log.d("subjects API", "Already called API today")
             // Get from Room DB
             return@withContext SubjectResponse(
-                subjects = subjectDao.getSubject(),
+                subjects = subjectDao.getAllSubjects(),
                 message = "Subjects from RoomDb",
                 status = true,
                 status_code = 200
@@ -167,7 +179,7 @@ class CategoryRepository(
 
 
 
-    suspend fun getAllSubject(): SubjectResponse = withContext(Dispatchers.IO) {
+    suspend fun getAllSubject3(): SubjectResponse = withContext(Dispatchers.IO) {
 
         val response = apiService.getAllSubject()
         if (response.isSuccessful) {
@@ -180,22 +192,47 @@ class CategoryRepository(
 
     suspend fun getSubjectByCategory(categoryId: Int): SubjectResponse =
         withContext(Dispatchers.IO) {
-            val response = apiService.getSubjectByCategory(categoryId)
-            if (response.isSuccessful) {
-                return@withContext response.body() ?: throw Exception("Empty response body")
-            } else {
-                throw Exception("Failed to get categories: ${response.message()}")
-            }
+            // Get from Room DB
+            return@withContext SubjectResponse(
+                subjects = subjectDao.getSubjectByCategory(categoryId),
+                message = "Subjects ByCategory from RoomDb",
+                status = true,
+                status_code = 200
+            )
+//            val response = apiService.getSubjectByCategory(categoryId)
+//            if (response.isSuccessful) {
+//                return@withContext response.body() ?: throw Exception("Empty response body")
+//            } else {
+//                throw Exception("Failed to get categories: ${response.message()}")
+//            }
         }
 
     suspend fun getSubjectBySubCategory(subCategoryId: Int): SubjectResponse =
         withContext(Dispatchers.IO) {
-            val response = apiService.getSubjectsBySubcategory(subCategoryId)
-            if (response.isSuccessful) {
-                return@withContext response.body() ?: throw Exception("Empty response body")
-            } else {
-                throw Exception("Failed to get categories: ${response.message()}")
-            }
+            // Get from Room DB
+            return@withContext SubjectResponse(
+                subjects = subjectDao.getSubjectBySubCategory(subCategoryId),
+                message = "Subjects BySubCategory from RoomDb",
+                status = true,
+                status_code = 200
+            )
+//            val response = apiService.getSubjectsBySubcategory(subCategoryId)
+//            if (response.isSuccessful) {
+//                return@withContext response.body() ?: throw Exception("Empty response body")
+//            } else {
+//                throw Exception("Failed to get categories: ${response.message()}")
+//            }
+        }
+
+    suspend fun getSubjectByCategorySubCategory(categoryId: Int, subCategoryId: Int): SubjectResponse =
+        withContext(Dispatchers.IO) {
+            // Get from Room DB
+            return@withContext SubjectResponse(
+                subjects = subjectDao.getSubjectByCategorySubCategory(categoryId,subCategoryId),
+                message = "Subjects ByCategorySubCategory from RoomDb",
+                status = true,
+                status_code = 200
+            )
         }
 
 

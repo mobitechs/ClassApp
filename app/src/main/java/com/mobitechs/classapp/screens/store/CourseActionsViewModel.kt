@@ -23,7 +23,6 @@ abstract class CourseActionsViewModel : BaseViewModel() {
         }
     }
 
-
     fun handleWishlistClick(courseId: Int, is_in_wishlist: Boolean) {
         if (is_in_wishlist) {
             removeFromWishlist(courseId)
@@ -39,9 +38,6 @@ abstract class CourseActionsViewModel : BaseViewModel() {
             dislikeCourse(courseId)
         }
     }
-
-
-
 
      fun addToFavorite(courseId: Int) {
         viewModelScope.launch {
@@ -60,7 +56,6 @@ abstract class CourseActionsViewModel : BaseViewModel() {
         }
     }
 
-
      fun removeFromFavorite(courseId: Int) {
         viewModelScope.launch {
             try {
@@ -77,7 +72,6 @@ abstract class CourseActionsViewModel : BaseViewModel() {
             }
         }
     }
-
 
      fun addToWishlist(courseId: Int) {
         viewModelScope.launch {
@@ -96,7 +90,6 @@ abstract class CourseActionsViewModel : BaseViewModel() {
         }
     }
 
-
      fun removeFromWishlist(courseId: Int) {
         viewModelScope.launch {
             try {
@@ -113,7 +106,6 @@ abstract class CourseActionsViewModel : BaseViewModel() {
             }
         }
     }
-
 
     fun likeCourse(courseId: Int) {
         viewModelScope.launch {
@@ -132,7 +124,6 @@ abstract class CourseActionsViewModel : BaseViewModel() {
         }
     }
 
-
     fun dislikeCourse(courseId: Int) {
         viewModelScope.launch {
             try {
@@ -149,6 +140,8 @@ abstract class CourseActionsViewModel : BaseViewModel() {
             }
         }
     }
+
+
 
 }
 

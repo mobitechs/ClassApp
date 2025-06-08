@@ -7,14 +7,27 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.data.model.response.SubCategoryItem
 import com.mobitechs.classapp.data.model.response.SubjectItem
 
 
 @Dao
 interface SubjectDao {
 
-//    @Query("SELECT * FROM subjects WHERE is_active = 'Active' AND ")
-//    fun getAllSubjects(): List<SubjectItem>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSubjects(subjects: List<SubjectItem>)
+
+    @Query("SELECT * FROM subjects WHERE is_active = 'Active' ")
+    fun getAllSubjects(): List<SubjectItem>
+
+    @Query("SELECT * FROM subjects WHERE is_active = 'Active' AND category_id = :categoryId")
+    fun getSubjectByCategory(categoryId: Int): List<SubjectItem>
+
+    @Query("SELECT * FROM subjects WHERE is_active = 'Active' AND subcategory_id = :subCategoryId")
+    fun getSubjectBySubCategory(subCategoryId: Int): List<SubjectItem>
+
+    @Query("SELECT * FROM subjects WHERE is_active = 'Active' AND category_id = :categoryId AND subcategory_id = :subCategoryId")
+    fun getSubjectByCategorySubCategory(categoryId: Int, subCategoryId: Int): List<SubjectItem>
 
 
     @Query("""
@@ -28,8 +41,7 @@ interface SubjectDao {
         subcategoryId: Int = 0
     ): List<SubjectItem>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSubjects(subjects: List<SubjectItem>)
+
 
 
 }

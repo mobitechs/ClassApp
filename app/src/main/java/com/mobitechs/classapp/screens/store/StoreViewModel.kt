@@ -389,18 +389,12 @@ class StoreViewModel(
 
         viewModelScope.launch {
             try {
-                // Try to get all subcategories (without category filter)
                 val response = categoryRepository.getAllSubCategories()
                 _uiState.update { state ->
                     state.copy(
                         subCategories = response.subCategories,
                         subCategoriesLoading = false
                     )
-                }
-                // Debug log
-                println("DEBUG: Loaded ${response.subCategories.size} subcategories")
-                if (response.subCategories.isNotEmpty()) {
-                    println("DEBUG: First subcategory: ${response.subCategories.first().name}")
                 }
             } catch (e: Exception) {
                 _uiState.update {
@@ -409,8 +403,6 @@ class StoreViewModel(
                         subCategoriesError = e.message ?: "Failed to load subcategories"
                     )
                 }
-                // Debug log
-                println("DEBUG: Error loading subcategories: ${e.message}")
             }
         }
     }
@@ -459,11 +451,6 @@ class StoreViewModel(
                         subjectsLoading = false
                     )
                 }
-                // Debug log
-                println("DEBUG: Loaded ${response.subjects.size} subjects")
-                if (response.subjects.isNotEmpty()) {
-                    println("DEBUG: First subject: ${response.subjects.first().name}")
-                }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
@@ -471,8 +458,6 @@ class StoreViewModel(
                         subjectsError = e.message ?: "Failed to load subjects"
                     )
                 }
-                // Debug log
-                println("DEBUG: Error loading subjects: ${e.message}")
             }
         }
     }
@@ -498,7 +483,6 @@ class StoreViewModel(
                     it.copy(
                         subjectsLoading = false,
                         subjectsError = e.message ?: "Failed to load subjects"
-                        // Keep existing subjects on error
                     )
                 }
             }
@@ -526,7 +510,6 @@ class StoreViewModel(
                     it.copy(
                         subjectsLoading = false,
                         subjectsError = e.message ?: "Failed to load subjects"
-                        // Keep existing subjects on error
                     )
                 }
             }
@@ -589,7 +572,6 @@ class StoreViewModel(
                     it.copy(
                         coursesLoading = false,
                         coursesError = e.message ?: "Failed to load courses"
-                        // Keep existing courses on error
                     )
                 }
             }
@@ -623,7 +605,6 @@ class StoreViewModel(
                     it.copy(
                         coursesLoading = false,
                         coursesError = e.message ?: "Failed to load courses"
-                        // Keep existing courses on error
                     )
                 }
             }
@@ -659,7 +640,6 @@ class StoreViewModel(
                     it.copy(
                         coursesLoading = false,
                         coursesError = e.message ?: "Failed to load courses"
-                        // Keep existing courses on error
                     )
                 }
             }

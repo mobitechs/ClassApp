@@ -115,14 +115,7 @@ class SearchRepository(
         }.take(5)
     }
 
-    /**
-     * Toggle favorite status for a course
-     */
-    suspend fun toggleFavorite(courseId: String): Boolean = withContext(Dispatchers.IO) {
-        // In a real implementation, this would call the API
-        // For now, just returning true
-        true
-    }
+
 
     /**
      * Get course categories for filter

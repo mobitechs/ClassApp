@@ -34,7 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.utils.getIconFromFieldName
 import com.mobitechs.classapp.utils.openCategoryWiseDetailsScreen
+import com.mobitechs.classapp.utils.toComposeColor
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -235,10 +237,10 @@ fun SearchTextField(
 fun SearchIdleState(
     recentSearches: List<String>,
     popularSearches: List<String>,
-    topCategories: List<SearchCategory>,
+    topCategories: List<CategoryItem>,
     onRecentSearchClick: (String) -> Unit,
     onPopularSearchClick: (String) -> Unit,
-    onCategoryClick: (SearchCategory) -> Unit,
+    onCategoryClick: (CategoryItem) -> Unit,
     onClearRecentSearches: () -> Unit
 ) {
     LazyColumn(
@@ -393,7 +395,7 @@ fun PopularSearchChip(
 
 @Composable
 fun CategoryCard(
-    category: SearchCategory,
+    category: CategoryItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -402,7 +404,7 @@ fun CategoryCard(
         modifier = modifier.height(80.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = category.backgroundColor
+            containerColor = category.backgroundColor.toComposeColor(default = MaterialTheme.colorScheme.primaryContainer)
         )
     ) {
         Row(
@@ -412,9 +414,9 @@ fun CategoryCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = category.icon,
+                imageVector = getIconFromFieldName(category.iconName),
                 contentDescription = null,
-                tint = category.iconColor,
+                tint = category.iconColor.toComposeColor(default = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
@@ -876,14 +878,14 @@ fun FilterContent(
 }
 
 // Data classes for search functionality
-data class SearchCategory(
-    val id: String,
-    val name: String,
-    val courseCount: Int,
-    val icon: ImageVector,
-    val backgroundColor: Color,
-    val iconColor: Color
-)
+//data class SearchCategory(
+//    val id: String,
+//    val name: String,
+//    val courseCount: Int,
+//    val icon: ImageVector,
+//    val backgroundColor: Color,
+//    val iconColor: Color
+//)
 
 data class SearchFilters(
     val priceRange: PriceRange? = null,

@@ -7,7 +7,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.request.GetCourseByRequest
+import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.screens.store.CourseActionsViewModel
@@ -32,7 +34,7 @@ data class SearchUiState(
     val searchSuggestions: List<String> = emptyList(),
 
     // Categories for browsing
-    val topCategories: List<SearchCategory> = emptyList(),
+    val topCategories: List<CategoryItem> = emptyList(),
 
     // Filters
     val selectedFilters: SearchFilters = SearchFilters(),
@@ -45,7 +47,8 @@ data class SearchUiState(
 
 class SearchViewModel(
     private val searchRepository: SearchRepository,
-    override val courseRepository: CourseRepository
+    override val courseRepository: CourseRepository,
+    private val categoryRepository: CategoryRepository,
 ) : CourseActionsViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
@@ -66,62 +69,16 @@ class SearchViewModel(
             val popularSearches = searchRepository.getPopularSearches()
 
             // Create sample categories for browsing
-            val topCategories = listOf(
-                SearchCategory(
-                    id = "1",
-                    name = "Mathematics",
-                    courseCount = 156,
-                    icon = Icons.Default.Calculate,
-                    backgroundColor = Color(0xFFE3F2FD),
-                    iconColor = Color(0xFF1976D2)
-                ),
-                SearchCategory(
-                    id = "2",
-                    name = "Science",
-                    courseCount = 203,
-                    icon = Icons.Default.Science,
-                    backgroundColor = Color(0xFFE8F5E9),
-                    iconColor = Color(0xFF388E3C)
-                ),
-                SearchCategory(
-                    id = "3",
-                    name = "Engineering",
-                    courseCount = 142,
-                    icon = Icons.Default.Engineering,
-                    backgroundColor = Color(0xFFFFF3E0),
-                    iconColor = Color(0xFFF57C00)
-                ),
-                SearchCategory(
-                    id = "4",
-                    name = "Business",
-                    courseCount = 189,
-                    icon = Icons.Default.Business,
-                    backgroundColor = Color(0xFFF3E5F5),
-                    iconColor = Color(0xFF7B1FA2)
-                ),
-                SearchCategory(
-                    id = "5",
-                    name = "Arts",
-                    courseCount = 97,
-                    icon = Icons.Default.Palette,
-                    backgroundColor = Color(0xFFFFEBEE),
-                    iconColor = Color(0xFFC62828)
-                ),
-                SearchCategory(
-                    id = "6",
-                    name = "Language",
-                    courseCount = 124,
-                    icon = Icons.Default.Language,
-                    backgroundColor = Color(0xFFE0F2F1),
-                    iconColor = Color(0xFF00796B)
-                )
-            )
+
+            val topCategories = categoryRepository.getCategories()
+
+
 
             _uiState.update {
                 it.copy(
                     recentSearches = recentSearches,
                     popularSearches = popularSearches,
-                    topCategories = topCategories
+                    topCategories = topCategories.categories
                 )
             }
         }
@@ -193,28 +150,6 @@ class SearchViewModel(
         }
     }
 
-    fun toggleFavorite(courseId: String) {
-        viewModelScope.launch {
-            try {
-                val is_favourited = searchRepository.toggleFavorite(courseId)
-
-                // Update the course in search results
-                _uiState.update { state ->
-                    val updatedResults = state.searchCourses.map { course ->
-                        if (course.id.toString() == courseId) {
-                            course.copy(is_favourited = is_favourited)
-                        } else {
-                            course
-                        }
-                    }
-                    state.copy(searchCourses = updatedResults)
-                }
-            } catch (e: Exception) {
-                // Handle error silently or show a snackbar
-            }
-        }
-    }
-
     fun updateFilter(filterKey: String, value: Any) {
         _uiState.update { state ->
             val updatedFilters = when (filterKey) {
@@ -251,11 +186,7 @@ class SearchViewModel(
         }
     }
 
-    fun loadMoreResults() {
-        if (_uiState.value.isLoading || !_uiState.value.hasMorePages) return
 
-
-    }
 
     override fun updateCourseInState(
         courseId: Int,

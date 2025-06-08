@@ -196,14 +196,14 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val categories = categoryRepository.getCategories()
+                val subCategories = categoryRepository.getAllSubCategories()
+                val subject = categoryRepository.getAllSubject()
                 _uiState.update {
                     it.copy(
                         categories = categories.categories,
                         categoriesLoading = false
                     )
                 }
-                // Send toast event
-//                _toastEvent.send(categories.message)
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(

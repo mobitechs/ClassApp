@@ -1,5 +1,6 @@
 package com.mobitechs.classapp.data.model.response
 
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -16,6 +17,13 @@ data class CategoryItem(
     @PrimaryKey val id: Int,
     val name: String,
     val is_active: String,
+
+//    @Ignore
+    var iconName: String? = null,
+    var iconColor: Int? = null,
+    var backgroundColor: Int? = null,
+    var courseCount: Int? = null,
+
     val added_by: String?,
     val created_at: String?,
     val deleted_at: String?,
