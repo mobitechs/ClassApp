@@ -9,13 +9,44 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class SearchRepository(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val sharedPrefsManager: SharedPrefsManager
 ) {
     companion object {
-        private const val RECENT_SEARCHES_KEY = "recent_searches"
-        private const val MAX_RECENT_SEARCHES = 10
+        private const val MAX_RECENT_SEARCHES = 5
+
+        private val DEFAULT_SEARCHES = listOf(
+            "PSI",
+            "IPS",
+            "STI",
+            "Talathi",
+            "Constable"
+        )
     }
 
+
+    suspend fun getRecentSearches(): List<String> = withContext(Dispatchers.IO) {
+        sharedPrefsManager.getRecentSearches().takeIf { it.isNotEmpty() } ?: DEFAULT_SEARCHES
+    }
+
+    suspend fun addRecentSearch(query: String) = withContext(Dispatchers.IO) {
+        val currentSearches = sharedPrefsManager.getRecentSearches().toMutableList()
+
+        // Remove if already exists to avoid duplicates
+        currentSearches.remove(query)
+
+        // Add to top
+        currentSearches.add(0, query)
+
+        // Keep only top 5
+        val updatedSearches = currentSearches.take(MAX_RECENT_SEARCHES)
+
+        sharedPrefsManager.saveRecentSearches(updatedSearches)
+    }
+
+    suspend fun clearRecentSearches() = withContext(Dispatchers.IO) {
+        sharedPrefsManager.clearRecentSearches()
+    }
 
     private fun applyFilters(courses: List<Course>, filters: SearchFilters): List<Course> {
         return courses.filter { course ->
@@ -56,35 +87,6 @@ class SearchRepository(
         }
     }
 
-    /**
-     * Get recent searches from local storage
-     */
-    suspend fun getRecentSearches(): List<String> = withContext(Dispatchers.IO) {
-        // In a real implementation, this would be stored in SharedPreferences or Room DB
-        // For now, returning sample data
-        listOf(
-            "Trigonometry basics",
-            "Calculus for beginners",
-            "Advanced algebra",
-            "Physics fundamentals",
-            "Chemistry 101"
-        )
-    }
-
-    /**
-     * Save a search term to recent searches
-     */
-    suspend fun saveRecentSearch(searchTerm: String) = withContext(Dispatchers.IO) {
-        // In a real implementation, this would save to SharedPreferences or Room DB
-        // Would also manage the list size to keep only MAX_RECENT_SEARCHES items
-    }
-
-    /**
-     * Clear all recent searches
-     */
-    suspend fun clearRecentSearches() = withContext(Dispatchers.IO) {
-        // In a real implementation, this would clear from SharedPreferences or Room DB
-    }
 
     /**
      * Get popular searches
@@ -92,14 +94,14 @@ class SearchRepository(
     suspend fun getPopularSearches(): List<String> = withContext(Dispatchers.IO) {
         // This could be fetched from the API or hardcoded based on analytics
         listOf(
-            "JEE Preparation",
-            "NEET Biology",
-            "Mathematics",
-            "Physics",
-            "Chemistry",
-            "Computer Science",
-            "English Grammar",
-            "History"
+            "Deputy Collector",
+            "Assistant Commissioner",
+            "Chief Officer (CO), Municipal Corporation",
+            "Assistant Regional Transport Officer (ARTO)",
+            "Education Officer",
+            "Child Development Project Officer",
+            "Government Labor Officer",
+            "Tax Assistant"
         )
     }
 

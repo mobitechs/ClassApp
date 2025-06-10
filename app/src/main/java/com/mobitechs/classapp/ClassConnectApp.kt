@@ -53,7 +53,7 @@ class ClassConnectApp : Application() {
     val paymentRepository by lazy { PaymentRepository(apiService) }
     val freeContentRepository by lazy { FreeContentRepository(apiService) }
     val offlineDownloadRepository by lazy { OfflineDownloadRepository(apiService) }
-    val searchRepository by lazy { SearchRepository(apiService) }
+    val searchRepository by lazy { SearchRepository(apiService,sharedPrefsManager) }
     val batchRepository by lazy { BatchRepository(apiService) }
     val policyTermConditionRepository by lazy { PolicyTermConditionRepository(apiService) }
 

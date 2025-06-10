@@ -88,17 +88,6 @@ class CategoryRepository(
         }
     }
 
-    suspend fun getAllSubCategories2(): SubCategoryResponse = withContext(Dispatchers.IO) {
-
-        val response = apiService.getAllSubCategories()
-        if (response.isSuccessful) {
-            val subCategoryResponse = response.body() ?: throw Exception("Empty response body")
-            return@withContext subCategoryResponse
-//            return@withContext response.body() ?: throw Exception("Empty response body")
-        } else {
-            throw Exception("Failed to get categories: ${response.message()}")
-        }
-    }
 
     suspend fun getSubCategoryByCategory(categoryId: Int): SubCategoryResponse =
         withContext(Dispatchers.IO) {
@@ -123,32 +112,6 @@ class CategoryRepository(
 //Subject ----------------------------------------------------------------------------------------
 
 
-    suspend fun getAllSubject2(categoryId: Int = 0, subcategoryId: Int = 0): SubjectResponse = withContext(Dispatchers.IO) {
-        // Check if already called API today
-        if (sharedPrefsManager.isAlreadySyncedToday(Constants.KEY_tbl_subjects)) {
-            Log.d("subjects API", "subjects Already called API today")
-            // Get from Room DB
-            return@withContext SubjectResponse(
-                subjects = subjectDao.getSubject(categoryId,subcategoryId),
-                message = "Subjects from RoomDb",
-                status = true,
-                status_code = 200
-            )
-        } else {
-            // call api
-            val response = apiService.getAllSubject()
-            if (response.isSuccessful) {
-                val subjectResponse = response.body() ?: throw Exception("Empty response body")
-
-                // Save to Room DB
-                subjectDao.insertSubjects(subjectResponse.subjects)
-                sharedPrefsManager.setLastSyncDate(Constants.KEY_tbl_subjects)
-                return@withContext subjectResponse
-            } else {
-                throw Exception("Failed to get subjects: ${response.message()}")
-            }
-        }
-    }
 
     suspend fun getAllSubject(): SubjectResponse = withContext(Dispatchers.IO) {
         // Check if already called API today
@@ -178,18 +141,6 @@ class CategoryRepository(
     }
 
 
-
-    suspend fun getAllSubject3(): SubjectResponse = withContext(Dispatchers.IO) {
-
-        val response = apiService.getAllSubject()
-        if (response.isSuccessful) {
-            val subjectResponse = response.body() ?: throw Exception("Empty response body")
-            return@withContext subjectResponse
-        } else {
-            throw Exception("Failed to get categories: ${response.message()}")
-        }
-    }
-
     suspend fun getSubjectByCategory(categoryId: Int): SubjectResponse =
         withContext(Dispatchers.IO) {
             // Get from Room DB
@@ -199,12 +150,6 @@ class CategoryRepository(
                 status = true,
                 status_code = 200
             )
-//            val response = apiService.getSubjectByCategory(categoryId)
-//            if (response.isSuccessful) {
-//                return@withContext response.body() ?: throw Exception("Empty response body")
-//            } else {
-//                throw Exception("Failed to get categories: ${response.message()}")
-//            }
         }
 
     suspend fun getSubjectBySubCategory(subCategoryId: Int): SubjectResponse =
@@ -216,12 +161,6 @@ class CategoryRepository(
                 status = true,
                 status_code = 200
             )
-//            val response = apiService.getSubjectsBySubcategory(subCategoryId)
-//            if (response.isSuccessful) {
-//                return@withContext response.body() ?: throw Exception("Empty response body")
-//            } else {
-//                throw Exception("Failed to get categories: ${response.message()}")
-//            }
         }
 
     suspend fun getSubjectByCategorySubCategory(categoryId: Int, subCategoryId: Int): SubjectResponse =

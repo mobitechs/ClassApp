@@ -69,7 +69,6 @@ class SearchViewModel(
             val popularSearches = searchRepository.getPopularSearches()
 
             // Create sample categories for browsing
-
             val topCategories = categoryRepository.getCategories()
 
 
@@ -115,6 +114,12 @@ class SearchViewModel(
             //_uiState.value.selectedFilters pass it as filter value
             var reqObj = GetCourseByRequest(sort = Constants.KEY_SORT_POPULAR)
             val courses = courseRepository.getCoursesFilterWise(reqObj)
+
+            if (courses.courses.isNotEmpty()) {
+                searchRepository.addRecentSearch(query)
+                refreshRecentSearches()
+            }
+
             _uiState.update {
                 it.copy(
                     searchCourses = courses.courses,
@@ -130,6 +135,13 @@ class SearchViewModel(
             }
         }
 
+    }
+
+    private fun refreshRecentSearches() {
+        viewModelScope.launch {
+            val recentSearches = searchRepository.getRecentSearches()
+            _uiState.update { it.copy(recentSearches = recentSearches) }
+        }
     }
 
     fun clearSearch() {
@@ -188,10 +200,13 @@ class SearchViewModel(
 
 
 
-    override fun updateCourseInState(
-        courseId: Int,
-        transform: (Course) -> Course
-    ) {
-
+    override fun updateCourseInState(courseId: Int, transform: (Course) -> Course) {
+        _uiState.update { state ->
+            state.copy(
+                searchCourses = state.searchCourses.map { course ->
+                    if (course.id == courseId) transform(course) else course
+                }
+            )
+        }
     }
 }

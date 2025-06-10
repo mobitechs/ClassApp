@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.utils.Constants
@@ -17,6 +18,10 @@ class SharedPrefsManager(
     private val context: Context,
     private val gson: Gson
 ) {
+
+    companion object {
+        private const val PREF_RECENT_SEARCHES = "recent_searches"
+    }
 
     // Create or get the master key for encryption
     private val masterKeyAlias by lazy {
@@ -203,5 +208,25 @@ class SharedPrefsManager(
             // If clearing fails, try to delete the files
             clearCorruptedData()
         }
+    }
+
+
+    fun saveRecentSearches(searches: List<String>) {
+        val json = gson.toJson(searches)
+        sharedPreferences.edit().putString(PREF_RECENT_SEARCHES, json).apply()
+    }
+
+    fun getRecentSearches(): List<String> {
+        val json = sharedPreferences.getString(PREF_RECENT_SEARCHES, null) ?: return emptyList()
+        return try {
+            val type = object : TypeToken<List<String>>() {}.type
+            gson.fromJson(json, type) ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    fun clearRecentSearches() {
+        sharedPreferences.edit().remove(PREF_RECENT_SEARCHES).apply()
     }
 }

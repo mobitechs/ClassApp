@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
@@ -373,16 +374,42 @@ fun RecentSearchItem(
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PopularSearchChip(
     text: String,
     onClick: () -> Unit
 ) {
+    val words = text.split(" ")
+    val formattedText = if (words.size > 2) {
+        "${words.take(2).joinToString(" ")}\n${words.drop(2).joinToString(" ")}"
+    } else {
+        text
+    }
+
+    val isMultiLine = words.size > 2 || text.contains("\n")
+
     FilterChip(
         selected = false,
         onClick = onClick,
-        label = { Text(text) },
+        label = {
+            Box(
+                modifier = Modifier
+                    .height(36.dp)
+                    .padding(horizontal = 3.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = formattedText,
+                    maxLines = 2,
+                    style = MaterialTheme.typography.labelMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.wrapContentHeight(Alignment.CenterVertically)
+                )
+
+            }
+        },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Outlined.TrendingUp,
@@ -392,6 +419,8 @@ fun PopularSearchChip(
         }
     )
 }
+
+
 
 
 @Composable
