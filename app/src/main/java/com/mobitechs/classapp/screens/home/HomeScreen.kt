@@ -1,5 +1,7 @@
 package com.mobitechs.classapp.screens.home
+import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -60,13 +62,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.gson.Gson
+import com.mobitechs.classapp.R
 import com.mobitechs.classapp.Screen
 import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.mobitechs.classapp.screens.common.BannerCarousel
@@ -77,9 +82,11 @@ import com.mobitechs.classapp.screens.common.ModernNoticeCard
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
+import com.mobitechs.classapp.utils.Constants
 import com.mobitechs.classapp.utils.ToastObserver
 import com.mobitechs.classapp.utils.getFirstName
 import com.mobitechs.classapp.utils.openCategoryWiseDetailsScreen
+import com.mobitechs.classapp.utils.openChannelLinks
 import com.mobitechs.classapp.utils.openCourseDetailsScreen
 import com.mobitechs.classapp.utils.openSeeAllCategory
 import com.mobitechs.classapp.utils.openSeeAllCourse
@@ -201,6 +208,7 @@ fun HomeScreen(
                 } else {
                     // Always show HomeContent, each section handles its own loading/error state
                     HomeContent(
+                        context = context,
                         viewModel = viewModel,
                         navController = navController,
                         uiState = uiState,
@@ -243,12 +251,14 @@ fun HomeScreen(
 
 @Composable
 fun HomeContent(
+    context:Context,
     viewModel: HomeViewModel,
     navController: NavController,
     uiState: HomeUiState,
     onSeeAllClick: (String) -> Unit,
     onReferralClick: () -> Unit,
-    onRetrySection: (String) -> Unit,
+    onRetrySection: (String) -> Unit
+
 ) {
     Column(
         modifier = Modifier
@@ -574,36 +584,67 @@ fun HomeContent(
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            SocialMediaIcon(
-                icon = Icons.Default.Facebook,
-                contentDescription = "Facebook",
-                backgroundColor = Color(0xFF1877F2),
-                onClick = { /* Open Facebook page */ }
-            )
 
-            SocialMediaIcon(
-                icon = Icons.Filled.Insights,
-                contentDescription = "Instagram",
-                backgroundColor = Color(0xFFE1306C),
-                onClick = { /* Open Instagram page */ }
-            )
 
-            SocialMediaIcon(
-                icon = Icons.Filled.YoutubeSearchedFor,
-                contentDescription = "YouTube",
-                backgroundColor = Color(0xFFFF0000),
-                onClick = { /* Open YouTube channel */ }
-            )
+            AddSocialMediaICons(context,"YouTube",R.drawable.youtube,Constants.CONNECT_YOUTUBE)
+            AddSocialMediaICons(context,"Telegram",R.drawable.telegram,Constants.CONNECT_TELEGRAM)
+            AddSocialMediaICons(context,"Whatsapp",R.drawable.whatsapp,Constants.CONNECT_WHATSAPP)
+            AddSocialMediaICons(context,"Facebook",R.drawable.facebook,Constants.CONNECT_FACEBOOK)
 
-            SocialMediaIcon(
-                icon = Icons.Filled.Hotel,
-                contentDescription = "Telegram",
-                backgroundColor = Color(0xFF0088CC),
-                onClick = { /* Open Telegram channel */ }
-            )
+//            Image(
+//                painter = painterResource(id = R.drawable.telegram),
+//                contentDescription = "",
+//                modifier = Modifier
+//                    .size(40.dp)
+//                    .clickable {
+//                        openChannelLinks(context, Constants.CONNECT_TELEGRAM)
+//                    }
+//            )
+//            Image(
+//                painter = painterResource(id = R.drawable.whatsapp),
+//                contentDescription = "Whatsapp",
+//                modifier = Modifier
+//                    .size(40.dp)
+//                    .clickable {
+//                        openChannelLinks(context, Constants.CONNECT_WHATSAPP)
+//                    }
+//            )
+//            Image(
+//                painter = painterResource(id = R.drawable.facebook),
+//                contentDescription = "Facebook",
+//                modifier = Modifier
+//                    .size(40.dp)
+//                    .clickable {
+//                        openChannelLinks(context, Constants.CONNECT_FACEBOOK)
+//                    }
+//            )
+
+
+
+
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Composable
+fun AddSocialMediaICons(context:Context,name: String, icon: Int, url: String) {
+    Box(
+        modifier = Modifier
+            .size(48.dp)  // Fixed size for all
+
+    ) {
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = name,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    openChannelLinks(context, url)
+                }
+        )
     }
 }
 
@@ -657,29 +698,6 @@ fun SectionErrorView(
     }
 }
 
-@Composable
-fun SocialMediaIcon(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    contentDescription: String,
-    backgroundColor: Color,
-    onClick: () -> Unit
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .size(48.dp)
-            .clip(CircleShape)
-            .background(backgroundColor)
-            .clickable(onClick = onClick)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            tint = Color.White,
-            modifier = Modifier.size(24.dp)
-        )
-    }
-}
 
 @Composable
 fun ErrorView(

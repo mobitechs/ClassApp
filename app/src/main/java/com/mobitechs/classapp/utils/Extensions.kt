@@ -1,6 +1,8 @@
 package com.mobitechs.classapp.utils
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.navigation.NavController
 import com.google.gson.Gson
@@ -63,6 +65,15 @@ fun openPDFReader(navController: NavController, course:Course, videoUrl:String) 
     val coursesJson = Gson().toJson(course)
     val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
     navController.navigate("PDFReader?courseJson=$encodedJson/url=$videoUrl")
+}
+
+fun openChannelLinks(context: Context, channelUrl: String) {
+    try {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(channelUrl))
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        // Handle error silently or show toast
+    }
 }
 
 

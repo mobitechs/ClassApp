@@ -15,6 +15,12 @@ object Constants {
     const val PREF_USER = "user_data"
 
     // Study material types
+    const val CONNECT_YOUTUBE = "https://www.youtube.com/@AdityaGarkal."
+    const val CONNECT_TELEGRAM = "https://t.me/AdityaGarkal"
+    const val CONNECT_WHATSAPP = "https://whatsapp.com/channel/0029VamsDsw4IBhJMZiavq2L/103"
+    const val CONNECT_FACEBOOK = "https://www.facebook.com/Pratik1082"
+
+
     const val MATERIAL_TYPE_VIDEO = "VIDEO"
     const val MATERIAL_TYPE_PDF = "PDF"
     const val MATERIAL_TYPE_DOCUMENT = "DOCUMENT"
