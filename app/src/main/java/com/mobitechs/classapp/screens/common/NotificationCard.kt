@@ -1,5 +1,8 @@
 package com.mobitechs.classapp.screens.common
 
+
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,7 +27,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.mobitechs.classapp.data.model.response.NotificationItem
-
 @Composable
 fun NotificationCard(
     notification: NotificationItem,
@@ -43,7 +45,7 @@ fun NotificationCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top // Changed to Top for better alignment with longer description
         ) {
             // Notification icon or image
             Box(
@@ -55,7 +57,7 @@ fun NotificationCard(
             ) {
                 if (notification.url != null && notification.url.isNotEmpty() && !notification.url.contains("null")) {
                     AsyncImage(
-                        model = "https://mobitechs.in/mobitech_laravel_classmate/public/storage/${notification.url}",
+                        model = notification.url,
                         contentDescription = "Notification Image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
@@ -76,27 +78,32 @@ fun NotificationCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                // Title
+                // Scrollable Title
                 Text(
                     text = notification.notice_title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.basicMarquee(
+                        iterations = Int.MAX_VALUE,
+                        initialDelayMillis = 1000, // Changed from delayMillis to initialDelayMillis
+                        spacing = MarqueeSpacing(20.dp),
+                        velocity = 30.dp
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Description
+                // Full Description (no maxLines)
                 Text(
                     text = notification.description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    // Removed maxLines and overflow
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Date and Course tag row
                 Row(
@@ -127,11 +134,37 @@ fun NotificationCard(
                         }
                     }
                 }
+
+                // Offer code if available
+                if (!notification.offer_code.isNullOrEmpty() && notification.offer_code != "null") {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.LocalOffer,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = "Use code: ${notification.offer_code}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             }
         }
     }
 }
-
 
 
 
@@ -213,7 +246,8 @@ fun SocialMediaStyleNotificationCard(
                     .height(280.dp)
             ) {
                 AsyncImage(
-                    model = "https://mobitechs.in/mobitech_laravel_classmate/public/storage/${notification.url}",
+//                    model = "https://mobitechs.in/mobitech_laravel_classmate/public/storage/${notification.url}",
+                    model = notification.url,
                     contentDescription = "Notification Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()

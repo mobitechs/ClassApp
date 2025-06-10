@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mobitechs.classapp.data.model.response.NotificationItem
+import com.mobitechs.classapp.screens.common.NotificationCard
 import com.mobitechs.classapp.screens.common.SocialMediaStyleNotificationCard
 import com.mobitechs.classapp.screens.home.ErrorView
 
@@ -30,9 +33,23 @@ fun NotificationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Notifications") }
+                title = {
+                    Text(
+                        text = "Notifications"
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
             )
         }
+
+
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -73,7 +90,7 @@ fun NotificationScreen(
 //                            formatDate = viewModel::formatDate
 //                        )
 
-                        SocialMediaStyleNotificationCard(
+                        NotificationCard(
                             notification = notification,
                             onNotificationClick = { selectedNotification ->
                                 handleNotificationClick(navController, selectedNotification)

@@ -117,7 +117,7 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
-    implementation ("androidx.compose.foundation:foundation:1.2.0")// or newer
+    implementation ("androidx.compose.foundation:foundation:1.8.2")// or newer
 
 
     implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
