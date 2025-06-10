@@ -71,6 +71,7 @@ import com.google.gson.Gson
 import com.mobitechs.classapp.Screen
 import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.mobitechs.classapp.screens.common.BannerCarousel
+import com.mobitechs.classapp.screens.common.CategoryCardWithBgColorNIcon
 import com.mobitechs.classapp.screens.common.CourseCardPopularFeatured
 import com.mobitechs.classapp.screens.common.Grid
 import com.mobitechs.classapp.screens.common.HomeCategoryItem
@@ -395,18 +396,15 @@ fun HomeContent(
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp)
                 ) { category ->
-                    HomeCategoryItem(
-                        icon = getCategoryIcon(category.name),
-                        name = category.name,
-                        isSelected = false,
-                        onCategorySelected = {
-                            openCategoryWiseDetailsScreen(
-                                navController,
-                                category.id.toString(), category.name
-                            )
-
-                        }
+                    CategoryCardWithBgColorNIcon(
+                        category = category,
+                        onClick = { openCategoryWiseDetailsScreen(
+                            navController,
+                            category.id.toString(), category.name
+                        ) },
+                        modifier = Modifier.weight(1f)
                     )
+
                 }
             }
         }

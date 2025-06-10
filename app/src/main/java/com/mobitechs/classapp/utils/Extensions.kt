@@ -66,18 +66,6 @@ fun openPDFReader(navController: NavController, course:Course, videoUrl:String) 
 }
 
 
-fun getUniqueIcon(id: Int, name: String): String  {
-    return try {
-        val allIconFields = Icons.Default::class.java.declaredFields
-            .filter { it.type == ImageVector::class.java }
-
-        val index = ((id * 31) + name.hashCode()).absoluteValue % allIconFields.size
-        allIconFields[index].name
-    } catch (e: Exception) {
-        "Category"  // Default field name
-    }
-}
-
 
 
 // while setting color to container
@@ -85,39 +73,6 @@ fun Int?.toComposeColor(default: Color = Color.Gray): Color {
     return this?.let { Color(it) } ?: default
 }
 
-//---------------------------------------------------------------------------------------
-
-
-fun getAllAvailableIconNames(): List<String> {
-    return try {
-        val iconNames = Icons.Default::class.java.declaredFields
-            .filter { field ->
-                field.type == ImageVector::class.java &&
-                        java.lang.reflect.Modifier.isPublic(field.modifiers)
-            }
-            .map { it.name }
-            .distinct() // Ensure no duplicates
-
-        if (iconNames.isEmpty()) {
-            getFallbackIconNames()
-        } else {
-            iconNames
-        }
-    } catch (e: Exception) {
-        getFallbackIconNames()
-    }
-}
-
-fun getFallbackIconNames(): List<String> {
-    return listOf(
-        "School", "Book", "Science", "Calculate", "Computer",
-        "Language", "History", "MusicNote", "Palette", "SportsSoccer",
-        "Home", "Person", "Settings", "Star", "Favorite",
-        "ThumbUp", "ShoppingCart", "Work", "Email", "Phone",
-        "LocationOn", "Search", "Info", "Help", "Assignment",
-        "Dashboard", "Category", "Folder", "Description", "Assessment"
-    )
-}
 
 fun hsvToColor(hue: Float, saturation: Float, value: Float): Color {
     val c = value * saturation
@@ -142,7 +97,6 @@ fun hsvToColor(hue: Float, saturation: Float, value: Float): Color {
 }
 
 
-//------------------------------------------------------------------------------------
 fun updateCategoriesWithUIData(categoryList: List<CategoryItem>): List<CategoryItem> {
     // Define icons explicitly to avoid reflection issues
     val iconList = listOf(
@@ -172,11 +126,19 @@ fun updateCategoriesWithUIData(categoryList: List<CategoryItem>): List<CategoryI
             value = 0.55f - (index % 2) * 0.1f
         )
 
+
+
         val backgroundColor = hsvToColor(
             hue = hueWithVariation,
-            saturation = 0.15f + (index % 3) * 0.05f,
-            value = 0.95f - (index % 2) * 0.03f
+            saturation = 0.08f + (index % 3) * 0.02f,  // Changed from 0.15f to 0.08f (much lighter)
+            value = 0.97f + (index % 2) * 0.02f        // Changed from 0.95f to 0.97f (brighter)
         )
+
+//        val backgroundColor = hsvToColor(
+//            hue = hueWithVariation,
+//            saturation = 0.05f + (index % 3) * 0.02f,  // Very light: 0.05f to 0.07f
+//            value = 0.98f + (index % 2) * 0.01f        // Very bright: 0.98f to 0.99f
+//        )
 
         category.copy(
             iconName = iconName,

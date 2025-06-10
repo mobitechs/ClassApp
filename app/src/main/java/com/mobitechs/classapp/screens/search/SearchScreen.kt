@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,9 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
-import com.mobitechs.classapp.utils.getIconFromFieldName
+import com.mobitechs.classapp.screens.common.CategoryCardWithBgColorNIcon
+import com.mobitechs.classapp.screens.common.Grid
 import com.mobitechs.classapp.utils.openCategoryWiseDetailsScreen
-import com.mobitechs.classapp.utils.toComposeColor
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,6 +75,7 @@ fun SearchScreen(
                 uiState.isLoading && uiState.searchQuery.isNotEmpty() -> {
                     SearchLoadingState()
                 }
+
                 uiState.searchQuery.isEmpty() -> {
                     SearchIdleState(
                         recentSearches = uiState.recentSearches,
@@ -95,12 +94,14 @@ fun SearchScreen(
                         onClearRecentSearches = { viewModel.clearRecentSearches() }
                     )
                 }
+
                 uiState.searchCourses.isEmpty() && !uiState.isLoading -> {
                     SearchEmptyState(
                         searchQuery = uiState.searchQuery,
                         onSuggestionClick = { viewModel.updateSearchQuery(it) }
                     )
                 }
+
                 else -> {
                     searchCoursesContent(
                         searchCourses = uiState.searchCourses,
@@ -316,27 +317,26 @@ fun SearchIdleState(
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        items(topCategories.chunked(2)) { rowCategories ->
-            Row(
+        item {
+            Grid(
+                items = topCategories,
+                columns = 2,
+                horizontalSpacing = 1.dp,
+                verticalSpacing = 1.dp,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                rowCategories.forEach { category ->
-                    CategoryCard(
-                        category = category,
-                        onClick = { onCategoryClick(category) },
-                        modifier = Modifier.weight(1f)
+                    .padding(horizontal = 10.dp)
+            ) { category ->
+                CategoryCardWithBgColorNIcon(
+                    category = category,
+                    onClick = { onCategoryClick(category)  },
+
                     )
-                }
-                // Add empty space if odd number of categories
-                if (rowCategories.size == 1) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
             }
             Spacer(modifier = Modifier.height(12.dp))
         }
+
+
     }
 }
 
@@ -393,48 +393,6 @@ fun PopularSearchChip(
     )
 }
 
-@Composable
-fun CategoryCard(
-    category: CategoryItem,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        onClick = onClick,
-        modifier = modifier.height(80.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = category.backgroundColor.toComposeColor(default = MaterialTheme.colorScheme.primaryContainer)
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = getIconFromFieldName(category.iconName),
-                contentDescription = null,
-                tint = category.iconColor.toComposeColor(default = MaterialTheme.colorScheme.primary),
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
-                Text(
-                    text = category.name,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "${category.courseCount} courses",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun searchCoursesContent(
@@ -553,7 +511,7 @@ fun SearchResultCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = course.instructor?:"No Instructor",
+                        text = course.instructor ?: "No Instructor",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

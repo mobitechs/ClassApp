@@ -20,72 +20,59 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-
+import com.mobitechs.classapp.data.model.response.CategoryItem
+import com.mobitechs.classapp.utils.getIconFromFieldName
+import com.mobitechs.classapp.utils.toComposeColor
 
 
 @Composable
-fun HomeCategoryItem(
-    icon: ImageVector,
-    name: String,
+fun StoreCategoryItem2(
+    category: CategoryItem,
     isSelected: Boolean,
     onCategorySelected: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()// Dynamic height
-            .padding(8.dp)
+            .wrapContentHeight() // Dynamic height
+            .padding(5.dp)
             .clickable { onCategorySelected() },
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected)
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-            else
-                Color.Transparent
+            containerColor = category.backgroundColor.toComposeColor(
+                default = MaterialTheme.colorScheme.primaryContainer
+            )
         ),
         border = BorderStroke(
-            width = 1.dp,
+            width = 1.5.dp,
             color = if (isSelected)
                 MaterialTheme.colorScheme.primary
             else
-                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
         ),
         elevation = CardDefaults.cardElevation(0.dp)
-    )  {
-        Row(
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .padding(8.dp), // Consistent padding
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Icon with background
-            Box(
-                modifier = Modifier
-                    .size(25.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White.copy(alpha = 0.6f)),
-                contentAlignment = Alignment.Center
-            ) {
+            Icon(
+                imageVector = getIconFromFieldName(category.iconName),
+                contentDescription = "${category.name}Icon",
+                tint = category.iconColor.toComposeColor(
+                    default = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier.size(24.dp)
+            )
 
-                Icon(
-                    imageVector = icon,
-                    contentDescription = name,
-                    tint = if (isSelected)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
-                )
-
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = name,
+                text = category.name,
                 style = MaterialTheme.typography.bodySmall,
-                fontSize = 13.sp,
+                fontSize = 11.sp,
                 textAlign = TextAlign.Center,
                 color = if (isSelected)
                     MaterialTheme.colorScheme.primary
@@ -159,6 +146,64 @@ fun StoreCategoryItem(
     }
 }
 
+
+@Composable
+fun CategoryCardWithBgColorNIcon(
+    category: CategoryItem,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth().padding(5.dp), //
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = category.backgroundColor.toComposeColor(
+                default = MaterialTheme.colorScheme.primaryContainer
+            )
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 80.dp) // Minimum height but can expand
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = getIconFromFieldName(category.iconName),
+                contentDescription = null,
+                tint = category.iconColor.toComposeColor(
+                    default = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier
+                    .size(32.dp)
+                    .align(Alignment.Top) // Align icon to top when card expands
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = category.name,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = 18.sp // Better line spacing
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "${category.courseCount} courses",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
 
 // Create a reusable Grid component (like Column/Row)
 @Composable

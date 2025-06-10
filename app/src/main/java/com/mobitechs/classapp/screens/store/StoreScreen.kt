@@ -83,6 +83,7 @@ import com.mobitechs.classapp.data.model.response.SubjectItem
 import com.mobitechs.classapp.screens.common.CourseCardForStore
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.StoreCategoryItem
+import com.mobitechs.classapp.screens.common.StoreCategoryItem2
 import com.mobitechs.classapp.utils.ToastObserver
 import com.mobitechs.classapp.utils.openCourseDetailsScreen
 import kotlinx.coroutines.launch
@@ -743,9 +744,8 @@ fun CategoriesSidebar(
 
         // Regular categories
         items(categories) { category ->
-            StoreCategoryItem(
-                icon = getCategoryIcon(category.name),
-                name = category.name,
+            StoreCategoryItem2(
+                category = category,
                 isSelected = selectedCategoryId == category.id,
                 onCategorySelected = { onCategorySelected(category.id) }
             )
@@ -753,9 +753,7 @@ fun CategoriesSidebar(
     }
 }
 
-/**
- * Helper function to get an icon for a category
- */
+
 @Composable
 fun getCategoryIcon(categoryName: String): ImageVector {
     return when (categoryName.lowercase()) {
