@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,10 +30,7 @@ import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.screens.common.CategoryCardWithBgColorNIcon
 import com.mobitechs.classapp.screens.common.CourseCardEmptyMessageWithoutBox
 import com.mobitechs.classapp.screens.common.Grid
-import com.mobitechs.classapp.screens.common.HomeCategoryItem
-import com.mobitechs.classapp.screens.home.HomeViewModel
 import com.mobitechs.classapp.screens.profile.SearchAppBar
-import com.mobitechs.classapp.screens.store.getCategoryIcon
 import com.mobitechs.classapp.utils.openCategoryWiseDetailsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +70,7 @@ fun SeeAllCategoriesScreen(
         topBar = {
             if (isSearchActive) {
                 SearchAppBar(
-                    searchFor =  "Search by category name...",
+                    searchFor = "Search by category name...",
                     searchQuery = searchQuery,
                     onSearchQueryChange = { searchQuery = it },
                     onCloseSearch = {
@@ -155,10 +151,12 @@ fun SeeAllCategoriesScreen(
 //                        )
                         CategoryCardWithBgColorNIcon(
                             category = category,
-                            onClick = { openCategoryWiseDetailsScreen(
-                                navController,
-                                category.id.toString(), category.name
-                            ) },
+                            onClick = {
+                                openCategoryWiseDetailsScreen(
+                                    navController,
+                                    category.id.toString(), category.name
+                                )
+                            },
                         )
                     }
                 }

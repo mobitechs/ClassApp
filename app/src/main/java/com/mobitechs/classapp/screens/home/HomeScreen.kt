@@ -1,5 +1,4 @@
 package com.mobitechs.classapp.screens.home
-
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -74,12 +73,10 @@ import com.mobitechs.classapp.screens.common.BannerCarousel
 import com.mobitechs.classapp.screens.common.CategoryCardWithBgColorNIcon
 import com.mobitechs.classapp.screens.common.CourseCardPopularFeatured
 import com.mobitechs.classapp.screens.common.Grid
-import com.mobitechs.classapp.screens.common.HomeCategoryItem
 import com.mobitechs.classapp.screens.common.ModernNoticeCard
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
-import com.mobitechs.classapp.screens.store.getCategoryIcon
 import com.mobitechs.classapp.utils.ToastObserver
 import com.mobitechs.classapp.utils.getFirstName
 import com.mobitechs.classapp.utils.openCategoryWiseDetailsScreen
@@ -398,10 +395,12 @@ fun HomeContent(
                 ) { category ->
                     CategoryCardWithBgColorNIcon(
                         category = category,
-                        onClick = { openCategoryWiseDetailsScreen(
-                            navController,
-                            category.id.toString(), category.name
-                        ) },
+                        onClick = {
+                            openCategoryWiseDetailsScreen(
+                                navController,
+                                category.id.toString(), category.name
+                            )
+                        },
                         modifier = Modifier.weight(1f)
                     )
 
