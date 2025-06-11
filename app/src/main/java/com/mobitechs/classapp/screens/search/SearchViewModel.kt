@@ -101,18 +101,15 @@ class SearchViewModel(
 
         // Debounce search with 300ms delay
         searchJob = viewModelScope.launch {
-            delay(300)
+            delay(2000)
             performSearch(query)
         }
     }
 
     private suspend fun performSearch(query: String) {
         _uiState.update { it.copy(isLoading = true, error = null) }
-
         try {
-
-            //_uiState.value.selectedFilters pass it as filter value
-            var reqObj = GetCourseByRequest(sort = Constants.KEY_SORT_POPULAR)
+            var reqObj = GetCourseByRequest(keyword = query)
             val courses = courseRepository.getCoursesFilterWise(reqObj)
 
             if (courses.courses.isNotEmpty()) {

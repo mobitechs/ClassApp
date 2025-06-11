@@ -202,13 +202,6 @@ fun SearchTextField(
                 style = MaterialTheme.typography.bodyLarge
             )
         },
-//        leadingIcon = {
-//            Icon(
-//                imageVector = Icons.Default.Search,
-//                contentDescription = null,
-//                tint = MaterialTheme.colorScheme.onSurfaceVariant
-//            )
-//        },
         trailingIcon = {
             AnimatedVisibility(
                 visible = value.isNotEmpty(),

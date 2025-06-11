@@ -4,5 +4,6 @@ data class GetCourseByRequest (
     val categoryId: Int? = 0,
     val subCategoryId: Int? = 0,
     val subjectId: Int? = 0,
-    val sort: String? = ""
+    val sort: String? = "",
+    val keyword: String? = ""
 )
