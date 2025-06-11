@@ -66,7 +66,7 @@ interface ApiService {
     @GET("courses/{id}")
     suspend fun getCourseDetails(@Path("id") courseId: Int): Response<Course>
 
-    @GET("courses/{id}")
+    @GET("content/{id}")
     suspend fun getCourseContent(@Path("id") courseId: Int): Response<CourseContentResponse>
 
     @GET("free-content")

@@ -15,16 +15,27 @@ import kotlinx.coroutines.launch
 // UI State for authentication screens
 data class AuthUiState(
     // Login fields
-    val phone: String = "8655883062",
+//    val phone: String = "8655883062",
     val email: String = "pratik@gmail.com",
+//
+//    // Registration fields
+//    val name: String = "Pratik Sonawane",
+//    val gender: String = "male",
+    val password: String = "Pratik@10",
+//    val password_confirmation: String = "",
+//    val city: String = "Mumbai",
+//    val pincode: String = "421201",
+
+    val phone: String = "",
+//    val email: String = "",
 
     // Registration fields
-    val name: String = "Pratik Sonawane",
-    val gender: String = "male",
-    val password: String = "Pratik@10",
+    val name: String = "",
+    val gender: String = "",
+//    val password: String = "",
     val password_confirmation: String = "",
-    val city: String = "Mumbai",
-    val pincode: String = "421201",
+    val city: String = "",
+    val pincode: String = "",
 
     val nameError: String = "",
     val emailError: String = "",

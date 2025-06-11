@@ -17,7 +17,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-
+import com.mobitechs.classapp.data.model.response.Content
 
 
 fun showToast(context: Context, msg: String) {
@@ -73,6 +73,42 @@ fun openChannelLinks(context: Context, channelUrl: String) {
         context.startActivity(intent)
     } catch (e: Exception) {
         // Handle error silently or show toast
+    }
+}
+
+
+
+fun handleContentClick(
+    course: Course,
+    content: Content,
+    isPurchased: Boolean,
+    navController: NavController,
+    context: Context
+) {
+    // Check if content is accessible
+    if (content.is_free != "Yes" && !isPurchased) {
+        showToast(context, "This content is not available in the free version")
+        return
+    }
+
+    when (content.content_type.uppercase()) {
+        "VIDEO" -> {
+            openVideoPlayer(navController, course, content.content_url)
+        }
+
+        "AUDIO" -> {
+            openVideoPlayer(navController, course, content.content_url)
+        }
+
+        "PDF" -> {
+            openPDFReader(navController, course, content.content_url)
+        }
+
+        else -> {
+            // Open in browser or default viewer
+            showToast(context, "Opening ${content.content_type}...")
+            // You can implement browser opening logic here
+        }
     }
 }
 

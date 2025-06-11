@@ -16,6 +16,8 @@ data class Content(
     val is_free: String?,
     val is_offline_available: String?,
 
+    val course: Course?,
+
     val is_active: String,
     val offer_code: String?,
     val added_by: String?,

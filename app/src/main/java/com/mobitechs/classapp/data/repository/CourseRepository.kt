@@ -46,8 +46,7 @@ class CourseRepository(
         }
 
     suspend fun getCourseContent(courseId: Int): CourseContentResponse = withContext(Dispatchers.IO) {
-//        val response = apiService.getCourseContent(courseId)
-        val response = apiService.getFreeContent() // temporary because api is not ready (getCourseContent)
+        val response = apiService.getCourseContent(courseId)
         if (response.isSuccessful) {
             return@withContext response.body() ?: throw Exception("Empty response body")
         } else {

@@ -68,9 +68,7 @@ class CourseDetailViewModel(
 
         viewModelScope.launch {
             try {
-                // Replace with actual API call when available
                 val content = courseRepository.getCourseContent(courseId)
-
                 _uiState.update {
                     it.copy(
                         courseContent = content.content,

@@ -95,7 +95,7 @@ class ViewModelFactory(
 
 
             modelClass.isAssignableFrom(FreeContentViewModel::class.java) -> {
-                FreeContentViewModel(freeContentRepository) as T
+                FreeContentViewModel(freeContentRepository,courseRepository) as T
             }
 
             modelClass.isAssignableFrom(PaymentHistoryViewModel::class.java) -> {
