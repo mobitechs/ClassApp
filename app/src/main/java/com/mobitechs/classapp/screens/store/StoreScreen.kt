@@ -753,21 +753,6 @@ fun CategoriesSidebar(
     }
 }
 
-
-@Composable
-fun getCategoryIcon(categoryName: String): ImageVector {
-    return when (categoryName.lowercase()) {
-        "programming" -> Icons.Default.Code
-        "business" -> Icons.Default.Business
-        "design" -> Icons.Default.Brush
-        "marketing" -> Icons.Default.TrendingUp
-        "language" -> Icons.Default.Language
-        "mathematics" -> Icons.Default.Calculate
-        "science" -> Icons.Default.Science
-        else -> Icons.Default.School
-    }
-}
-
 /**
  * Filter types enumeration
  */

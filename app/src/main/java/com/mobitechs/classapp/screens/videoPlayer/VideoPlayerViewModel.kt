@@ -1,19 +1,31 @@
-package com.mobitechs.classapp.screens.VideoPlayer
-// VideoPlayerViewModel.kt
+package com.mobitechs.classapp.screens.videoPlayer
+
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
-import androidx.media3.common.PlaybackException
+import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSpec
+import androidx.media3.datasource.TransferListener
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import com.mobitechs.classapp.data.local.AppDatabase
+import com.mobitechs.classapp.security.SecureStorageManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import android.util.Log
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import java.io.File
+import java.io.InputStream
 
 class VideoPlayerViewModel : ViewModel() {
 
@@ -52,7 +64,6 @@ class VideoPlayerViewModel : ViewModel() {
                             _isLoading.value = playbackState == Player.STATE_BUFFERING
                             if (playbackState == Player.STATE_READY) {
                                 _duration.value = duration
-                                // Restore saved position if available
                                 if (savedPosition > 0) {
                                     seekTo(savedPosition)
                                     savedPosition = 0L
@@ -88,8 +99,41 @@ class VideoPlayerViewModel : ViewModel() {
                     .build()
                 player.setMediaItem(mediaItem)
                 player.prepare()
-                // Don't auto-play, let user control
                 player.playWhenReady = false
+            }
+        }
+    }
+
+    // Load secure encrypted content
+    @OptIn(UnstableApi::class)
+    fun loadSecureContent(context: Context, contentId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val database = AppDatabase.getDatabase(context)
+                val download = database.contentDao().getDownloadByContentId(contentId)
+
+                download?.downloadedFilePath?.let { filePath ->
+                    val encryptedFile = File(filePath)
+                    if (encryptedFile.exists()) {
+                        val secureStorage = SecureStorageManager(context)
+                        val inputStream = secureStorage.getDecryptedInputStream(encryptedFile)
+
+                        if (inputStream != null) {
+                            // Create custom data source for encrypted content
+                            val dataSource = EncryptedDataSource(inputStream)
+                            val mediaSource = ProgressiveMediaSource.Factory { dataSource }
+                                .createMediaSource(MediaItem.fromUri(Uri.EMPTY))
+
+                            exoPlayer?.apply {
+                                setMediaSource(mediaSource)
+                                prepare()
+                                playWhenReady = false
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("VideoPlayer", "Error loading secure content: ${e.message}")
             }
         }
     }
@@ -108,28 +152,6 @@ class VideoPlayerViewModel : ViewModel() {
         exoPlayer?.seekTo(position)
     }
 
-    // Save state for orientation changes
-    fun saveState() {
-        exoPlayer?.let { player ->
-            savedPosition = player.currentPosition
-            wasPlaying = player.isPlaying
-        }
-    }
-
-    // Restore state after orientation change
-    fun restoreState() {
-        exoPlayer?.let { player ->
-            if (savedPosition > 0) {
-                player.seekTo(savedPosition)
-                savedPosition = 0L
-            }
-            if (wasPlaying) {
-                player.play()
-            }
-        }
-    }
-
-    // Pause player (for lifecycle events)
     fun pausePlayer() {
         exoPlayer?.let { player ->
             wasPlaying = player.isPlaying
@@ -139,14 +161,12 @@ class VideoPlayerViewModel : ViewModel() {
         }
     }
 
-    // Resume player (for lifecycle events)
     fun resumePlayer() {
         if (wasPlaying) {
             exoPlayer?.play()
         }
     }
 
-    // Release player completely
     fun releasePlayer() {
         exoPlayer?.release()
         exoPlayer = null
@@ -162,7 +182,7 @@ class VideoPlayerViewModel : ViewModel() {
                 exoPlayer?.let { player ->
                     _currentPosition.value = player.currentPosition
                 }
-                delay(1000) // Update every second
+                delay(1000)
             }
         }
     }
@@ -170,5 +190,31 @@ class VideoPlayerViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         releasePlayer()
+    }
+}
+
+// Custom data source for encrypted content
+@UnstableApi
+class EncryptedDataSource(private val inputStream: InputStream) : DataSource {
+    private var opened = false
+
+    override fun addTransferListener(transferListener: TransferListener) {}
+
+    override fun open(dataSpec: DataSpec): Long {
+        opened = true
+        return inputStream.available().toLong()
+    }
+
+    override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+        return inputStream.read(buffer, offset, length)
+    }
+
+    override fun getUri(): Uri? = null
+
+    override fun close() {
+        if (opened) {
+            inputStream.close()
+            opened = false
+        }
     }
 }

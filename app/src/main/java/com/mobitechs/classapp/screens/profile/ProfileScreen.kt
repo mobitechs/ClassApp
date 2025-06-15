@@ -144,7 +144,7 @@ fun ProfileScreen(
                                     ProfileMenuItemData(
                                         title = "My Downloaded Courses",
                                         icon = Icons.Default.Download,
-                                        route = Screen.MyDownloadScreen.route
+                                        route = Screen.MyDownloadsScreen.route
                                     ),
                                     ProfileMenuItemData(
                                         title = "My Wishlist",

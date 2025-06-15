@@ -75,9 +75,10 @@ fun StoreCategoryItem2(
                 fontSize = 11.sp,
                 textAlign = TextAlign.Center,
                 color = if (isSelected)
-                    MaterialTheme.colorScheme.primary
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.9f) // Slightly darker
                 else
                     MaterialTheme.colorScheme.onSurface,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -105,7 +106,7 @@ fun StoreCategoryItem(
                 Color.Transparent
         ),
         border = BorderStroke(
-            width = 1.dp,
+            width = 1.5.dp,
             color = if (isSelected)
                 MaterialTheme.colorScheme.primary
             else
@@ -137,9 +138,10 @@ fun StoreCategoryItem(
                 fontSize = 11.sp,
                 textAlign = TextAlign.Center,
                 color = if (isSelected)
-                    MaterialTheme.colorScheme.primary
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.9f) // Slightly darker
                 else
                     MaterialTheme.colorScheme.onSurface,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                 modifier = Modifier.fillMaxWidth()
             )
         }

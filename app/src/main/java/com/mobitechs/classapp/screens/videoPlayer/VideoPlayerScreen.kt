@@ -1,4 +1,4 @@
-package com.mobitechs.classapp.screens.VideoPlayer
+package com.mobitechs.classapp.screens.videoPlayer
 
 import android.app.Activity
 import android.content.Context
@@ -78,6 +78,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.utils.showToast
 import kotlinx.coroutines.delay
 import java.net.URLDecoder

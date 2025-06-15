@@ -130,7 +130,7 @@ fun SideMenu(
         ProfileMenuItem(
             title = "Offline Downloads",
             icon = Icons.Default.CloudDownload,
-            onClick = { onMenuItemClick(Screen.MyDownloadScreen.route) }
+            onClick = { onMenuItemClick(Screen.MyDownloadsScreen.route) }
         )
 
         ProfileMenuItem(

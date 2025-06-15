@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.mobitechs.classapp.data.model.response.Content
@@ -122,7 +123,8 @@ fun FreeContentScreen(
                                 onToggleExpanded = {
                                     viewModel.toggleCourseExpanded(course.id)
                                 },
-                                navController = navController
+                                navController = navController,
+                                viewModel = viewModel
                             )
                         }
                     }
@@ -205,7 +207,8 @@ private fun CourseWithContentCard(
     contentList: List<Content>,
     isExpanded: Boolean,
     onToggleExpanded: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    viewModel: FreeContentViewModel
 ) {
     Card(
         modifier = Modifier
@@ -242,7 +245,8 @@ private fun CourseWithContentCard(
                             type = type,
                             contentList = contents,
                             course = course,
-                            navController = navController
+                            navController = navController,
+                            viewModel = viewModel
                         )
                     }
                 }
@@ -493,7 +497,8 @@ private fun ContentTypeSection(
     type: String,
     contentList: List<Content>,
     course: Course,
-    navController: NavController
+    navController: NavController,
+    viewModel: FreeContentViewModel
 ) {
     Column(
         modifier = Modifier.padding(16.dp)
@@ -537,7 +542,8 @@ private fun ContentTypeSection(
                 content = content,
                 course = course,
                 index = index + 1,
-                navController = navController
+                navController = navController,
+                viewModel = viewModel
             )
 
             if (index < contentList.size - 1) {
@@ -549,15 +555,22 @@ private fun ContentTypeSection(
         }
     }
 }
-
 @Composable
 private fun FreeContentItem(
     content: Content,
     course: Course,
     index: Int,
-    navController: NavController
+    navController: NavController,
+    viewModel: FreeContentViewModel
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var isDownloaded by remember { mutableStateOf(false) }
+
+    // Check if content is downloaded
+    LaunchedEffect(content.id) {
+        isDownloaded = viewModel.isContentDownloaded(content.id)
+    }
 
     Row(
         modifier = Modifier
@@ -620,10 +633,11 @@ private fun FreeContentItem(
                     )
                 }
 
-                if (content.is_offline_available == "Yes") {
+                // Show downloaded indicator
+                if (isDownloaded) {
                     Icon(
                         imageVector = Icons.Outlined.DownloadDone,
-                        contentDescription = "Available Offline",
+                        contentDescription = "Downloaded",
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -631,20 +645,136 @@ private fun FreeContentItem(
             }
         }
 
-        // Play/View Icon
-        Icon(
-            imageVector = when (content.content_type?.uppercase()) {
-                "VIDEO" -> Icons.Default.PlayCircleOutline
-                "AUDIO" -> Icons.Default.VolumeUp
-                "PDF" -> Icons.Default.PictureAsPdf
-                else -> Icons.Default.Description
-            },
-            contentDescription = "Play/View",
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp)
-        )
+        // Download Button
+        if (!isDownloaded) {
+            IconButton(
+                onClick = {
+                    viewModel.downloadContent(content, course)
+                    showToast(context, "Download started")
+                    // Refresh download status after a delay
+                    scope.launch {
+                        kotlinx.coroutines.delay(3000)
+                        isDownloaded = viewModel.isContentDownloaded(content.id)
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Download,
+                    contentDescription = "Download",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        } else {
+            // Play/View Icon for downloaded content
+            Icon(
+                imageVector = when (content.content_type?.uppercase()) {
+                    "VIDEO" -> Icons.Default.PlayCircleOutline
+                    "AUDIO" -> Icons.Default.VolumeUp
+                    "PDF" -> Icons.Default.PictureAsPdf
+                    else -> Icons.Default.Description
+                },
+                contentDescription = "Play/View",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
+            )
+        }
     }
 }
+//@Composable
+//private fun FreeContentItem(
+//    content: Content,
+//    course: Course,
+//    index: Int,
+//    navController: NavController
+//) {
+//    val context = LocalContext.current
+//
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable {
+//                handleContentClick(
+//                    content = content,
+//                    course = course,
+//                    navController = navController,
+//                    context = context
+//                )
+//            }
+//            .padding(vertical = 8.dp),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        // Index circle
+//        Surface(
+//            color = MaterialTheme.colorScheme.tertiaryContainer,
+//            shape = CircleShape,
+//            modifier = Modifier.size(28.dp)
+//        ) {
+//            Box(
+//                contentAlignment = Alignment.Center,
+//                modifier = Modifier.fillMaxSize()
+//            ) {
+//                Text(
+//                    text = index.toString(),
+//                    style = MaterialTheme.typography.labelSmall,
+//                    fontWeight = FontWeight.Bold
+//                )
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.width(12.dp))
+//
+//        // Content info
+//        Column(
+//            modifier = Modifier.weight(1f)
+//        ) {
+//            Text(
+//                text = "Lesson $index",
+//                style = MaterialTheme.typography.bodyMedium,
+//                fontWeight = FontWeight.Medium
+//            )
+//
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.spacedBy(8.dp)
+//            ) {
+//                Surface(
+//                    color = MaterialTheme.colorScheme.tertiaryContainer,
+//                    shape = RoundedCornerShape(4.dp)
+//                ) {
+//                    Text(
+//                        text = "FREE",
+//                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+//                        style = MaterialTheme.typography.labelSmall,
+//                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
+//
+//                if (content.is_offline_available == "Yes") {
+//                    Icon(
+//                        imageVector = Icons.Outlined.DownloadDone,
+//                        contentDescription = "Available Offline",
+//                        modifier = Modifier.size(16.dp),
+//                        tint = MaterialTheme.colorScheme.primary
+//                    )
+//                }
+//            }
+//        }
+//
+//        // Play/View Icon
+//        Icon(
+//            imageVector = when (content.content_type?.uppercase()) {
+//                "VIDEO" -> Icons.Default.PlayCircleOutline
+//                "AUDIO" -> Icons.Default.VolumeUp
+//                "PDF" -> Icons.Default.PictureAsPdf
+//                else -> Icons.Default.Description
+//            },
+//            contentDescription = "Play/View",
+//            tint = MaterialTheme.colorScheme.primary,
+//            modifier = Modifier.size(24.dp)
+//        )
+//    }
+//}
 
 // Updated handleContentClick function
 private fun handleContentClick(

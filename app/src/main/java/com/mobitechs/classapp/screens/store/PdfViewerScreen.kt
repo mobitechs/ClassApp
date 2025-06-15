@@ -1,7 +1,6 @@
 package com.mobitechs.classapp.screens.store
 
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.webkit.WebResourceRequest
@@ -14,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -22,7 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.model.response.Course
-import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerViewModel
+import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import java.net.URLDecoder
 
 @OptIn(ExperimentalMaterial3Api::class)

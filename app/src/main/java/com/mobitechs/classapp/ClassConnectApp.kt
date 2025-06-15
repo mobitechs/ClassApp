@@ -15,11 +15,12 @@ import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.FreeContentRepository
 import com.mobitechs.classapp.data.repository.NotificationRepository
-import com.mobitechs.classapp.data.repository.OfflineDownloadRepository
+import com.mobitechs.classapp.data.repository.MyDownloadsRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.data.repository.UserRepository
+import com.mobitechs.classapp.utils.SimpleDownloadManager
 import com.razorpay.Checkout
 
 
@@ -39,10 +40,19 @@ class ClassConnectApp : Application() {
         RetrofitClient.getRetrofitInstance(authInterceptor).create(ApiService::class.java)
     }
 
+    // Create download repository instance
+
+
     // Add database instance
     val database by lazy { AppDatabase.getDatabase(this) }
 
     lateinit var appContext: Context
+
+    val myDownloadsRepository: MyDownloadsRepository by lazy {
+        val database = AppDatabase.getDatabase(appContext)
+        val downloadManager = SimpleDownloadManager(appContext)
+        MyDownloadsRepository(database, downloadManager)
+    }
 
     // Repositories
     val authRepository by lazy { AuthRepository(apiService, sharedPrefsManager) }
@@ -52,7 +62,7 @@ class ClassConnectApp : Application() {
     val notificationRepository by lazy { NotificationRepository(apiService) }
     val paymentRepository by lazy { PaymentRepository(apiService) }
     val freeContentRepository by lazy { FreeContentRepository(apiService) }
-    val offlineDownloadRepository by lazy { OfflineDownloadRepository(apiService) }
+//    val myDownloadsRepository by lazy { MyDownloadsRepository(apiService) }
     val searchRepository by lazy { SearchRepository(apiService,sharedPrefsManager) }
     val batchRepository by lazy { BatchRepository(apiService) }
     val policyTermConditionRepository by lazy { PolicyTermConditionRepository(apiService) }

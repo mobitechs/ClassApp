@@ -18,6 +18,9 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.mobitechs.classapp.data.model.response.Content
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 fun showToast(context: Context, msg: String) {
@@ -253,5 +256,113 @@ fun getIconFromFieldName(fieldName: String?): ImageVector {
         field.get(Icons.Default) as? ImageVector ?: Icons.Default.Category
     } catch (e: Exception) {
         Icons.Default.Category
+    }
+}
+
+
+
+fun formatFileSize(sizeInBytes: Long): String {
+    if (sizeInBytes <= 0) return "0 B"
+
+    val units = arrayOf("B", "KB", "MB", "GB", "TB")
+    val digitGroups = (Math.log10(sizeInBytes.toDouble()) / Math.log10(1024.0)).toInt()
+
+    return String.format(
+        "%.1f %s",
+        sizeInBytes / Math.pow(1024.0, digitGroups.toDouble()),
+        units[digitGroups]
+    )
+}
+
+/**
+ * Format timestamp to date string
+ */
+fun formatDate(timestamp: Long): String {
+    val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+    return sdf.format(Date(timestamp))
+}
+
+/**
+ * Format timestamp to date and time string
+ */
+fun formatDateTime(timestamp: Long): String {
+    val sdf = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
+    return sdf.format(Date(timestamp))
+}
+
+
+/**
+ * Get file extension from content type
+ */
+fun getFileExtension(contentType: String?): String {
+    return when (contentType?.uppercase()) {
+        "VIDEO" -> "mp4"
+        "AUDIO" -> "mp3"
+        "PDF" -> "pdf"
+        "DOCUMENT" -> "doc"
+        "IMAGE" -> "jpg"
+        else -> "file"
+    }
+}
+
+/**
+ * Get MIME type from content type
+ */
+fun getMimeType(contentType: String?): String {
+    return when (contentType?.uppercase()) {
+        "VIDEO" -> "video/mp4"
+        "AUDIO" -> "audio/mp3"
+        "PDF" -> "application/pdf"
+        "DOCUMENT" -> "application/msword"
+        "IMAGE" -> "image/jpeg"
+        else -> "*/*"
+    }
+}
+
+/**
+ * Format duration in seconds to readable format
+ */
+fun formatDuration(seconds: Long): String {
+    val hours = seconds / 3600
+    val minutes = (seconds % 3600) / 60
+    val secs = seconds % 60
+
+    return when {
+        hours > 0 -> String.format("%d:%02d:%02d", hours, minutes, secs)
+        else -> String.format("%d:%02d", minutes, secs)
+    }
+}
+
+/**
+ * Check if file size is within limit (in MB)
+ */
+fun isFileSizeWithinLimit(sizeInBytes: Long, limitInMB: Int): Boolean {
+    val sizeInMB = sizeInBytes / (1024.0 * 1024.0)
+    return sizeInMB <= limitInMB
+}
+
+/**
+ * Get relative time string (e.g., "2 hours ago")
+ */
+fun getRelativeTimeString(timestamp: Long): String {
+    val now = System.currentTimeMillis()
+    val diff = now - timestamp
+
+    val seconds = diff / 1000
+    val minutes = seconds / 60
+    val hours = minutes / 60
+    val days = hours / 24
+    val weeks = days / 7
+    val months = days / 30
+    val years = days / 365
+
+    return when {
+        seconds < 60 -> "Just now"
+        minutes < 60 -> "$minutes ${if (minutes == 1L) "minute" else "minutes"} ago"
+        hours < 24 -> "$hours ${if (hours == 1L) "hour" else "hours"} ago"
+        days < 7 -> "$days ${if (days == 1L) "day" else "days"} ago"
+        weeks < 4 -> "$weeks ${if (weeks == 1L) "week" else "weeks"} ago"
+        months < 12 -> "$months ${if (months == 1L) "month" else "months"} ago"
+        else -> "$years ${if (years == 1L) "year" else "years"} ago"
     }
 }

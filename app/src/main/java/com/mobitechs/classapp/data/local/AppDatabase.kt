@@ -15,7 +15,8 @@ import com.mobitechs.classapp.data.model.response.*
         SubjectItem::class,
         NotificationItem::class,
         Notice::class,
-        OfferBanner::class
+        OfferBanner::class,
+        DownloadContent::class,
     ],
     version = 1,
     exportSchema = false
@@ -28,6 +29,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
     abstract fun noticeDao(): NoticeDao
     abstract fun offerBannerDao(): OfferBannerDao
+    abstract fun contentDao(): DownloadContentDao
 
     companion object {
         @Volatile

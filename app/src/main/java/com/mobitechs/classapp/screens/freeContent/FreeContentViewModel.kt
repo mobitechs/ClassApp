@@ -1,11 +1,14 @@
 package com.mobitechs.classapp.screens.freeContent
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.response.Content
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.FreeContentRepository
+import com.mobitechs.classapp.data.repository.MyDownloadsRepository
+import com.mobitechs.classapp.utils.SimpleDownloadManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +27,8 @@ data class FreeContentUiState(
 
 class FreeContentViewModel(
     private val repository: FreeContentRepository,
-    private val courseRepository: CourseRepository
+    private val courseRepository: CourseRepository,
+    private val downloadRepository: MyDownloadsRepository // Add this
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FreeContentUiState())
@@ -123,5 +127,17 @@ class FreeContentViewModel(
         )
     }
 
+
+    // Download content using repository
+    fun downloadContent(content: Content, course: Course) {
+        viewModelScope.launch {
+            downloadRepository.downloadContent(content, course)
+        }
+    }
+
+    // Check if content is downloaded using repository
+    suspend fun isContentDownloaded(contentId: Int): Boolean {
+        return downloadRepository.isContentDownloaded(contentId)
+    }
 
 }

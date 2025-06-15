@@ -15,8 +15,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerScreen
-import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerViewModel
+import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerScreen
+import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.auth.LoginScreen
 import com.mobitechs.classapp.screens.auth.RegisterScreen
@@ -31,8 +31,6 @@ import com.mobitechs.classapp.screens.home.HomeScreen
 import com.mobitechs.classapp.screens.home.HomeViewModel
 import com.mobitechs.classapp.screens.notification.NotificationScreen
 import com.mobitechs.classapp.screens.notification.NotificationViewModel
-import com.mobitechs.classapp.screens.offlineDownload.MyDownloadScreen
-import com.mobitechs.classapp.screens.offlineDownload.OfflineDownloadViewModel
 import com.mobitechs.classapp.screens.payment.PaymentHistoryScreen
 import com.mobitechs.classapp.screens.payment.PaymentHistoryViewModel
 import com.mobitechs.classapp.screens.policyTermCondition.FeedbackScreen
@@ -42,6 +40,8 @@ import com.mobitechs.classapp.screens.policyTermCondition.TermConditionScreen
 import com.mobitechs.classapp.screens.profile.FavouriteViewModel
 import com.mobitechs.classapp.screens.profile.MyFavouriteScreen
 import com.mobitechs.classapp.screens.categoryDetails.SeeAllCategoriesScreen
+import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsScreen
+import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsViewModel
 import com.mobitechs.classapp.screens.profile.MyWishListViewModel
 import com.mobitechs.classapp.screens.profile.MyWishlistScreen
 import com.mobitechs.classapp.screens.profile.ProfileScreen
@@ -71,6 +71,7 @@ class MainActivity : ComponentActivity() {
 
         // Create ViewModel factory
         val viewModelFactory = ViewModelFactory(
+            applicationContext,
             app.authRepository,
             app.userRepository,
             app.courseRepository,
@@ -79,7 +80,7 @@ class MainActivity : ComponentActivity() {
             app.notificationRepository,
             app.paymentRepository,
             app.freeContentRepository,
-            app.offlineDownloadRepository,
+            app.myDownloadsRepository,
             app.searchRepository,
             app.policyTermConditionRepository
         )
@@ -253,6 +254,8 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 VideoPlayerScreen(courseJson, videoUrl, navController, viewModel)
             }
 
+
+
             composable(
                 "PDFReader?courseJson={courseJson}/url={url}",
                 arguments = listOf(
@@ -289,9 +292,9 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-            composable(Screen.MyDownloadScreen.route) {
-                val viewModel: OfflineDownloadViewModel = viewModel(factory = viewModelFactory)
-                MyDownloadScreen(
+            composable(Screen.MyDownloadsScreen.route) {
+                val viewModel: MyDownloadsViewModel = viewModel(factory = viewModelFactory)
+                MyDownloadsScreen(
                     viewModel = viewModel,
                     navController = navController
                 )
@@ -444,7 +447,7 @@ sealed class Screen(val route: String) {
     object FreeContentScreen : Screen("freeContentScreen")
 
     object ProfileScreen : Screen("profileScreen")
-    object MyDownloadScreen : Screen("myDownloadScreen")
+    object MyDownloadsScreen : Screen("myDownloadScreen")
     object MyFavouriteScreen : Screen("MyFavouriteScreen")
     object MyWishlistScreen : Screen("myWishlistScreen")
 

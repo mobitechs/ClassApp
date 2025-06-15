@@ -1,6 +1,7 @@
 package com.mobitechs.classapp
 
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.mobitechs.classapp.data.repository.AuthRepository
@@ -9,19 +10,19 @@ import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.FreeContentRepository
 import com.mobitechs.classapp.data.repository.NotificationRepository
-import com.mobitechs.classapp.data.repository.OfflineDownloadRepository
+import com.mobitechs.classapp.data.repository.MyDownloadsRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.data.repository.UserRepository
-import com.mobitechs.classapp.screens.VideoPlayer.VideoPlayerViewModel
+import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.batches.BatchViewModel
 import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
 import com.mobitechs.classapp.screens.freeContent.FreeContentViewModel
 import com.mobitechs.classapp.screens.home.HomeViewModel
 import com.mobitechs.classapp.screens.notification.NotificationViewModel
-import com.mobitechs.classapp.screens.offlineDownload.OfflineDownloadViewModel
+import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsViewModel
 import com.mobitechs.classapp.screens.payment.PaymentHistoryViewModel
 import com.mobitechs.classapp.screens.policyTermCondition.PolicyTermConditionViewModel
 import com.mobitechs.classapp.screens.profile.FavouriteViewModel
@@ -36,6 +37,8 @@ import com.mobitechs.classapp.screens.store.StoreViewModel
  * Factory class for creating ViewModels without dependency injection
  */
 class ViewModelFactory(
+
+    private val context: Context,
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
     private val courseRepository: CourseRepository,
@@ -44,10 +47,13 @@ class ViewModelFactory(
     private val notificationRepository: NotificationRepository,
     private val paymentRepository: PaymentRepository,
     private val freeContentRepository: FreeContentRepository,
-    private val offlineDownloadRepository: OfflineDownloadRepository,
+    private val myDownloadsRepository: MyDownloadsRepository,
     private val searchRepository: SearchRepository,
     private val policyTermConditionRepository: PolicyTermConditionRepository
 ) : ViewModelProvider.Factory {
+
+
+
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -95,15 +101,15 @@ class ViewModelFactory(
 
 
             modelClass.isAssignableFrom(FreeContentViewModel::class.java) -> {
-                FreeContentViewModel(freeContentRepository,courseRepository) as T
+                FreeContentViewModel(freeContentRepository,courseRepository,myDownloadsRepository) as T
             }
 
             modelClass.isAssignableFrom(PaymentHistoryViewModel::class.java) -> {
                 PaymentHistoryViewModel(paymentRepository) as T
             }
 
-            modelClass.isAssignableFrom(OfflineDownloadViewModel::class.java) -> {
-                OfflineDownloadViewModel(offlineDownloadRepository) as T
+            modelClass.isAssignableFrom(MyDownloadsViewModel::class.java) -> {
+                MyDownloadsViewModel(myDownloadsRepository) as T
             }
 
             modelClass.isAssignableFrom(NotificationViewModel::class.java) -> {
