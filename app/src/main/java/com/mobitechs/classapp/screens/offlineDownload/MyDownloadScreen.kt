@@ -514,7 +514,7 @@ private fun handleDownloadClick(
         course_expiry_date = null,
         offer_code = null,
         is_favourited = false,
-        isPurchased = false,
+        is_purchased = false,
         is_in_wishlist = false,
         is_liked = false,
         is_active = "Active",

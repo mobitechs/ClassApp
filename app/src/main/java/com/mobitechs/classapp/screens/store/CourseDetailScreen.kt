@@ -208,13 +208,13 @@ fun CourseDetailScreen(
                             0 -> CourseDetailsTab(navController = navController,course = uiState.course)
                             1 -> CourseContentTab(
                                 content = uiState.courseContent,
-                                isPurchased = uiState.course?.isPurchased ?: false,
+                                is_purchased = uiState.course?.is_purchased ?: false,
                                 isLoading = uiState.isContentLoading,
                                 onContentClick = { content ->
                                     handleContentClick(
                                         course = uiState.course!!,
                                         content = content,
-                                        isPurchased = uiState.course?.isPurchased ?: false,
+                                        is_purchased = uiState.course?.is_purchased ?: false,
                                         navController = navController,
                                         context = context
                                     )
@@ -257,7 +257,7 @@ fun CourseDetailScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                     }
                     Text(
-                        text = if (uiState.course?.isPurchased == true) "Go to Course" else "Buy Now",
+                        text = if (uiState.course?.is_purchased == true) "Go to Course" else "Buy Now",
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 }
@@ -546,7 +546,7 @@ fun CourseDetailsTab(navController:NavController, course: Course?) {
 @Composable
 fun CourseContentTab(
     content: List<Content>,
-    isPurchased: Boolean,
+    is_purchased: Boolean,
     isLoading: Boolean,
     onContentClick: (Content) -> Unit
 ) {
@@ -592,7 +592,7 @@ fun CourseContentTab(
                     ContentTypeSection(
                         type = type,
                         contentList = contentList,
-                        isPurchased = isPurchased,
+                        is_purchased = is_purchased,
                         onContentClick = onContentClick
                     )
                 }
@@ -605,7 +605,7 @@ fun CourseContentTab(
 fun ContentTypeSection(
     type: String,
     contentList: List<Content>,
-    isPurchased: Boolean,
+    is_purchased: Boolean,
     onContentClick: (Content) -> Unit
 ) {
     Card(
@@ -649,7 +649,7 @@ fun ContentTypeSection(
             contentList.forEachIndexed { index, content ->
                 ContentItem(
                     content = content,
-                    isPurchased = isPurchased,
+                    is_purchased = is_purchased,
                     index = index + 1,
                     onContentClick = { onContentClick(content) }
                 )
@@ -668,11 +668,11 @@ fun ContentTypeSection(
 @Composable
 fun ContentItem(
     content: Content,
-    isPurchased: Boolean,
+    is_purchased: Boolean,
     index: Int,
     onContentClick: () -> Unit
 ) {
-    val canAccess = content.is_free == "Yes" || isPurchased
+    val canAccess = content.is_free == "Yes" || is_purchased
 
     Row(
         modifier = Modifier
@@ -794,11 +794,11 @@ fun getContentTypeTitle(type: String): String {
 fun handleContentClick(
     course: Course,
     content: Content,
-    isPurchased: Boolean,
+    is_purchased: Boolean,
     navController: NavController,
     context: Context
 ) {
-    if (content.is_free != "Yes" && !isPurchased) {
+    if (content.is_free != "Yes" && !is_purchased) {
         return
     }
 

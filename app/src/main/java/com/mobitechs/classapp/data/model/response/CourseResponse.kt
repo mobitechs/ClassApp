@@ -34,7 +34,7 @@ data class Course(
     val subject_name: String?,
 
     val is_favourited: Boolean,
-    val isPurchased: Boolean,
+    val is_purchased: Boolean,
     val is_in_wishlist: Boolean,
     val is_liked: Boolean,
 

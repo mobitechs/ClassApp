@@ -84,12 +84,12 @@ fun openChannelLinks(context: Context, channelUrl: String) {
 fun handleContentClick(
     course: Course,
     content: Content,
-    isPurchased: Boolean,
+    is_purchased: Boolean,
     navController: NavController,
     context: Context
 ) {
     // Check if content is accessible
-    if (content.is_free != "Yes" && !isPurchased) {
+    if (content.is_free != "Yes" && !is_purchased) {
         showToast(context, "This content is not available in the free version")
         return
     }

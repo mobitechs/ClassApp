@@ -20,6 +20,7 @@ import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.data.repository.UserRepository
+import com.mobitechs.classapp.utils.SecureDownloadManager
 import com.mobitechs.classapp.utils.SimpleDownloadManager
 import com.razorpay.Checkout
 
@@ -50,7 +51,8 @@ class ClassConnectApp : Application() {
 
     val myDownloadsRepository: MyDownloadsRepository by lazy {
         val database = AppDatabase.getDatabase(appContext)
-        val downloadManager = SimpleDownloadManager(appContext)
+//        val downloadManager = SimpleDownloadManager(appContext)
+        val downloadManager = SecureDownloadManager(appContext)
         MyDownloadsRepository(database, downloadManager)
     }
 

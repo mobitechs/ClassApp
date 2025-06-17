@@ -15,14 +15,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerScreen
-import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.auth.LoginScreen
 import com.mobitechs.classapp.screens.auth.RegisterScreen
 import com.mobitechs.classapp.screens.batches.BatchViewModel
 import com.mobitechs.classapp.screens.batches.BatchesScreen
 import com.mobitechs.classapp.screens.categoryDetails.CategoryWiseDetailsScreen
+import com.mobitechs.classapp.screens.categoryDetails.SeeAllCategoriesScreen
 import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
 import com.mobitechs.classapp.screens.freeContent.FreeContentScreen
 import com.mobitechs.classapp.screens.freeContent.FreeContentViewModel
@@ -31,6 +30,8 @@ import com.mobitechs.classapp.screens.home.HomeScreen
 import com.mobitechs.classapp.screens.home.HomeViewModel
 import com.mobitechs.classapp.screens.notification.NotificationScreen
 import com.mobitechs.classapp.screens.notification.NotificationViewModel
+import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsScreen
+import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsViewModel
 import com.mobitechs.classapp.screens.payment.PaymentHistoryScreen
 import com.mobitechs.classapp.screens.payment.PaymentHistoryViewModel
 import com.mobitechs.classapp.screens.policyTermCondition.FeedbackScreen
@@ -39,9 +40,6 @@ import com.mobitechs.classapp.screens.policyTermCondition.PrivacyPolicyScreen
 import com.mobitechs.classapp.screens.policyTermCondition.TermConditionScreen
 import com.mobitechs.classapp.screens.profile.FavouriteViewModel
 import com.mobitechs.classapp.screens.profile.MyFavouriteScreen
-import com.mobitechs.classapp.screens.categoryDetails.SeeAllCategoriesScreen
-import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsScreen
-import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsViewModel
 import com.mobitechs.classapp.screens.profile.MyWishListViewModel
 import com.mobitechs.classapp.screens.profile.MyWishlistScreen
 import com.mobitechs.classapp.screens.profile.ProfileScreen
@@ -56,6 +54,8 @@ import com.mobitechs.classapp.screens.store.PdfViewerScreen
 import com.mobitechs.classapp.screens.store.SeeAllCoursesScreen
 import com.mobitechs.classapp.screens.store.StoreScreen
 import com.mobitechs.classapp.screens.store.StoreViewModel
+import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerScreen
+import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.ui.theme.ClassConnectTheme
 
 
