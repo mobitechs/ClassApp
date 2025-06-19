@@ -113,9 +113,11 @@ object ChatTestDataHelper {
                         messageId = UUID.randomUUID().toString(),
                         chatId = chatId,
                         senderId = "user_john",
-                        content = "Hey, how are you doing?",
-                        timestamp = now - 5 * 60 * 1000,
-                        isRead = true
+                        content = "Photo",
+                        timestamp = now - 3 * 60 * 1000,
+                        isRead = true,
+                        messageType = "IMAGE",
+                        mediaUrl = "https://picsum.photos/300/200" // Sample image URL
                     ),
                     ChatMessage(
                         messageId = UUID.randomUUID().toString(),

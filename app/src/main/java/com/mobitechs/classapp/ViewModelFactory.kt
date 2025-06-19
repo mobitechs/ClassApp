@@ -143,7 +143,7 @@ class ViewModelFactory(
                 ChatListViewModel(chatRepository,chatUserRepository,authRepository) as T
             }
             modelClass.isAssignableFrom(ChatViewModel::class.java) -> {
-                ChatViewModel(chatRepository, messageRepository,authRepository) as T
+                ChatViewModel(chatRepository, messageRepository,authRepository,context) as T
             }
 
 
