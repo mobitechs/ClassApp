@@ -16,7 +16,8 @@ data class ChatListUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val showDeleteDialog: Boolean = false,
-    val chatToDelete: Chat? = null
+    val chatToDelete: Chat? = null,
+    val searchQuery: String = "",
 )
 
 class ChatListViewModel(
@@ -30,7 +31,6 @@ class ChatListViewModel(
 
     private val currentUserId: String by lazy {
         authRepository.getCurrentUserId() ?: "5" // Default for testing
-        //"user123"
     }
 
     init {
@@ -52,6 +52,22 @@ class ChatListViewModel(
                     error = "Failed to initialize: ${e.message}",
                     isLoading = false
                 )
+            }
+        }
+    }
+
+    fun updateSearchQuery(query: String) {
+        _uiState.value = _uiState.value.copy(searchQuery = query)
+    }
+
+    fun getFilteredChats(): List<Chat> {
+        val query = _uiState.value.searchQuery.lowercase()
+        return if (query.isEmpty()) {
+            _uiState.value.chats
+        } else {
+            _uiState.value.chats.filter { chat ->
+                chat.chatName?.lowercase()?.contains(query) == true ||
+                        chat.lastMessage?.lowercase()?.contains(query) == true
             }
         }
     }

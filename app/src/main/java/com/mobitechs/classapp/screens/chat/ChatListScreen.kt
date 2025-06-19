@@ -1,21 +1,22 @@
 package com.mobitechs.classapp.screens.chat
+
+
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.mobitechs.classapp.Screen
+import com.mobitechs.classapp.utils.formatTimestamp
 import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatListScreen(
     viewModel: ChatListViewModel,
@@ -23,6 +24,7 @@ fun ChatListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    // Delete confirmation dialog
     if (uiState.showDeleteDialog && uiState.chatToDelete != null) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDeleteDialog() },
@@ -52,54 +54,93 @@ fun ChatListScreen(
             TopAppBar(
                 title = { Text("Chats") },
                 actions = {
-                    IconButton(onClick = {   navController.navigate(Screen.NewChatScreen.route) }) {
+                    IconButton(
+                        onClick = {
+                            navController.navigate("newChatScreen")
+                        }
+                    ) {
                         Icon(Icons.Default.Add, contentDescription = "New Chat")
                     }
                 }
             )
         }
     ) { paddingValues ->
-        when {
-            uiState.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            // Search bar
+            if (uiState.chats.isNotEmpty()) {
+                CommonSearchBar(
+                    query = uiState.searchQuery,
+                    onQueryChange = viewModel::updateSearchQuery,
+                    placeholder = "Search chats...",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
             }
-            uiState.error != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(uiState.error!!)
+
+            // Content
+            when {
+                uiState.isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
-            }
-            uiState.chats.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("No chats yet")
+                uiState.error != null -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(uiState.error!!)
+                    }
                 }
-            }
-            else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    items(uiState.chats) { chat ->
-                        ChatListItem(
-                            chat = chat,
-                            onClick = {
-                                navController.navigate("chat/${chat.chatId}")
-                            },
-                            onLongClick = {
-                                viewModel.showDeleteDialog(chat)
+                else -> {
+                    val filteredChats = viewModel.getFilteredChats()
+
+                    if (filteredChats.isEmpty()) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                if (uiState.searchQuery.isEmpty())
+                                    "No chats yet"
+                                else
+                                    "No chats found for \"${uiState.searchQuery}\""
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(
+                                items = filteredChats,
+                                key = { it.chatId }
+                            ) { chat ->
+                                CommonChatListItem(
+                                    item = ListItemData(
+                                        id = chat.chatId,
+                                        title = chat.chatName ?: "Chat",
+                                        subtitle = chat.lastMessage,
+                                        imageUrl = chat.chatImageUrl,
+                                        trailing = chat.lastMessageTimestamp?.let {
+                                            formatTimestamp(it)
+                                        },
+                                        unreadCount = 0 // TODO: Add unread count
+                                    ),
+                                    onClick = {
+                                        navController.navigate("chat/${chat.chatId}")
+                                    },
+                                    onLongClick = {
+                                        viewModel.showDeleteDialog(chat)
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
                 }
             }

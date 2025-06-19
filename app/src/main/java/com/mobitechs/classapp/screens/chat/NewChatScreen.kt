@@ -2,26 +2,45 @@ package com.mobitechs.classapp.screens.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import com.mobitechs.classapp.data.model.response.ChatUser
 import com.mobitechs.classapp.utils.formatTimestamp
 import com.mobitechs.classapp.viewModel.chat.NewChatViewModel
 
@@ -62,15 +81,12 @@ fun NewChatScreen(
                 .padding(paddingValues)
         ) {
             // Search bar
-            SearchBar(
-                query = searchQuery,
-                onQueryChange = {
-                    searchQuery = it
-                    viewModel.updateSearchQuery(it)
-                },
-                modifier = Modifier.padding(16.dp)
+            CommonSearchBar(
+                query = uiState.searchQuery,
+                onQueryChange = viewModel::updateSearchQuery,
+                placeholder = "Search users...",
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
-
 
 //            CreateGroupButton()
             // Content
@@ -83,6 +99,7 @@ fun NewChatScreen(
                         CircularProgressIndicator()
                     }
                 }
+
                 uiState.error != null -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -100,6 +117,7 @@ fun NewChatScreen(
                         }
                     }
                 }
+
                 else -> {
                     val filteredUsers = viewModel.getFilteredUsers()
 
@@ -123,8 +141,17 @@ fun NewChatScreen(
                             contentPadding = PaddingValues(vertical = 8.dp)
                         ) {
                             items(filteredUsers) { user ->
-                                UserListItem(
-                                    user = user,
+                                CommonChatListItem(
+                                    item = ListItemData(
+                                        id = user.userId,
+                                        title = user.displayName,
+                                        subtitle = if (user.isOnline)
+                                            "Online"
+                                        else
+                                            "Last seen ${formatTimestamp(user.lastSeen)}",
+                                        imageUrl = user.profilePictureUrl,
+                                        isOnline = user.isOnline
+                                    ),
                                     onClick = {
                                         if (!uiState.isCreatingChat) {
                                             viewModel.startChatWithUser(user)
@@ -163,101 +190,6 @@ fun NewChatScreen(
         }
     }
 }
-
-@Composable
-private fun SearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = modifier.fillMaxWidth(),
-        placeholder = { Text("Search users...") },
-        leadingIcon = {
-            Icon(Icons.Default.Search, contentDescription = "Search")
-        },
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        shape = RoundedCornerShape(12.dp),
-        singleLine = true
-    )
-}
-
-@Composable
-private fun UserListItem(
-    user: ChatUser,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Profile picture
-        AsyncImage(
-            model = user.profilePictureUrl,
-            contentDescription = "Profile picture",
-            modifier = Modifier
-                .size(56.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // User info
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = user.displayName,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 4.dp)
-            ) {
-                // Online status indicator
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (user.isOnline)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = if (user.isOnline)
-                        "Online"
-                    else
-                        "Last seen ${formatTimestamp(user.lastSeen)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-
-    HorizontalDivider(
-        modifier = Modifier.padding(start = 88.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant
-    )
-}
-
 
 @Composable
 private fun CreateGroupButton(
