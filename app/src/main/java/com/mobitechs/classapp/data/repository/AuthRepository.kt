@@ -14,6 +14,13 @@ class AuthRepository(
     private val apiService: ApiService,
     private val sharedPrefsManager: SharedPrefsManager
 ) {
+
+    fun getCurrentUserId(): String? {
+        // Assuming you store user data after login
+        val user = sharedPrefsManager.getUser()
+        return user?.id.toString()
+    }
+
     suspend fun login(request: LoginRequest): LoginResponse = withContext(Dispatchers.IO) {
         val response = apiService.login(request)
         if (response.isSuccessful) {

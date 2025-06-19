@@ -20,6 +20,9 @@ import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.data.repository.UserRepository
+import com.mobitechs.classapp.data.repository.chat.ChatRepository
+import com.mobitechs.classapp.data.repository.chat.ChatUserRepository
+import com.mobitechs.classapp.data.repository.chat.MessageRepository
 import com.mobitechs.classapp.utils.SecureDownloadManager
 import com.mobitechs.classapp.utils.SimpleDownloadManager
 import com.razorpay.Checkout
@@ -68,6 +71,9 @@ class ClassConnectApp : Application() {
     val searchRepository by lazy { SearchRepository(apiService,sharedPrefsManager) }
     val batchRepository by lazy { BatchRepository(apiService) }
     val policyTermConditionRepository by lazy { PolicyTermConditionRepository(apiService) }
+    val chatUserRepository by lazy { ChatUserRepository(database.chatUserDao()) }
+    val chatRepository by lazy { ChatRepository(database.chatDao()) }
+    val messageRepository by lazy { MessageRepository(database.messageDao()) }
 
     override fun onCreate() {
         super.onCreate()

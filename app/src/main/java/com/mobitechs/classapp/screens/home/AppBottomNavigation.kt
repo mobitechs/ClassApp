@@ -3,11 +3,16 @@ package com.mobitechs.classapp.screens.home
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.ChatBubble
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Message
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -49,6 +54,12 @@ fun AppBottomNavigation(
                 selectedIcon = Icons.Filled.ShoppingCart,
                 unselectedIcon = Icons.Outlined.ShoppingCart,
                 route = Screen.StoreScreen
+            ),
+            NavigationItem(
+                title = "ChatList",
+                selectedIcon = Icons.Filled.ChatBubble,
+                unselectedIcon = Icons.Outlined.ChatBubbleOutline,
+                route = Screen.ChatListScreen
             ),
             NavigationItem(
                 title = "Profile",

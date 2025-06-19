@@ -15,6 +15,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mobitechs.classapp.Screen.ChatListScreen
+import com.mobitechs.classapp.data.local.AppDatabase
+import com.mobitechs.classapp.data.repository.UserRepository
+import com.mobitechs.classapp.data.repository.chat.ChatRepository
+import com.mobitechs.classapp.data.repository.chat.ChatUserRepository
+import com.mobitechs.classapp.data.repository.chat.MessageRepository
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.auth.LoginScreen
 import com.mobitechs.classapp.screens.auth.RegisterScreen
@@ -23,6 +29,8 @@ import com.mobitechs.classapp.screens.batches.BatchesScreen
 import com.mobitechs.classapp.screens.categoryDetails.CategoryWiseDetailsScreen
 import com.mobitechs.classapp.screens.categoryDetails.SeeAllCategoriesScreen
 import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
+import com.mobitechs.classapp.screens.chat.ChatListScreen
+import com.mobitechs.classapp.screens.chat.ChatScreen
 import com.mobitechs.classapp.screens.freeContent.FreeContentScreen
 import com.mobitechs.classapp.screens.freeContent.FreeContentViewModel
 import com.mobitechs.classapp.screens.home.AppBottomNavigation
@@ -57,6 +65,8 @@ import com.mobitechs.classapp.screens.store.StoreViewModel
 import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerScreen
 import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.ui.theme.ClassConnectTheme
+import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
+import com.mobitechs.classapp.viewModel.chat.ChatViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -67,6 +77,10 @@ class MainActivity : ComponentActivity() {
 
         // Get repositories from application class
         val app = application as ClassConnectApp
+
+
+
+
 
 
         // Create ViewModel factory
@@ -82,7 +96,10 @@ class MainActivity : ComponentActivity() {
             app.freeContentRepository,
             app.myDownloadsRepository,
             app.searchRepository,
-            app.policyTermConditionRepository
+            app.policyTermConditionRepository,
+            app.chatUserRepository,
+            app.chatRepository,
+            app.messageRepository,
         )
 
         setContent {
@@ -426,6 +443,34 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
             }
 
 
+//            chat screen
+            composable(Screen.ChatListScreen.route) {
+                val viewModel: ChatListViewModel = viewModel(factory = viewModelFactory)
+                ChatListScreen(
+                    viewModel = viewModel,
+                    navController = navController
+                )
+            }
+
+            composable(
+                "chat/{chatId}",
+                arguments = listOf(
+                    navArgument("chatId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+                val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
+                val viewModel: ChatViewModel = viewModel(factory = viewModelFactory)
+
+                ChatScreen(
+                    viewModel = viewModel,
+                    navController = navController,
+                    chatId = chatId
+                )
+            }
+
+
         }
     }
 }
@@ -459,5 +504,6 @@ sealed class Screen(val route: String) {
     object FeedbackScreen : Screen("feedbackScreen")
 
     object VideoPlayerScreen : Screen("videoPlayerScreen")
+    object ChatListScreen : Screen("chatListScreen")
 
 }

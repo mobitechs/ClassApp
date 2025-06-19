@@ -15,6 +15,9 @@ import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.data.repository.UserRepository
+import com.mobitechs.classapp.data.repository.chat.ChatRepository
+import com.mobitechs.classapp.data.repository.chat.ChatUserRepository
+import com.mobitechs.classapp.data.repository.chat.MessageRepository
 import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.batches.BatchViewModel
@@ -32,6 +35,8 @@ import com.mobitechs.classapp.screens.search.SearchViewModel
 import com.mobitechs.classapp.screens.splash.SplashViewModel
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreViewModel
+import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
+import com.mobitechs.classapp.viewModel.chat.ChatViewModel
 
 /**
  * Factory class for creating ViewModels without dependency injection
@@ -49,9 +54,11 @@ class ViewModelFactory(
     private val freeContentRepository: FreeContentRepository,
     private val myDownloadsRepository: MyDownloadsRepository,
     private val searchRepository: SearchRepository,
-    private val policyTermConditionRepository: PolicyTermConditionRepository
+    private val policyTermConditionRepository: PolicyTermConditionRepository,
+    private val chatUserRepository: ChatUserRepository,
+    private val chatRepository: ChatRepository,
+    private val messageRepository: MessageRepository,
 ) : ViewModelProvider.Factory {
-
 
 
 
@@ -130,6 +137,13 @@ class ViewModelFactory(
 
             modelClass.isAssignableFrom(MyWishListViewModel::class.java) -> {
                 MyWishListViewModel(courseRepository) as T
+            }
+
+            modelClass.isAssignableFrom(ChatListViewModel::class.java) -> {
+                ChatListViewModel(chatRepository,chatUserRepository,authRepository) as T
+            }
+            modelClass.isAssignableFrom(ChatViewModel::class.java) -> {
+                ChatViewModel(chatRepository, messageRepository,authRepository) as T
             }
 
 

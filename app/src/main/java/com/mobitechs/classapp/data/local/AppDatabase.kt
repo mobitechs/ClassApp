@@ -5,6 +5,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import android.content.Context
 import com.mobitechs.classapp.data.model.dao.*
+import com.mobitechs.classapp.data.model.dao.chat.ChatDao
+import com.mobitechs.classapp.data.model.dao.chat.ChatUserDao
+import com.mobitechs.classapp.data.model.dao.chat.MessageDao
 import com.mobitechs.classapp.data.model.response.*
 
 @Database(
@@ -17,6 +20,10 @@ import com.mobitechs.classapp.data.model.response.*
         Notice::class,
         OfferBanner::class,
         DownloadContent::class,
+        ChatUser::class,
+        Chat::class,
+        ChatMessage::class,
+        ChatParticipantEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -30,6 +37,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun noticeDao(): NoticeDao
     abstract fun offerBannerDao(): OfferBannerDao
     abstract fun contentDao(): DownloadContentDao
+    abstract fun chatUserDao(): ChatUserDao
+    abstract fun chatDao(): ChatDao
+    abstract fun messageDao(): MessageDao
 
     companion object {
         @Volatile
