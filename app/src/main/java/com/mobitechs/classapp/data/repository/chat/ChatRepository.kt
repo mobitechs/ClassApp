@@ -29,6 +29,10 @@ class ChatRepository(
         }
     }
 
+    suspend fun findPrivateChatBetweenUsers(userId1: String, userId2: String): Chat? {
+        return chatDao.getPrivateChatBetweenUsers(userId1, userId2)
+    }
+
     suspend fun updateChat(chat: Chat) {
         chatDao.updateChat(chat)
     }

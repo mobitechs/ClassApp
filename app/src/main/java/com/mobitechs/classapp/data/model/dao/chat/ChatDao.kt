@@ -38,4 +38,16 @@ interface ChatDao {
 
     @Query("DELETE FROM chat_participants WHERE chatId = :chatId")
     suspend fun deleteChatParticipants(chatId: String)
+
+    @Query("""
+        SELECT c.* FROM chats c
+        WHERE c.chatType = 'PRIVATE'
+        AND c.chatId IN (
+            SELECT cp1.chatId FROM chat_participants cp1
+            INNER JOIN chat_participants cp2 ON cp1.chatId = cp2.chatId
+            WHERE cp1.userId = :userId1 AND cp2.userId = :userId2
+        )
+        LIMIT 1
+    """)
+    suspend fun getPrivateChatBetweenUsers(userId1: String, userId2: String): Chat?
 }

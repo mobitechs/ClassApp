@@ -31,6 +31,7 @@ import com.mobitechs.classapp.screens.categoryDetails.SeeAllCategoriesScreen
 import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
 import com.mobitechs.classapp.screens.chat.ChatListScreen
 import com.mobitechs.classapp.screens.chat.ChatScreen
+import com.mobitechs.classapp.screens.chat.NewChatScreen
 import com.mobitechs.classapp.screens.freeContent.FreeContentScreen
 import com.mobitechs.classapp.screens.freeContent.FreeContentViewModel
 import com.mobitechs.classapp.screens.home.AppBottomNavigation
@@ -67,6 +68,7 @@ import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.ui.theme.ClassConnectTheme
 import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
 import com.mobitechs.classapp.viewModel.chat.ChatViewModel
+import com.mobitechs.classapp.viewModel.chat.NewChatViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -470,6 +472,14 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
+            composable(Screen.NewChatScreen.route) {
+                val viewModel: NewChatViewModel = viewModel(factory = viewModelFactory)
+                NewChatScreen(
+                    viewModel = viewModel,
+                    navController = navController
+                )
+            }
+
 
         }
     }
@@ -505,5 +515,6 @@ sealed class Screen(val route: String) {
 
     object VideoPlayerScreen : Screen("videoPlayerScreen")
     object ChatListScreen : Screen("chatListScreen")
+    object NewChatScreen : Screen("newChatScreen")
 
 }

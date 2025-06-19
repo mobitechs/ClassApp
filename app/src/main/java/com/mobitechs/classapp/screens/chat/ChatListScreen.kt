@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.mobitechs.classapp.Screen
 import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,7 +52,7 @@ fun ChatListScreen(
             TopAppBar(
                 title = { Text("Chats") },
                 actions = {
-                    IconButton(onClick = { /* TODO: New chat */ }) {
+                    IconButton(onClick = {   navController.navigate(Screen.NewChatScreen.route) }) {
                         Icon(Icons.Default.Add, contentDescription = "New Chat")
                     }
                 }

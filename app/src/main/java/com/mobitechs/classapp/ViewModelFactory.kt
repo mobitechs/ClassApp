@@ -37,6 +37,7 @@ import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreViewModel
 import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
 import com.mobitechs.classapp.viewModel.chat.ChatViewModel
+import com.mobitechs.classapp.viewModel.chat.NewChatViewModel
 
 /**
  * Factory class for creating ViewModels without dependency injection
@@ -144,6 +145,9 @@ class ViewModelFactory(
             }
             modelClass.isAssignableFrom(ChatViewModel::class.java) -> {
                 ChatViewModel(chatRepository, messageRepository,authRepository,context) as T
+            }
+            modelClass.isAssignableFrom(NewChatViewModel::class.java) -> {
+                NewChatViewModel(chatRepository, chatUserRepository,authRepository) as T
             }
 
 

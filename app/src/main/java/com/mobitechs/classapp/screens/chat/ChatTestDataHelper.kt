@@ -242,4 +242,71 @@ object ChatTestDataHelper {
             )
         }
     }
+
+    fun getDummyUsers(): List<ChatUser> {
+        val dummyUsers = listOf(
+            ChatUser(
+                userId = "user_emma",
+                username = "emma_wilson",
+                displayName = "Emma Wilson",
+                profilePictureUrl = "https://i.pravatar.cc/150?img=6",
+                isOnline = true
+            ),
+            ChatUser(
+                userId = "user_david",
+                username = "david_brown",
+                displayName = "David Brown",
+                profilePictureUrl = "https://i.pravatar.cc/150?img=7",
+                isOnline = false,
+                lastSeen = System.currentTimeMillis() - 3 * 60 * 60 * 1000
+            ),
+            ChatUser(
+                userId = "user_sophia",
+                username = "sophia_davis",
+                displayName = "Sophia Davis",
+                profilePictureUrl = "https://i.pravatar.cc/150?img=8",
+                isOnline = true
+            ),
+            ChatUser(
+                userId = "user_james",
+                username = "james_miller",
+                displayName = "James Miller",
+                profilePictureUrl = "https://i.pravatar.cc/150?img=9",
+                isOnline = false,
+                lastSeen = System.currentTimeMillis() - 24 * 60 * 60 * 1000
+            ),
+            ChatUser(
+                userId = "user_olivia",
+                username = "olivia_garcia",
+                displayName = "Olivia Garcia",
+                profilePictureUrl = "https://i.pravatar.cc/150?img=10",
+                isOnline = true
+            ),
+            ChatUser(
+                userId = "user_william",
+                username = "william_martinez",
+                displayName = "William Martinez",
+                profilePictureUrl = "https://i.pravatar.cc/150?img=11",
+                isOnline = false,
+                lastSeen = System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000
+            ),
+            ChatUser(
+                userId = "user_ava",
+                username = "ava_anderson",
+                displayName = "Ava Anderson",
+                profilePictureUrl = "https://i.pravatar.cc/150?img=12",
+                isOnline = true
+            ),
+            ChatUser(
+                userId = "user_noah",
+                username = "noah_taylor",
+                displayName = "Noah Taylor",
+                profilePictureUrl = "https://i.pravatar.cc/150?img=13",
+                isOnline = false,
+                lastSeen = System.currentTimeMillis() - 1 * 60 * 60 * 1000
+            )
+        )
+
+        return dummyUsers
+    }
 }
