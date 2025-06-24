@@ -21,6 +21,8 @@ class SharedPrefsManager(
 
     companion object {
         private const val PREF_RECENT_SEARCHES = "recent_searches"
+        private const val KEY_IS_PREMIUM_USER = "is_premium_user"
+        private const val KEY_PREMIUM_EXPIRY_DATE = "premium_expiry_date"
     }
 
     // Create or get the master key for encryption
@@ -210,23 +212,92 @@ class SharedPrefsManager(
         }
     }
 
+    // Save premium status - FIXED
+    fun savePremiumStatus(isPremium: Boolean) {
+        try {
+            sharedPreferences.edit().putBoolean(KEY_IS_PREMIUM_USER, isPremium).apply()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    // Get premium status
+    fun isPremiumUser(): Boolean {
+        return try {
+            sharedPreferences.getBoolean(KEY_IS_PREMIUM_USER, false)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    // Save premium expiry date - FIXED
+    fun savePremiumExpiryDate(expiryDate: String?) {
+        try {
+            if (expiryDate != null) {
+                sharedPreferences.edit().putString(KEY_PREMIUM_EXPIRY_DATE, expiryDate).apply()
+            } else {
+                sharedPreferences.edit().remove(KEY_PREMIUM_EXPIRY_DATE).apply()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    // Get premium expiry date
+    fun getPremiumExpiryDate(): String? {
+        return try {
+            sharedPreferences.getString(KEY_PREMIUM_EXPIRY_DATE, null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    // Check if premium is still valid (if using expiry dates)
+    fun isPremiumValid(): Boolean {
+        return try {
+            val expiryDate = getPremiumExpiryDate()
+            if (expiryDate == null) {
+                return isPremiumUser()
+            }
+
+            // Parse and compare dates
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val expiry = formatter.parse(expiryDate)
+            val today = Date()
+            expiry?.after(today) ?: false
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
 
     fun saveRecentSearches(searches: List<String>) {
-        val json = gson.toJson(searches)
-        sharedPreferences.edit().putString(PREF_RECENT_SEARCHES, json).apply()
+        try {
+            val json = gson.toJson(searches)
+            sharedPreferences.edit().putString(PREF_RECENT_SEARCHES, json).apply()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun getRecentSearches(): List<String> {
-        val json = sharedPreferences.getString(PREF_RECENT_SEARCHES, null) ?: return emptyList()
         return try {
+            val json = sharedPreferences.getString(PREF_RECENT_SEARCHES, null) ?: return emptyList()
             val type = object : TypeToken<List<String>>() {}.type
             gson.fromJson(json, type) ?: emptyList()
         } catch (e: Exception) {
+            e.printStackTrace()
             emptyList()
         }
     }
 
     fun clearRecentSearches() {
-        sharedPreferences.edit().remove(PREF_RECENT_SEARCHES).apply()
+        try {
+            sharedPreferences.edit().remove(PREF_RECENT_SEARCHES).apply()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

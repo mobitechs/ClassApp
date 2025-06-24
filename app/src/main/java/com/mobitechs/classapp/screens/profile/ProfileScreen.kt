@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AppShortcut
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Download
@@ -149,7 +150,13 @@ fun ProfileScreen(
                                     ProfileMenuItemData(
                                         title = "My Wishlist",
                                         icon = Icons.Default.Bookmark,
-                                        route = Screen.MyWishlistScreen.route,
+                                        route = Screen.MyWishlistScreen.route
+
+                                    ),
+                                    ProfileMenuItemData(
+                                        title = "Free Content",
+                                        icon = Icons.Default.Star,
+                                        route = Screen.FreeContentScreen.route,
                                         showDivider = false
                                     )
                                 ),
@@ -177,9 +184,10 @@ fun ProfileScreen(
                                 title = "App Settings",
                                 items = listOf(
                                     ProfileMenuItemData(
-                                        title = "Free Content",
-                                        icon = Icons.Default.Star,
-                                        route = "freeContentScreen"
+                                        title = "Themes",
+                                        icon = Icons.Default.AppShortcut,
+                                        route = Screen.ThemeSelectionScreen.route,
+                                        showDivider = false
                                     ),
                                     ProfileMenuItemData(
                                         title = "Add Feedback",

@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -55,6 +56,8 @@ import com.mobitechs.classapp.screens.profile.ProfileScreen
 import com.mobitechs.classapp.screens.profile.ProfileViewModel
 import com.mobitechs.classapp.screens.search.SearchScreen
 import com.mobitechs.classapp.screens.search.SearchViewModel
+import com.mobitechs.classapp.screens.settings.ThemeSelectionScreen
+import com.mobitechs.classapp.screens.settings.ThemeSelectionViewModel
 import com.mobitechs.classapp.screens.splash.SplashScreen
 import com.mobitechs.classapp.screens.splash.SplashViewModel
 import com.mobitechs.classapp.screens.store.CourseDetailScreen
@@ -66,10 +69,13 @@ import com.mobitechs.classapp.screens.store.StoreViewModel
 import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerScreen
 import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.ui.theme.ClassConnectTheme
+import com.mobitechs.classapp.ui.theme.ClassConnectThemeWrapper
 import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
 import com.mobitechs.classapp.viewModel.chat.ChatViewModel
 import com.mobitechs.classapp.viewModel.chat.NewChatViewModel
-
+import com.mobitechs.classapp.ui.theme.ThemeManager
+import com.mobitechs.classapp.ui.theme.ThemeState
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -80,8 +86,21 @@ class MainActivity : ComponentActivity() {
         // Get repositories from application class
         val app = application as ClassConnectApp
 
+        // Initialize theme manager early
+        val themeManager = ThemeManager(applicationContext)
 
+        // Load saved theme on app start
+        lifecycleScope.launch {
+            themeManager.selectedTheme.collect { theme ->
+                ThemeState.currentTheme.value = theme
+            }
+        }
 
+        lifecycleScope.launch {
+            themeManager.isDarkMode.collect { isDark ->
+                ThemeState.isDarkMode.value = isDark
+            }
+        }
 
 
 
@@ -102,10 +121,11 @@ class MainActivity : ComponentActivity() {
             app.chatUserRepository,
             app.chatRepository,
             app.messageRepository,
+            app.themeRepository
         )
 
         setContent {
-            ClassConnectTheme {
+            ClassConnectThemeWrapper  {
                 AppNavigation(viewModelFactory)
             }
         }
@@ -143,7 +163,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
         }
-    ) { paddingValues ->
+    )  { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = Screen.SplashScreen.route,
@@ -299,6 +319,13 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 val viewModel: FreeContentViewModel = viewModel(factory = viewModelFactory)
                 FreeContentScreen(
                     viewModel = viewModel,
+                    navController = navController
+                )
+            }
+            composable(Screen.ThemeSelectionScreen.route) {
+                val themeViewModel: ThemeSelectionViewModel = viewModel(factory = viewModelFactory)
+                ThemeSelectionScreen(
+                    viewModel = themeViewModel,
                     navController = navController
                 )
             }
@@ -500,6 +527,7 @@ sealed class Screen(val route: String) {
     object SeeAllCategoriesScreen : Screen("seeAllCategoriesScreen")
     object SearchScreen : Screen("searchScreen")
     object FreeContentScreen : Screen("freeContentScreen")
+    object ThemeSelectionScreen : Screen("themeSelectionScreen")
 
     object ProfileScreen : Screen("profileScreen")
     object MyDownloadsScreen : Screen("myDownloadScreen")

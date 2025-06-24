@@ -81,24 +81,7 @@ fun ChatScreen(
             viewModel.sendPhotoMessage(it)
         }
     }
-    // Gallery launcher
-    val galleryLauncher = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickVisualMedia()
-        ) { uri: Uri? ->
-            uri?.let {
-                viewModel.sendPhotoMessage(it)
-            }
-        }
-    } else {
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent()
-        ) { uri: Uri? ->
-            uri?.let {
-                viewModel.sendPhotoMessage(it)
-            }
-        }
-    }
+
 
     // Auto-scroll to bottom when new messages arrive
     LaunchedEffect(uiState.messages.size) {

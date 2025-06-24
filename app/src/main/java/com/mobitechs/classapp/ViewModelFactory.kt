@@ -14,6 +14,7 @@ import com.mobitechs.classapp.data.repository.MyDownloadsRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
+import com.mobitechs.classapp.data.repository.ThemeRepository
 import com.mobitechs.classapp.data.repository.UserRepository
 import com.mobitechs.classapp.data.repository.chat.ChatRepository
 import com.mobitechs.classapp.data.repository.chat.ChatUserRepository
@@ -32,6 +33,7 @@ import com.mobitechs.classapp.screens.profile.FavouriteViewModel
 import com.mobitechs.classapp.screens.profile.MyWishListViewModel
 import com.mobitechs.classapp.screens.profile.ProfileViewModel
 import com.mobitechs.classapp.screens.search.SearchViewModel
+import com.mobitechs.classapp.screens.settings.ThemeSelectionViewModel
 import com.mobitechs.classapp.screens.splash.SplashViewModel
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreViewModel
@@ -59,6 +61,7 @@ class ViewModelFactory(
     private val chatUserRepository: ChatUserRepository,
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
+    private val themeRepository: ThemeRepository
 ) : ViewModelProvider.Factory {
 
 
@@ -148,6 +151,9 @@ class ViewModelFactory(
             }
             modelClass.isAssignableFrom(NewChatViewModel::class.java) -> {
                 NewChatViewModel(chatRepository, chatUserRepository,authRepository) as T
+            }
+            modelClass.isAssignableFrom(ThemeSelectionViewModel::class.java) -> {
+                ThemeSelectionViewModel(themeRepository) as T
             }
 
 

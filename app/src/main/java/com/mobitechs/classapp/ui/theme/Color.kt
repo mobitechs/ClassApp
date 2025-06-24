@@ -22,9 +22,9 @@ val SurfaceLight = Color(0xFFFFFFFF)
 val SurfaceDark = Color(0xFF1E1E1E)
 
 // Error colors
-val ErrorLight = Color(0xFFB00020)
-val ErrorDark = Color(0xFFCF6679)
-
-// Success colors
-val SuccessLight = Color(0xFF4CAF50)
-val SuccessDark = Color(0xFF2E7D32)
+//val ErrorLight = Color(0xFFB00020)
+//val ErrorDark = Color(0xFFCF6679)
+//
+//// Success colors
+//val SuccessLight = Color(0xFF4CAF50)
+//val SuccessDark = Color(0xFF2E7D32)

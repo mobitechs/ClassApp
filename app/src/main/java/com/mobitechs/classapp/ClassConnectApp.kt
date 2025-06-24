@@ -19,6 +19,7 @@ import com.mobitechs.classapp.data.repository.MyDownloadsRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
+import com.mobitechs.classapp.data.repository.ThemeRepository
 import com.mobitechs.classapp.data.repository.UserRepository
 import com.mobitechs.classapp.data.repository.chat.ChatRepository
 import com.mobitechs.classapp.data.repository.chat.ChatUserRepository
@@ -59,7 +60,9 @@ class ClassConnectApp : Application() {
         MyDownloadsRepository(database, downloadManager)
     }
 
+
     // Repositories
+    val themeRepository by lazy { ThemeRepository(appContext) }
     val authRepository by lazy { AuthRepository(apiService, sharedPrefsManager) }
     val userRepository by lazy { UserRepository(apiService, sharedPrefsManager) }
     val courseRepository by lazy { CourseRepository(apiService, sharedPrefsManager, database.courseDao()) }
