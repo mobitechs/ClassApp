@@ -415,10 +415,10 @@ fun CourseCardForStore(
                         Text(
                             text = "₹${course.course_price}",
                             style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = 14.sp
+                                fontSize = 12.sp
                             ),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                            textDecoration = TextDecoration.LineThrough
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(

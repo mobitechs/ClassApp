@@ -202,8 +202,7 @@ fun CourseDetailScreen(
                             imageVector = if (uiState.course?.is_in_wishlist == true) Icons.Default.Bookmark
                             else Icons.Default.BookmarkBorder,
                             contentDescription = "Wishlist",
-                            tint = if (uiState.course?.is_in_wishlist == true) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.onPrimary // This will contrast with primary
                         )
                     }
                 },
@@ -469,12 +468,15 @@ fun CourseDetailsTab(navController: NavController, course: Course?) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Instructor
-                Text(
-                    text = "By ${course.instructor}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
+                if(course.instructor !=null ){
+                    // Instructor
+                    Text(
+                        text = "By ${course.instructor}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                }
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -531,7 +533,7 @@ fun CourseDetailsTab(navController: NavController, course: Course?) {
 
                 // Price section
                 Row(
-                    verticalAlignment = Alignment.Bottom
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Show discounted price if available
                     if (course.course_discounted_price != null) {
