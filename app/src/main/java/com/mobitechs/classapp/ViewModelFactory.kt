@@ -9,8 +9,8 @@ import com.mobitechs.classapp.data.repository.BatchRepository
 import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.FreeContentRepository
-import com.mobitechs.classapp.data.repository.NotificationRepository
 import com.mobitechs.classapp.data.repository.MyDownloadsRepository
+import com.mobitechs.classapp.data.repository.NotificationRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
@@ -19,7 +19,6 @@ import com.mobitechs.classapp.data.repository.UserRepository
 import com.mobitechs.classapp.data.repository.chat.ChatRepository
 import com.mobitechs.classapp.data.repository.chat.ChatUserRepository
 import com.mobitechs.classapp.data.repository.chat.MessageRepository
-import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.batches.BatchViewModel
 import com.mobitechs.classapp.screens.categoryDetails.SubCategoryViewModel
@@ -37,6 +36,7 @@ import com.mobitechs.classapp.screens.settings.ThemeSelectionViewModel
 import com.mobitechs.classapp.screens.splash.SplashViewModel
 import com.mobitechs.classapp.screens.store.CourseDetailViewModel
 import com.mobitechs.classapp.screens.store.StoreViewModel
+import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
 import com.mobitechs.classapp.viewModel.chat.ChatViewModel
 import com.mobitechs.classapp.viewModel.chat.NewChatViewModel
@@ -63,7 +63,6 @@ class ViewModelFactory(
     private val messageRepository: MessageRepository,
     private val themeRepository: ThemeRepository
 ) : ViewModelProvider.Factory {
-
 
 
     @Suppress("UNCHECKED_CAST")
@@ -112,7 +111,11 @@ class ViewModelFactory(
 
 
             modelClass.isAssignableFrom(FreeContentViewModel::class.java) -> {
-                FreeContentViewModel(freeContentRepository,courseRepository,myDownloadsRepository) as T
+                FreeContentViewModel(
+                    freeContentRepository,
+                    courseRepository,
+                    myDownloadsRepository
+                ) as T
             }
 
             modelClass.isAssignableFrom(PaymentHistoryViewModel::class.java) -> {
@@ -128,7 +131,7 @@ class ViewModelFactory(
             }
 
             modelClass.isAssignableFrom(SearchViewModel::class.java) -> {
-                SearchViewModel(searchRepository,courseRepository,categoryRepository) as T
+                SearchViewModel(searchRepository, courseRepository, categoryRepository) as T
             }
 
             modelClass.isAssignableFrom(PolicyTermConditionViewModel::class.java) -> {
@@ -144,14 +147,17 @@ class ViewModelFactory(
             }
 
             modelClass.isAssignableFrom(ChatListViewModel::class.java) -> {
-                ChatListViewModel(chatRepository,chatUserRepository,authRepository) as T
+                ChatListViewModel(chatRepository, chatUserRepository, authRepository) as T
             }
+
             modelClass.isAssignableFrom(ChatViewModel::class.java) -> {
-                ChatViewModel(chatRepository, messageRepository,authRepository,context) as T
+                ChatViewModel(chatRepository, messageRepository, authRepository, context) as T
             }
+
             modelClass.isAssignableFrom(NewChatViewModel::class.java) -> {
-                NewChatViewModel(chatRepository, chatUserRepository,authRepository) as T
+                NewChatViewModel(chatRepository, chatUserRepository, authRepository) as T
             }
+
             modelClass.isAssignableFrom(ThemeSelectionViewModel::class.java) -> {
                 ThemeSelectionViewModel(themeRepository) as T
             }

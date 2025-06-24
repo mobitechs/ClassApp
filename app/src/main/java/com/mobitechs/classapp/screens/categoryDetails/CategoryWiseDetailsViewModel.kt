@@ -276,7 +276,6 @@ class SubCategoryViewModel(
     }
 
 
-
     override fun updateCourseInState(courseId: Int, transform: (Course) -> Course) {
         _uiState.update { state ->
             state.copy(

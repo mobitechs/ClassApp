@@ -14,8 +14,8 @@ import com.mobitechs.classapp.data.repository.BatchRepository
 import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.FreeContentRepository
-import com.mobitechs.classapp.data.repository.NotificationRepository
 import com.mobitechs.classapp.data.repository.MyDownloadsRepository
+import com.mobitechs.classapp.data.repository.NotificationRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
@@ -25,7 +25,6 @@ import com.mobitechs.classapp.data.repository.chat.ChatRepository
 import com.mobitechs.classapp.data.repository.chat.ChatUserRepository
 import com.mobitechs.classapp.data.repository.chat.MessageRepository
 import com.mobitechs.classapp.utils.SecureDownloadManager
-import com.mobitechs.classapp.utils.SimpleDownloadManager
 import com.razorpay.Checkout
 
 
@@ -65,13 +64,28 @@ class ClassConnectApp : Application() {
     val themeRepository by lazy { ThemeRepository(appContext) }
     val authRepository by lazy { AuthRepository(apiService, sharedPrefsManager) }
     val userRepository by lazy { UserRepository(apiService, sharedPrefsManager) }
-    val courseRepository by lazy { CourseRepository(apiService, sharedPrefsManager, database.courseDao()) }
-    val categoryRepository by lazy { CategoryRepository(apiService, sharedPrefsManager, database.categoryDao(), database.subCategoryDao(), database.subjectDao()) }
+    val courseRepository by lazy {
+        CourseRepository(
+            apiService,
+            sharedPrefsManager,
+            database.courseDao()
+        )
+    }
+    val categoryRepository by lazy {
+        CategoryRepository(
+            apiService,
+            sharedPrefsManager,
+            database.categoryDao(),
+            database.subCategoryDao(),
+            database.subjectDao()
+        )
+    }
     val notificationRepository by lazy { NotificationRepository(apiService) }
     val paymentRepository by lazy { PaymentRepository(apiService) }
     val freeContentRepository by lazy { FreeContentRepository(apiService) }
-//    val myDownloadsRepository by lazy { MyDownloadsRepository(apiService) }
-    val searchRepository by lazy { SearchRepository(apiService,sharedPrefsManager) }
+
+    //    val myDownloadsRepository by lazy { MyDownloadsRepository(apiService) }
+    val searchRepository by lazy { SearchRepository(apiService, sharedPrefsManager) }
     val batchRepository by lazy { BatchRepository(apiService) }
     val policyTermConditionRepository by lazy { PolicyTermConditionRepository(apiService) }
     val chatUserRepository by lazy { ChatUserRepository(database.chatUserDao()) }

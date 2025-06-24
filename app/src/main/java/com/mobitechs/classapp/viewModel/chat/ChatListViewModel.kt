@@ -8,7 +8,12 @@ import com.mobitechs.classapp.data.repository.AuthRepository
 import com.mobitechs.classapp.data.repository.chat.ChatRepository
 import com.mobitechs.classapp.data.repository.chat.ChatUserRepository
 import com.mobitechs.classapp.screens.chat.ChatTestDataHelper
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class ChatListUiState(

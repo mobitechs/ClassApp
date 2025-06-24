@@ -1,17 +1,11 @@
 package com.mobitechs.classapp.data.model.response
 
 
-
-
-
 data class RefreshTokenResponse(
     val accessToken: String,
     val refreshToken: String? = null,
     val expiresIn: Long
 )
-
-
-
 
 
 data class LoginResponse(
@@ -45,8 +39,6 @@ data class Student(
     val signature: String,
     val updated_at: String
 )
-
-
 
 
 data class CommonResponse(

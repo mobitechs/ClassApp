@@ -1,8 +1,8 @@
 package com.mobitechs.classapp.screens.home
+
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,19 +19,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.Facebook
-import androidx.compose.material.icons.filled.Hotel
-import androidx.compose.material.icons.filled.Insights
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.YoutubeSearchedFor
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -59,8 +54,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -82,6 +75,7 @@ import com.mobitechs.classapp.screens.common.ModernNoticeCard
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.screens.common.SectionTitle
 import com.mobitechs.classapp.screens.common.SideMenu
+import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.Constants
 import com.mobitechs.classapp.utils.ToastObserver
 import com.mobitechs.classapp.utils.getFirstName
@@ -143,6 +137,7 @@ fun HomeScreen(
                             overflow = TextOverflow.Ellipsis
                         )
                     },
+                    colors = AppTheme.topAppBarColors,
                     navigationIcon = {
                         IconButton(
                             onClick = {
@@ -251,7 +246,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeContent(
-    context:Context,
+    context: Context,
     viewModel: HomeViewModel,
     navController: NavController,
     uiState: HomeUiState,
@@ -586,10 +581,25 @@ fun HomeContent(
         ) {
 
 
-            AddSocialMediaICons(context,"YouTube",R.drawable.youtube,Constants.CONNECT_YOUTUBE)
-            AddSocialMediaICons(context,"Telegram",R.drawable.telegram,Constants.CONNECT_TELEGRAM)
-            AddSocialMediaICons(context,"Whatsapp",R.drawable.whatsapp,Constants.CONNECT_WHATSAPP)
-            AddSocialMediaICons(context,"Facebook",R.drawable.facebook,Constants.CONNECT_FACEBOOK)
+            AddSocialMediaICons(context, "YouTube", R.drawable.youtube, Constants.CONNECT_YOUTUBE)
+            AddSocialMediaICons(
+                context,
+                "Telegram",
+                R.drawable.telegram,
+                Constants.CONNECT_TELEGRAM
+            )
+            AddSocialMediaICons(
+                context,
+                "Whatsapp",
+                R.drawable.whatsapp,
+                Constants.CONNECT_WHATSAPP
+            )
+            AddSocialMediaICons(
+                context,
+                "Facebook",
+                R.drawable.facebook,
+                Constants.CONNECT_FACEBOOK
+            )
 
 //            Image(
 //                painter = painterResource(id = R.drawable.telegram),
@@ -620,8 +630,6 @@ fun HomeContent(
 //            )
 
 
-
-
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -629,7 +637,7 @@ fun HomeContent(
 }
 
 @Composable
-fun AddSocialMediaICons(context:Context,name: String, icon: Int, url: String) {
+fun AddSocialMediaICons(context: Context, name: String, icon: Int, url: String) {
     Box(
         modifier = Modifier
             .size(48.dp)  // Fixed size for all

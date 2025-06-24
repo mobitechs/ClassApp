@@ -1,11 +1,11 @@
 package com.mobitechs.classapp.data.repository.chat
+
 import com.mobitechs.classapp.data.model.dao.chat.ChatDao
 import com.mobitechs.classapp.data.model.response.Chat
 import com.mobitechs.classapp.data.model.response.ChatParticipantEntity
 import com.mobitechs.classapp.utils.enumClasses.ChatType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import java.util.UUID
+
 class ChatRepository(
     private val chatDao: ChatDao
 ) {

@@ -37,8 +37,10 @@ object Constants {
 
     // Payment related
     const val RAZORPAY_KEY_ID = "rzp_test_cMgcyHVPwSF1sq" // Replace with actual key in build config
-//    const val RAZORPAY_KEY_ID = "rzp_test_e9mokpUFZZRN4g" // Replace with actual key in build config
-    const val RAZORPAY_KEY_SECRET = "9uttQ5gw8WlYwkvRYVKnGE8I" // Replace with actual key in build config
+
+    //    const val RAZORPAY_KEY_ID = "rzp_test_e9mokpUFZZRN4g" // Replace with actual key in build config
+    const val RAZORPAY_KEY_SECRET =
+        "9uttQ5gw8WlYwkvRYVKnGE8I" // Replace with actual key in build config
 
     // Deep link URI schemes
     const val DEEP_LINK_SCHEME = "classconnect"
@@ -46,19 +48,23 @@ object Constants {
 
 
     // 1. Big Buck Bunny (Open Source Movie) - Various Qualities
-    const val video1 = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-    const val video2 = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+    const val video1 =
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    const val video2 =
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
 //    const val ytVideo = "https://www.youtube.com/watch?v=RzmBnllRnh8"
 
     // 2. Elephant's Dream (Open Source Movie)
-    const val video3 = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+    const val video3 =
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
 
     // 3. For Bigger Blazes (Google Sample)
-    const val video4 = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+    const val video4 =
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
 
     // 4. For Bigger Escape (Google Sample)
-    const val video5 = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
-
+    const val video5 =
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
 
 
     // Keys for SharedPreferences
@@ -90,7 +96,6 @@ object Constants {
     const val KEY_TOKEN = "token"
 
 
-
     const val KEY_tbl_course = "courses"
     const val KEY_tbl_categories = "categories"
     const val KEY_tbl_sub_categories = "subCategories"
@@ -104,8 +109,6 @@ object Constants {
     const val KEY_SORT_FEATURED = "newest"
     const val KEY_SORT_PRICE_ASC = "priceAsc"
     const val KEY_SORT_PRICE_DESC = "priceDesc"
-
-
 
 
 }

@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.mobitechs.classapp.data.model.response.SubCategoryItem
-import com.mobitechs.classapp.data.model.response.SubjectItem
 
 
 @Dao
@@ -31,7 +30,6 @@ interface SubCategoryDao {
 //    fun getSubCategories(
 //        categoryId: Int = 0,
 //    ): List<SubCategoryItem>
-
 
 
 }

@@ -1,6 +1,5 @@
 package com.mobitechs.classapp.screens.store
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.PaymentData
 import com.mobitechs.classapp.data.model.response.Content
@@ -22,7 +21,6 @@ data class CourseDetailUiState(
     val isProcessingPayment: Boolean = false,
     val paymentData: PaymentData? = null
 )
-
 
 
 class CourseDetailViewModel(

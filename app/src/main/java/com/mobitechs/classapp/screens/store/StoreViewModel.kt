@@ -102,7 +102,6 @@ class StoreViewModel(
     }
 
 
-
     /**
      * Selects a category and loads related data
      */
@@ -294,7 +293,7 @@ class StoreViewModel(
         }
 
         // Apply subject filter
-        if (subjectId!=0) {
+        if (subjectId != 0) {
             filteredCourses = filteredCourses.filter {
                 it.subject_id == subjectId
             }
@@ -312,7 +311,6 @@ class StoreViewModel(
 
         return filteredCourses
     }
-
 
 
     /**
@@ -349,8 +347,6 @@ class StoreViewModel(
             getPopularCourses()
         }
     }
-
-
 
 
 //    API Calls
@@ -470,7 +466,7 @@ class StoreViewModel(
 
         viewModelScope.launch {
             try {
-                val response = categoryRepository.getSubjectByCategory(categoryId =  categoryId)
+                val response = categoryRepository.getSubjectByCategory(categoryId = categoryId)
 
                 _uiState.update { state ->
                     state.copy(
@@ -621,7 +617,10 @@ class StoreViewModel(
         viewModelScope.launch {
             try {
 
-                var reqObj = GetCourseByRequest(categoryId = _uiState.value.selectedCategoryId, subCategoryId = subCategoryId)
+                var reqObj = GetCourseByRequest(
+                    categoryId = _uiState.value.selectedCategoryId,
+                    subCategoryId = subCategoryId
+                )
                 val courses = courseRepository.getCoursesFilterWise(reqObj)
                 _uiState.update { state ->
                     state.copy(
@@ -655,7 +654,11 @@ class StoreViewModel(
 
         viewModelScope.launch {
             try {
-                var reqObj = GetCourseByRequest(categoryId =  _uiState.value.selectedCategoryId,subCategoryId = _uiState.value.selectedSubCategoryId, subjectId = subjectId)
+                var reqObj = GetCourseByRequest(
+                    categoryId = _uiState.value.selectedCategoryId,
+                    subCategoryId = _uiState.value.selectedSubCategoryId,
+                    subjectId = subjectId
+                )
                 val courses = courseRepository.getCoursesFilterWise(reqObj)
 
                 _uiState.update { state ->
@@ -681,8 +684,6 @@ class StoreViewModel(
             }
         }
     }
-
-
 
 
     override fun updateCourseInState(

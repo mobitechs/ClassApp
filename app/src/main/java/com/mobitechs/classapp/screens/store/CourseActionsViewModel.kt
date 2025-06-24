@@ -39,7 +39,7 @@ abstract class CourseActionsViewModel : BaseViewModel() {
         }
     }
 
-     fun addToFavorite(courseId: Int) {
+    fun addToFavorite(courseId: Int) {
         viewModelScope.launch {
             try {
                 val response = courseRepository.addToFavorite(courseId)
@@ -56,7 +56,7 @@ abstract class CourseActionsViewModel : BaseViewModel() {
         }
     }
 
-     fun removeFromFavorite(courseId: Int) {
+    fun removeFromFavorite(courseId: Int) {
         viewModelScope.launch {
             try {
                 val response = courseRepository.removeFromFavorite(courseId)
@@ -73,7 +73,7 @@ abstract class CourseActionsViewModel : BaseViewModel() {
         }
     }
 
-     fun addToWishlist(courseId: Int) {
+    fun addToWishlist(courseId: Int) {
         viewModelScope.launch {
             try {
                 val response = courseRepository.addToWishlist(courseId)
@@ -90,7 +90,7 @@ abstract class CourseActionsViewModel : BaseViewModel() {
         }
     }
 
-     fun removeFromWishlist(courseId: Int) {
+    fun removeFromWishlist(courseId: Int) {
         viewModelScope.launch {
             try {
                 val response = courseRepository.removeFromWishlist(courseId)
@@ -140,7 +140,6 @@ abstract class CourseActionsViewModel : BaseViewModel() {
             }
         }
     }
-
 
 
 }

@@ -1,8 +1,10 @@
 package com.mobitechs.classapp.data.model.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.mobitechs.classapp.data.model.response.Course
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CourseDao {
@@ -21,20 +23,21 @@ interface CourseDao {
     @Query("SELECT * FROM courses WHERE subject_id = :subjectId AND is_active = 'Active'")
     fun getCoursesBySubject(subjectId: Int): List<Course>
 
-//combine in one query with filters
-@Query("""
+    //combine in one query with filters
+    @Query(
+        """
     SELECT * FROM courses 
     WHERE is_active = 'Active'
     AND (:categoryId = 0 OR category_id = :categoryId)
     AND (:subcategoryId = 0 OR sub_category_id = :subcategoryId)
     AND (:subjectId = 0 OR subject_id = :subjectId)
-""")
-fun getCourses(
-    categoryId: Int = 0,
-    subcategoryId: Int = 0,
-    subjectId: Int = 0
-): List<Course>
-
+"""
+    )
+    fun getCourses(
+        categoryId: Int = 0,
+        subcategoryId: Int = 0,
+        subjectId: Int = 0
+    ): List<Course>
 
 
     @Query("SELECT * FROM courses WHERE id = :courseId")
@@ -42,8 +45,6 @@ fun getCourses(
 
     @Query("SELECT * FROM courses WHERE is_favourited = 1")
     fun getFavoriteCourses(): List<Course>
-
-
 
 
     @Query("UPDATE courses SET is_favourited = :is_favourited WHERE id = :courseId")

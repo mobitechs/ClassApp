@@ -15,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedFilterChip
@@ -27,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -40,13 +40,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.gson.Gson
 import com.mobitechs.classapp.data.model.response.SubCategoryItem
 import com.mobitechs.classapp.data.model.response.SubjectItem
 import com.mobitechs.classapp.screens.common.CourseCardEmptyMessage
 import com.mobitechs.classapp.screens.common.CourseCardPopularFeatured
 import com.mobitechs.classapp.screens.common.CourseCardRectangular
 import com.mobitechs.classapp.screens.common.SectionTitle
+import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.ToastObserver
 import com.mobitechs.classapp.utils.openCourseDetailsScreen
 
@@ -108,7 +108,8 @@ fun CategoryWiseDetailsScreen(
                             contentDescription = "Search"
                         )
                     }
-                }
+                },
+                colors = AppTheme.topAppBarColors,
             )
         }
     ) { paddingValues ->
@@ -148,12 +149,12 @@ fun CategoryWiseDetailsScreen(
                     items(uiState.popularCourses) { course ->
                         CourseCardPopularFeatured(
                             course = course,
-                            onClick = {openCourseDetailsScreen(navController,course)},
+                            onClick = { openCourseDetailsScreen(navController, course) },
                             onFavoriteClick = {
-                                viewModel.handleFavoriteClick(course.id,course.is_favourited)
+                                viewModel.handleFavoriteClick(course.id, course.is_favourited)
                             },
                             onWishlistClick = {
-                                viewModel.handleWishlistClick(course.id,course.is_in_wishlist)
+                                viewModel.handleWishlistClick(course.id, course.is_in_wishlist)
                             }
                         )
                     }
@@ -215,12 +216,23 @@ fun CategoryWiseDetailsScreen(
                                 items(uiState.subcategoryCourses) { course ->
                                     CourseCardPopularFeatured(
                                         course = course,
-                                        onClick = {openCourseDetailsScreen(navController,course)},
+                                        onClick = {
+                                            openCourseDetailsScreen(
+                                                navController,
+                                                course
+                                            )
+                                        },
                                         onFavoriteClick = {
-                                            viewModel.handleFavoriteClick(course.id,course.is_favourited)
+                                            viewModel.handleFavoriteClick(
+                                                course.id,
+                                                course.is_favourited
+                                            )
                                         },
                                         onWishlistClick = {
-                                            viewModel.handleWishlistClick(course.id,course.is_in_wishlist)
+                                            viewModel.handleWishlistClick(
+                                                course.id,
+                                                course.is_in_wishlist
+                                            )
                                         }
                                     )
                                 }
@@ -285,12 +297,23 @@ fun CategoryWiseDetailsScreen(
                                 items(uiState.subjectCourses) { course ->
                                     CourseCardPopularFeatured(
                                         course = course,
-                                        onClick = {openCourseDetailsScreen(navController,course)},
+                                        onClick = {
+                                            openCourseDetailsScreen(
+                                                navController,
+                                                course
+                                            )
+                                        },
                                         onFavoriteClick = {
-                                            viewModel.handleFavoriteClick(course.id,course.is_favourited)
+                                            viewModel.handleFavoriteClick(
+                                                course.id,
+                                                course.is_favourited
+                                            )
                                         },
                                         onWishlistClick = {
-                                            viewModel.handleWishlistClick(course.id,course.is_in_wishlist)
+                                            viewModel.handleWishlistClick(
+                                                course.id,
+                                                course.is_in_wishlist
+                                            )
                                         }
                                     )
                                 }
@@ -335,12 +358,12 @@ fun CategoryWiseDetailsScreen(
                         uiState.allCourses.forEach { course ->
                             CourseCardRectangular(
                                 course = course,
-                                onClick = {openCourseDetailsScreen(navController,course)},
+                                onClick = { openCourseDetailsScreen(navController, course) },
                                 onFavoriteClick = {
-                                    viewModel.handleFavoriteClick(course.id,course.is_favourited)
+                                    viewModel.handleFavoriteClick(course.id, course.is_favourited)
                                 },
                                 onWishlistClick = {
-                                    viewModel.handleWishlistClick(course.id,course.is_in_wishlist)
+                                    viewModel.handleWishlistClick(course.id, course.is_in_wishlist)
                                 }
                             )
                         }

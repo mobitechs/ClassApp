@@ -1,6 +1,5 @@
 package com.mobitechs.classapp.screens.freeContent
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -61,6 +60,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -83,6 +83,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.mobitechs.classapp.data.model.response.Content
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.openPDFReader
 import com.mobitechs.classapp.utils.openVideoPlayer
 import com.mobitechs.classapp.utils.showToast
@@ -119,7 +120,8 @@ fun FreeContentScreen(
                             contentDescription = "Back"
                         )
                     }
-                }
+                },
+                colors = AppTheme.topAppBarColors,
             )
         }
     ) { paddingValues ->

@@ -6,18 +6,68 @@ import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Article
+import androidx.compose.material.icons.outlined.Audiotrack
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.FolderOff
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.PictureAsPdf
+import androidx.compose.material.icons.outlined.VideoLibrary
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -41,6 +91,7 @@ import com.mobitechs.classapp.data.model.response.Content
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.screens.home.ErrorView
 import com.mobitechs.classapp.screens.payment.PaymentActivity
+import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.Constants
 import com.mobitechs.classapp.utils.ToastObserver
 import com.mobitechs.classapp.utils.openPDFReader
@@ -127,7 +178,8 @@ fun CourseDetailScreen(
                     }
 
                     IconButton(onClick = {
-                        viewModel.handleFavoriteClick(uiState.course?.id ?: 1,
+                        viewModel.handleFavoriteClick(
+                            uiState.course?.id ?: 1,
                             uiState.course?.is_favourited ?: true
                         )
                     }) {
@@ -141,7 +193,8 @@ fun CourseDetailScreen(
                     }
 
                     IconButton(onClick = {
-                        viewModel.handleWishlistClick(uiState.course?.id ?: 1,
+                        viewModel.handleWishlistClick(
+                            uiState.course?.id ?: 1,
                             uiState.course?.is_in_wishlist ?: true
                         )
                     }) {
@@ -153,7 +206,8 @@ fun CourseDetailScreen(
                             else MaterialTheme.colorScheme.onSurface
                         )
                     }
-                }
+                },
+                colors = AppTheme.topAppBarColors,
             )
         }
     ) { paddingValues ->
@@ -205,7 +259,11 @@ fun CourseDetailScreen(
                             .weight(1f)
                     ) {
                         when (selectedTab) {
-                            0 -> CourseDetailsTab(navController = navController,course = uiState.course)
+                            0 -> CourseDetailsTab(
+                                navController = navController,
+                                course = uiState.course
+                            )
+
                             1 -> CourseContentTab(
                                 content = uiState.courseContent,
                                 is_purchased = uiState.course?.is_purchased ?: false,
@@ -287,7 +345,7 @@ fun CourseDetailScreen(
 }
 
 @Composable
-fun CourseDetailsTab(navController:NavController, course: Course?) {
+fun CourseDetailsTab(navController: NavController, course: Course?) {
     course?.let {
         Column(
             modifier = Modifier
@@ -319,7 +377,7 @@ fun CourseDetailsTab(navController:NavController, course: Course?) {
                             onClick = {
                                 /* Play video */
                                 val videoUrl = Constants.video1 // or your actual video URL
-                                openVideoPlayer(navController,course,videoUrl)
+                                openVideoPlayer(navController, course, videoUrl)
 //                                navController.navigate("video_player?courseJson=${Gson().toJson(course)}/videoUrl=$videoUrl")
                             },
                             modifier = Modifier
@@ -790,7 +848,6 @@ fun getContentTypeTitle(type: String): String {
 }
 
 
-
 fun handleContentClick(
     course: Course,
     content: Content,
@@ -804,15 +861,15 @@ fun handleContentClick(
 
     when (content.content_type.uppercase()) {
         "VIDEO" -> {
-            openVideoPlayer(navController,course,content.content_url)
+            openVideoPlayer(navController, course, content.content_url)
         }
 
         "AUDIO" -> {
-            openVideoPlayer(navController,course,content.content_url)
+            openVideoPlayer(navController, course, content.content_url)
         }
 
         "PDF" -> {
-            openPDFReader(navController,course,content.content_url)
+            openPDFReader(navController, course, content.content_url)
         }
 
         else -> {

@@ -1,10 +1,6 @@
 package com.mobitechs.classapp.screens.search
 
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.request.GetCourseByRequest
 import com.mobitechs.classapp.data.model.response.CategoryItem
@@ -13,7 +9,6 @@ import com.mobitechs.classapp.data.repository.CategoryRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.screens.store.CourseActionsViewModel
-import com.mobitechs.classapp.utils.Constants
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -194,7 +189,6 @@ class SearchViewModel(
             )
         }
     }
-
 
 
     override fun updateCourseInState(courseId: Int, transform: (Course) -> Course) {

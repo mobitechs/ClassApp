@@ -1,7 +1,6 @@
 package com.mobitechs.classapp.screens.profile
 
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
@@ -15,15 +14,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mobitechs.classapp.screens.common.CourseCardEmptyMessageWithoutBox
 import com.mobitechs.classapp.screens.common.CourseCardRectangular
+import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.ToastObserver
 import com.mobitechs.classapp.utils.openCourseDetailsScreen
 
@@ -55,7 +56,7 @@ fun MyWishlistScreen(
         topBar = {
             if (isSearchActive) {
                 SearchAppBar(
-                    searchFor =  "Search by name, category, subject...",
+                    searchFor = "Search by name, category, subject...",
                     searchQuery = searchQuery,
                     onSearchQueryChange = {
                         searchQuery = it
@@ -85,7 +86,8 @@ fun MyWishlistScreen(
                                 contentDescription = "Search"
                             )
                         }
-                    }
+                    },
+                   colors = AppTheme.topAppBarColors,
                 )
             }
         }

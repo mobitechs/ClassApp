@@ -15,9 +15,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,12 +30,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.mobitechs.classapp.data.model.response.CategoryItem
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.screens.common.CourseCardEmptyMessageWithoutBox
 import com.mobitechs.classapp.screens.common.CourseCardRectangular
 import com.mobitechs.classapp.screens.home.HomeViewModel
 import com.mobitechs.classapp.screens.profile.SearchAppBar
+import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.openCourseDetailsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +56,6 @@ fun SeeAllCoursesScreen(
     } catch (e: Exception) {
         emptyList()
     }
-
 
 
     var searchQuery by remember { mutableStateOf("") }
@@ -80,7 +81,7 @@ fun SeeAllCoursesScreen(
         topBar = {
             if (isSearchActive) {
                 SearchAppBar(
-                    searchFor =  "Search by name, category, subject...",
+                    searchFor = "Search by name, category, subject...",
                     searchQuery = searchQuery,
                     onSearchQueryChange = { searchQuery = it },
                     onCloseSearch = {
@@ -92,7 +93,7 @@ fun SeeAllCoursesScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = when(courseType) {
+                            text = when (courseType) {
                                 "popular" -> "Popular Courses"
                                 "featured" -> "Featured Courses"
                                 else -> "All Courses"
@@ -114,7 +115,8 @@ fun SeeAllCoursesScreen(
                                 contentDescription = "Search"
                             )
                         }
-                    }
+                    },
+                   colors = AppTheme.topAppBarColors,
                 )
             }
         }

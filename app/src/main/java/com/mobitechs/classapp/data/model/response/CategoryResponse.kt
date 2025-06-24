@@ -1,6 +1,5 @@
 package com.mobitechs.classapp.data.model.response
 
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

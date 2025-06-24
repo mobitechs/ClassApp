@@ -1,9 +1,6 @@
 package com.mobitechs.classapp.data.model.response
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Ignore
-import androidx.room.Index
 import androidx.room.PrimaryKey
 
 data class CourseContentResponse(
@@ -50,4 +47,4 @@ data class DownloadContent(
     var isDownloaded: Boolean = false,
     var downloadedAt: Long = System.currentTimeMillis(),
 
-)
+    )

@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mobitechs.classapp.screens.common.CourseCardEmptyMessageWithoutBox
 import com.mobitechs.classapp.screens.common.CourseCardRectangular
+import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.ToastObserver
 import com.mobitechs.classapp.utils.openCourseDetailsScreen
 
@@ -95,7 +97,8 @@ fun MyFavouriteScreen(
                                 contentDescription = "Search"
                             )
                         }
-                    }
+                    },
+                   colors = AppTheme.topAppBarColors,
                 )
             }
         }
@@ -224,7 +227,8 @@ fun SearchAppBar(
                     )
                 }
             }
-        }
+        },
+        colors = AppTheme.topAppBarColors,
     )
 }
 

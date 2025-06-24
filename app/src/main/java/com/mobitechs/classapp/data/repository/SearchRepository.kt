@@ -58,16 +58,19 @@ class SearchRepository(
                         ?: course.course_price.toIntOrNull() ?: Int.MAX_VALUE
                     price < 500
                 }
+
                 PriceRange.UNDER_1000 -> {
                     val price = course.course_discounted_price?.toIntOrNull()
                         ?: course.course_price.toIntOrNull() ?: Int.MAX_VALUE
                     price < 1000
                 }
+
                 PriceRange.ABOVE_1000 -> {
                     val price = course.course_discounted_price?.toIntOrNull()
                         ?: course.course_price.toIntOrNull() ?: 0
                     price >= 1000
                 }
+
                 null -> true
             }
 
@@ -108,15 +111,15 @@ class SearchRepository(
     /**
      * Get search suggestions based on partial query
      */
-    suspend fun getSearchSuggestions(partialQuery: String): List<String> = withContext(Dispatchers.IO) {
-        // In a real implementation, this would call an API endpoint for suggestions
-        // For now, filtering popular searches
-        val popularSearches = getPopularSearches()
-        popularSearches.filter {
-            it.contains(partialQuery, ignoreCase = true)
-        }.take(5)
-    }
-
+    suspend fun getSearchSuggestions(partialQuery: String): List<String> =
+        withContext(Dispatchers.IO) {
+            // In a real implementation, this would call an API endpoint for suggestions
+            // For now, filtering popular searches
+            val popularSearches = getPopularSearches()
+            popularSearches.filter {
+                it.contains(partialQuery, ignoreCase = true)
+            }.take(5)
+        }
 
 
     /**

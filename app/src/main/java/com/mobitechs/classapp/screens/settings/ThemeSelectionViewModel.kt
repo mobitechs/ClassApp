@@ -3,8 +3,8 @@ package com.mobitechs.classapp.screens.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.repository.ThemeRepository
-import com.mobitechs.classapp.ui.theme.ThemeType
 import com.mobitechs.classapp.ui.theme.ThemeState
+import com.mobitechs.classapp.ui.theme.ThemeType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

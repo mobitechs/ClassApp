@@ -245,7 +245,7 @@ class HomeViewModel(
                 // Update featured courses list
                 featuredCourses = state.featuredCourses.updateCourseList(courseId, transform),
 
-            )
+                )
         }
     }
 

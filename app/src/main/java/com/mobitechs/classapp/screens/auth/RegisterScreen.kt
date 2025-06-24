@@ -153,7 +153,8 @@ fun RegisterScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Gender selection
-                        val genderOptions = remember { listOf("male", "female", "Other", "Prefer not to say") }
+                        val genderOptions =
+                            remember { listOf("male", "female", "Other", "Prefer not to say") }
                         DropDown(
                             options = genderOptions,
                             selectedOption = uiState.gender ?: "Select Gender",

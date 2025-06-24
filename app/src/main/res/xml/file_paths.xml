@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<paths xmlns:android="http://schemas.android.com/apk/res/android">
+<paths>
     <!-- For cache directory -->
-    <cache-path 
-        name="temp_images" 
+    <cache-path
+        name="temp_images"
         path="." />
-    
+
     <!-- For files directory -->
-    <files-path 
-        name="chat_images" 
+    <files-path
+        name="chat_images"
         path="images/" />
-    
+
     <!-- For external files directory -->
-    <external-files-path 
-        name="external_images" 
+    <external-files-path
+        name="external_images"
         path="." />
-    
+
     <!-- For external cache directory -->
-    <external-cache-path 
-        name="external_cache_images" 
+    <external-cache-path
+        name="external_cache_images"
         path="." />
 </paths>

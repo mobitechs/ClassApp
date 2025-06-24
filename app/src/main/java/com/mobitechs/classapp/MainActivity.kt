@@ -16,12 +16,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.mobitechs.classapp.Screen.ChatListScreen
-import com.mobitechs.classapp.data.local.AppDatabase
-import com.mobitechs.classapp.data.repository.UserRepository
-import com.mobitechs.classapp.data.repository.chat.ChatRepository
-import com.mobitechs.classapp.data.repository.chat.ChatUserRepository
-import com.mobitechs.classapp.data.repository.chat.MessageRepository
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.auth.LoginScreen
 import com.mobitechs.classapp.screens.auth.RegisterScreen
@@ -68,13 +62,12 @@ import com.mobitechs.classapp.screens.store.StoreScreen
 import com.mobitechs.classapp.screens.store.StoreViewModel
 import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerScreen
 import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
-import com.mobitechs.classapp.ui.theme.ClassConnectTheme
 import com.mobitechs.classapp.ui.theme.ClassConnectThemeWrapper
+import com.mobitechs.classapp.ui.theme.ThemeManager
+import com.mobitechs.classapp.ui.theme.ThemeState
 import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
 import com.mobitechs.classapp.viewModel.chat.ChatViewModel
 import com.mobitechs.classapp.viewModel.chat.NewChatViewModel
-import com.mobitechs.classapp.ui.theme.ThemeManager
-import com.mobitechs.classapp.ui.theme.ThemeState
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -103,7 +96,6 @@ class MainActivity : ComponentActivity() {
         }
 
 
-
         // Create ViewModel factory
         val viewModelFactory = ViewModelFactory(
             applicationContext,
@@ -125,7 +117,7 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            ClassConnectThemeWrapper  {
+            ClassConnectThemeWrapper {
                 AppNavigation(viewModelFactory)
             }
         }
@@ -163,7 +155,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
         }
-    )  { paddingValues ->
+    ) { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = Screen.SplashScreen.route,

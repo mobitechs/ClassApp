@@ -4,12 +4,13 @@ package com.mobitechs.classapp.screens.offlineDownload
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mobitechs.classapp.data.local.AppDatabase
 import com.mobitechs.classapp.data.model.response.DownloadContent
 import com.mobitechs.classapp.data.repository.MyDownloadsRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.File
 
 data class MyDownloadsUiState(
     val isLoading: Boolean = false,

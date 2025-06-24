@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.mobitechs.classapp.data.model.response.OfferBanner
-import com.mobitechs.classapp.utils.Constants
 
 
 @Dao

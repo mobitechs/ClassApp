@@ -1,6 +1,11 @@
 package com.mobitechs.classapp.data.model.dao.chat
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.mobitechs.classapp.data.model.response.ChatUser
 import kotlinx.coroutines.flow.Flow
 

@@ -42,6 +42,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,6 +62,7 @@ import com.mobitechs.classapp.Screen
 import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.screens.common.ProfileMenuItem
 import com.mobitechs.classapp.screens.home.ErrorView
+import com.mobitechs.classapp.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +76,8 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile") }
+                title = { Text("Profile") },
+                colors = AppTheme.topAppBarColors,
             )
         }
     ) { paddingValues ->
@@ -283,6 +286,10 @@ fun ProfileHeader(
     onEditProfileClick: () -> Unit
 ) {
     Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),

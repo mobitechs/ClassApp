@@ -117,29 +117,26 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
-    implementation ("androidx.compose.foundation:foundation:1.8.2")// or newer
+    implementation("androidx.compose.foundation:foundation:1.8.2")// or newer
 
 
-    implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
-    implementation ("com.google.android.exoplayer:exoplayer-ui:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
 
     // Media3 ExoPlayer (new)
-    implementation ("androidx.media3:media3-exoplayer:1.7.1")
-    implementation ("androidx.media3:media3-ui:1.7.1")
-    implementation ("androidx.media3:media3-common:1.7.1")
+    implementation("androidx.media3:media3-exoplayer:1.7.1")
+    implementation("androidx.media3:media3-ui:1.7.1")
+    implementation("androidx.media3:media3-common:1.7.1")
 
 
     // Compose
-    implementation ("androidx.compose.ui:ui-viewbinding:1.5.4")
+    implementation("androidx.compose.ui:ui-viewbinding:1.5.4")
 
     // ViewModel
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.10.1")
-
-
-
 
 
 }

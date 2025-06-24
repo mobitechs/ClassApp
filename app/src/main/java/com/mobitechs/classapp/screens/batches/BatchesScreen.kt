@@ -51,6 +51,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -69,6 +70,7 @@ import coil.compose.AsyncImage
 import com.mobitechs.classapp.data.model.Batch
 import com.mobitechs.classapp.data.model.StudyMaterial
 import com.mobitechs.classapp.screens.home.ErrorView
+import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.Constants
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,8 +103,10 @@ fun BatchesScreen(
                             contentDescription = "Filter"
                         )
                     }
-                }
+                },
+                colors = AppTheme.topAppBarColors,
             )
+
         },
         floatingActionButton = {
             FloatingActionButton(

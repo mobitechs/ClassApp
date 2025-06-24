@@ -4,20 +4,56 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Computer
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Flight
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Hotel
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.LocalHospital
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.SportsSoccer
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.Work
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.model.response.CategoryItem
+import com.mobitechs.classapp.data.model.response.Content
 import com.mobitechs.classapp.data.model.response.Course
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import kotlin.math.absoluteValue
-import androidx.compose.ui.graphics.Color
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.filled.*
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
-import com.mobitechs.classapp.data.model.response.Content
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -26,45 +62,51 @@ import java.util.Locale
 fun showToast(context: Context, msg: String) {
     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
 }
+
 fun getFirstName(fullName: String): String {
     // Check if the input string is not empty or null
     return if (!fullName.isNullOrBlank()) {
         val nameParts = fullName.split(" ") // Split by space
-        nameParts.getOrNull(0) ?: "" // Return the first part (first name), or empty string if not available
+        nameParts.getOrNull(0)
+            ?: "" // Return the first part (first name), or empty string if not available
     } else {
         "" // Return empty string if the fullName is empty or null
     }
 }
 
 
-fun openCourseDetailsScreen(navController: NavController,course : Course) {
+fun openCourseDetailsScreen(navController: NavController, course: Course) {
     navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")
 }
 
 
-fun openSeeAllCourse(navController: NavController,courses : List<Course>, courseType:String) {
+fun openSeeAllCourse(navController: NavController, courses: List<Course>, courseType: String) {
     val coursesJson = Gson().toJson(courses)
     val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
     navController.navigate("seeAllCoursesScreen?courseListJson=$encodedJson/courseType=$courseType")
 }
 
-fun openSeeAllCategory(navController: NavController,courses : List<CategoryItem>) {
+fun openSeeAllCategory(navController: NavController, courses: List<CategoryItem>) {
     val coursesJson = Gson().toJson(courses)
     val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
     navController.navigate("SeeAllCategoriesScreen?categoryListJson=$encodedJson")
 }
 
-fun openCategoryWiseDetailsScreen(navController: NavController, categoryId:String, categoryName:String) {
+fun openCategoryWiseDetailsScreen(
+    navController: NavController,
+    categoryId: String,
+    categoryName: String
+) {
     navController.navigate("categoryWiseDetailsScreen?categoryId=${categoryId}/categoryName=${categoryName}")
 }
 
-fun openVideoPlayer(navController: NavController, course:Course, videoUrl:String) {
+fun openVideoPlayer(navController: NavController, course: Course, videoUrl: String) {
     val coursesJson = Gson().toJson(course)
     val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
     navController.navigate("video_player?courseJson=$encodedJson/videoUrl=$videoUrl")
 }
 
-fun openPDFReader(navController: NavController, course:Course, videoUrl:String) {
+fun openPDFReader(navController: NavController, course: Course, videoUrl: String) {
     val coursesJson = Gson().toJson(course)
     val encodedJson = URLEncoder.encode(coursesJson, StandardCharsets.UTF_8.toString())
     navController.navigate("PDFReader?courseJson=$encodedJson/url=$videoUrl")
@@ -78,7 +120,6 @@ fun openChannelLinks(context: Context, channelUrl: String) {
         // Handle error silently or show toast
     }
 }
-
 
 
 fun handleContentClick(
@@ -114,8 +155,6 @@ fun handleContentClick(
         }
     }
 }
-
-
 
 
 // while setting color to container
@@ -175,7 +214,6 @@ fun updateCategoriesWithUIData(categoryList: List<CategoryItem>): List<CategoryI
             saturation = 0.75f - (index % 3) * 0.1f,
             value = 0.55f - (index % 2) * 0.1f
         )
-
 
 
         val backgroundColor = hsvToColor(
@@ -258,7 +296,6 @@ fun getIconFromFieldName(fieldName: String?): ImageVector {
         Icons.Default.Category
     }
 }
-
 
 
 fun formatFileSize(sizeInBytes: Long): String {

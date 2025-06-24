@@ -6,8 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.google.gson.Gson
+import com.mobitechs.classapp.data.local.SharedPrefsManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -53,7 +53,7 @@ class ThemeManager(private val context: Context) {
     }
 
     suspend fun hasAccessToPremiumThemes(): Boolean {
-       // return sharedPrefsManager.isPremiumValid()
+        // return sharedPrefsManager.isPremiumValid()
         return true
     }
 

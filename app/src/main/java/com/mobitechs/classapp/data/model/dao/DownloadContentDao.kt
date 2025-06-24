@@ -1,10 +1,12 @@
-
 package com.mobitechs.classapp.data.model.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.mobitechs.classapp.data.model.response.DownloadContent
 import kotlinx.coroutines.flow.Flow
-
 
 
 @Dao

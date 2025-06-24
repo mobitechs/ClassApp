@@ -1,15 +1,9 @@
 package com.mobitechs.classapp.utils
 
 
-import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricPrompt
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
 import java.security.KeyStore
-import java.util.concurrent.Executor
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -18,7 +12,6 @@ object SecurityUtils {
 
     private const val KEY_NAME = "ClassConnectSecretKey"
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
-
 
 
     /**

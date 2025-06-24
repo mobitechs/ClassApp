@@ -1,7 +1,6 @@
 package com.mobitechs.classapp.data.repository
 
 
-import android.util.Log
 import com.mobitechs.classapp.data.api.ApiService
 import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.mobitechs.classapp.data.model.dao.CourseDao
@@ -13,8 +12,6 @@ import com.mobitechs.classapp.data.model.response.CourseContentResponse
 import com.mobitechs.classapp.data.model.response.CourseResponse
 import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
 import com.mobitechs.classapp.data.model.response.OfferBannerResponse
-import com.mobitechs.classapp.data.model.response.SubjectResponse
-import com.mobitechs.classapp.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -45,14 +42,15 @@ class CourseRepository(
             }
         }
 
-    suspend fun getCourseContent(courseId: Int): CourseContentResponse = withContext(Dispatchers.IO) {
-        val response = apiService.getCourseContent(courseId)
-        if (response.isSuccessful) {
-            return@withContext response.body() ?: throw Exception("Empty response body")
-        } else {
-            throw Exception("Failed to get course details: ${response.message()}")
+    suspend fun getCourseContent(courseId: Int): CourseContentResponse =
+        withContext(Dispatchers.IO) {
+            val response = apiService.getCourseContent(courseId)
+            if (response.isSuccessful) {
+                return@withContext response.body() ?: throw Exception("Empty response body")
+            } else {
+                throw Exception("Failed to get course details: ${response.message()}")
+            }
         }
-    }
 
     suspend fun getFreeContent(): CourseContentResponse = withContext(Dispatchers.IO) {
         val response = apiService.getFreeContent()
@@ -106,7 +104,12 @@ class CourseRepository(
     suspend fun addToFavorite(courseId: Int): CommonResponse =
         withContext(Dispatchers.IO) {
             val userId = sharedPrefsManager.getUser()?.id.toString()
-            val response = apiService.addToFavorite(CommonCourseRequest(userId.toString(),courseId.toString()))
+            val response = apiService.addToFavorite(
+                CommonCourseRequest(
+                    userId.toString(),
+                    courseId.toString()
+                )
+            )
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
@@ -117,7 +120,7 @@ class CourseRepository(
     suspend fun removeFromFavorite(courseId: Int): CommonResponse =
         withContext(Dispatchers.IO) {
             val userId = sharedPrefsManager.getUser()?.id.toString()
-            val response = apiService.removeFromFavorite(userId.toString(),courseId.toString())
+            val response = apiService.removeFromFavorite(userId.toString(), courseId.toString())
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
@@ -128,7 +131,12 @@ class CourseRepository(
     suspend fun addToWishlist(courseId: Int): CommonResponse =
         withContext(Dispatchers.IO) {
             val userId = sharedPrefsManager.getUser()?.id.toString()
-            val response = apiService.addToWishlist(CommonCourseRequest(userId.toString(),courseId.toString()))
+            val response = apiService.addToWishlist(
+                CommonCourseRequest(
+                    userId.toString(),
+                    courseId.toString()
+                )
+            )
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
@@ -139,7 +147,7 @@ class CourseRepository(
     suspend fun removeFromWishlist(courseId: Int): CommonResponse =
         withContext(Dispatchers.IO) {
             val userId = sharedPrefsManager.getUser()?.id.toString()
-            val response = apiService.removeFromWishlist(userId.toString(),courseId.toString())
+            val response = apiService.removeFromWishlist(userId.toString(), courseId.toString())
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
@@ -150,7 +158,8 @@ class CourseRepository(
     suspend fun likeCourse(courseId: Int): CommonResponse =
         withContext(Dispatchers.IO) {
             val userId = sharedPrefsManager.getUser()?.id.toString()
-            val response = apiService.likeCourse(CommonCourseRequest(userId.toString(),courseId.toString()))
+            val response =
+                apiService.likeCourse(CommonCourseRequest(userId.toString(), courseId.toString()))
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
@@ -161,15 +170,13 @@ class CourseRepository(
     suspend fun dislikeCourse(courseId: Int): CommonResponse =
         withContext(Dispatchers.IO) {
             val userId = sharedPrefsManager.getUser()?.id.toString()
-            val response = apiService.dislikeCourse(userId.toString(),courseId.toString())
+            val response = apiService.dislikeCourse(userId.toString(), courseId.toString())
             if (response.isSuccessful) {
                 return@withContext response.body() ?: throw Exception("Empty response body")
             } else {
                 throw Exception("Failed to get categories: ${response.message()}")
             }
         }
-
-
 
 
 }

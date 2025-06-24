@@ -1,5 +1,6 @@
 package com.mobitechs.classapp.viewModel.chat
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.response.Chat
@@ -7,14 +8,13 @@ import com.mobitechs.classapp.data.model.response.ChatUser
 import com.mobitechs.classapp.data.repository.AuthRepository
 import com.mobitechs.classapp.data.repository.chat.ChatRepository
 import com.mobitechs.classapp.data.repository.chat.ChatUserRepository
+import com.mobitechs.classapp.screens.chat.ChatTestDataHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.UUID
-import android.util.Log
-import com.mobitechs.classapp.screens.chat.ChatTestDataHelper
-import kotlinx.coroutines.flow.first
 
 data class NewChatUiState(
     val users: List<ChatUser> = emptyList(),

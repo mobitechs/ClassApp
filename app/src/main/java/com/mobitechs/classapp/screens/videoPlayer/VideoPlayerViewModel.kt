@@ -2,12 +2,15 @@ package com.mobitechs.classapp.screens.videoPlayer
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
+import androidx.annotation.OptIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.TransferListener
@@ -16,14 +19,11 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import com.mobitechs.classapp.data.local.AppDatabase
 import com.mobitechs.classapp.security.SecureStorageManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
-import android.util.Log
-import androidx.annotation.OptIn
-import androidx.media3.common.util.UnstableApi
 import java.io.File
 import java.io.InputStream
 
@@ -72,7 +72,10 @@ class VideoPlayerViewModel : ViewModel() {
                         }
 
                         override fun onVideoSizeChanged(videoSize: VideoSize) {
-                            Log.d("VideoPlayer", "Video size: ${videoSize.width} x ${videoSize.height}")
+                            Log.d(
+                                "VideoPlayer",
+                                "Video size: ${videoSize.width} x ${videoSize.height}"
+                            )
                         }
 
                         override fun onRenderedFirstFrame() {

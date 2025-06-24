@@ -1,6 +1,5 @@
 package com.mobitechs.classapp.screens.freeContent
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobitechs.classapp.data.model.response.Content
@@ -9,7 +8,6 @@ import com.mobitechs.classapp.data.model.response.DownloadContent
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.FreeContentRepository
 import com.mobitechs.classapp.data.repository.MyDownloadsRepository
-import com.mobitechs.classapp.utils.SecureDownloadManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,7 +40,7 @@ class FreeContentViewModel(
         setupDownloadCallbacks()
     }
 
-//    private fun setupDownloadCallbacks() {
+    //    private fun setupDownloadCallbacks() {
 //        val secureDownloadManager = (downloadRepository as? MyDownloadsRepository)?.let {
 //            // Access the secure download manager through reflection or make it public
 //            // For now, we'll assume you have access to it
@@ -68,51 +66,51 @@ class FreeContentViewModel(
 //            }
 //        }
 //    }
-private fun setupDownloadCallbacks() {
-    val secureDownloadManager = (downloadRepository as? MyDownloadsRepository)?.let {
-        // Access the secure download manager through reflection or make it public
-        // For now, we'll assume you have access to it
-        it.secureDownloadManager
-    }
-
-    secureDownloadManager?.apply {
-        onProgressUpdate = { contentId, progress ->
-            _uiState.update { state ->
-                state.copy(
-                    downloadProgress = state.downloadProgress + (contentId to progress)
-                )
-            }
+    private fun setupDownloadCallbacks() {
+        val secureDownloadManager = (downloadRepository as? MyDownloadsRepository)?.let {
+            // Access the secure download manager through reflection or make it public
+            // For now, we'll assume you have access to it
+            it.secureDownloadManager
         }
 
-        onDownloadComplete = { contentId, success ->
-            _uiState.update { state ->
-                val newDownloadingContent = state.downloadingContent - contentId
-                val newDownloadProgress = if (success) {
-                    // Keep progress at 100 briefly to trigger UI update
-                    state.downloadProgress + (contentId to 100)
-                } else {
-                    // Remove progress on failure
-                    state.downloadProgress - contentId
-                }
-
-                state.copy(
-                    downloadingContent = newDownloadingContent,
-                    downloadProgress = newDownloadProgress
-                )
-            }
-
-            // Clean up progress after a delay
-            viewModelScope.launch {
-                delay(1000) // Give UI time to react
+        secureDownloadManager?.apply {
+            onProgressUpdate = { contentId, progress ->
                 _uiState.update { state ->
                     state.copy(
-                        downloadProgress = state.downloadProgress - contentId
+                        downloadProgress = state.downloadProgress + (contentId to progress)
                     )
                 }
             }
+
+            onDownloadComplete = { contentId, success ->
+                _uiState.update { state ->
+                    val newDownloadingContent = state.downloadingContent - contentId
+                    val newDownloadProgress = if (success) {
+                        // Keep progress at 100 briefly to trigger UI update
+                        state.downloadProgress + (contentId to 100)
+                    } else {
+                        // Remove progress on failure
+                        state.downloadProgress - contentId
+                    }
+
+                    state.copy(
+                        downloadingContent = newDownloadingContent,
+                        downloadProgress = newDownloadProgress
+                    )
+                }
+
+                // Clean up progress after a delay
+                viewModelScope.launch {
+                    delay(1000) // Give UI time to react
+                    _uiState.update { state ->
+                        state.copy(
+                            downloadProgress = state.downloadProgress - contentId
+                        )
+                    }
+                }
+            }
         }
     }
-}
 
     fun toggleCourseExpanded(courseId: Int) {
         _uiState.update { state ->

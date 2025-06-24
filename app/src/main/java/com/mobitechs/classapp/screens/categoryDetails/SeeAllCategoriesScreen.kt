@@ -13,9 +13,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +33,7 @@ import com.mobitechs.classapp.screens.common.CategoryCardWithBgColorNIcon
 import com.mobitechs.classapp.screens.common.CourseCardEmptyMessageWithoutBox
 import com.mobitechs.classapp.screens.common.Grid
 import com.mobitechs.classapp.screens.profile.SearchAppBar
+import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.openCategoryWiseDetailsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,7 +103,8 @@ fun SeeAllCategoriesScreen(
                                 contentDescription = "Search"
                             )
                         }
-                    }
+                    },
+                   colors = AppTheme.topAppBarColors,
                 )
             }
         }

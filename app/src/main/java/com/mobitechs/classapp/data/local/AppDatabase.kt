@@ -1,14 +1,32 @@
 package com.mobitechs.classapp.data.local
 
+import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import android.content.Context
-import com.mobitechs.classapp.data.model.dao.*
+import com.mobitechs.classapp.data.model.dao.CategoryDao
+import com.mobitechs.classapp.data.model.dao.CourseDao
+import com.mobitechs.classapp.data.model.dao.DownloadContentDao
+import com.mobitechs.classapp.data.model.dao.NoticeDao
+import com.mobitechs.classapp.data.model.dao.NotificationDao
+import com.mobitechs.classapp.data.model.dao.OfferBannerDao
+import com.mobitechs.classapp.data.model.dao.SubCategoryDao
+import com.mobitechs.classapp.data.model.dao.SubjectDao
 import com.mobitechs.classapp.data.model.dao.chat.ChatDao
 import com.mobitechs.classapp.data.model.dao.chat.ChatUserDao
 import com.mobitechs.classapp.data.model.dao.chat.MessageDao
-import com.mobitechs.classapp.data.model.response.*
+import com.mobitechs.classapp.data.model.response.CategoryItem
+import com.mobitechs.classapp.data.model.response.Chat
+import com.mobitechs.classapp.data.model.response.ChatMessage
+import com.mobitechs.classapp.data.model.response.ChatParticipantEntity
+import com.mobitechs.classapp.data.model.response.ChatUser
+import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.data.model.response.DownloadContent
+import com.mobitechs.classapp.data.model.response.Notice
+import com.mobitechs.classapp.data.model.response.NotificationItem
+import com.mobitechs.classapp.data.model.response.OfferBanner
+import com.mobitechs.classapp.data.model.response.SubCategoryItem
+import com.mobitechs.classapp.data.model.response.SubjectItem
 
 @Database(
     entities = [

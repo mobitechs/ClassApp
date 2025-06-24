@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 
 class SimpleDownloadManager(private val context: Context) {
 
-    private val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    private val downloadManager =
+        context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
     private val database = AppDatabase.getDatabase(context)
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -74,7 +75,8 @@ class SimpleDownloadManager(private val context: Context) {
             delay(2000)
 
             // Update Room DB with file path
-            val filePath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/ClassApp/content_$contentId.mp4"
+            val filePath =
+                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/ClassApp/content_$contentId.mp4"
             database.contentDao().updateDownloadComplete(contentId, filePath)
         }
     }

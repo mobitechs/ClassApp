@@ -85,9 +85,6 @@ class FavouriteViewModel(
     }
 
 
-
-
-
     override fun updateCourseInState(
         courseId: Int,
         transform: (Course) -> Course

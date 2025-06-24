@@ -1,10 +1,7 @@
 package com.mobitechs.classapp.data.repository
 
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.ui.unit.Constraints
 import com.mobitechs.classapp.data.api.ApiService
 import com.mobitechs.classapp.data.local.SharedPrefsManager
 import com.mobitechs.classapp.data.model.dao.CategoryDao
@@ -14,7 +11,6 @@ import com.mobitechs.classapp.data.model.response.CategoryResponse
 import com.mobitechs.classapp.data.model.response.SubCategoryResponse
 import com.mobitechs.classapp.data.model.response.SubjectResponse
 import com.mobitechs.classapp.utils.Constants
-import com.mobitechs.classapp.utils.showToast
 import com.mobitechs.classapp.utils.updateCategoriesWithUIData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -56,7 +52,6 @@ class CategoryRepository(
             }
         }
     }
-
 
 
 //Sub categories ----------------------------------------------------------------------------------
@@ -108,9 +103,7 @@ class CategoryRepository(
         }
 
 
-
 //Subject ----------------------------------------------------------------------------------------
-
 
 
     suspend fun getAllSubject(): SubjectResponse = withContext(Dispatchers.IO) {
@@ -163,19 +156,19 @@ class CategoryRepository(
             )
         }
 
-    suspend fun getSubjectByCategorySubCategory(categoryId: Int, subCategoryId: Int): SubjectResponse =
+    suspend fun getSubjectByCategorySubCategory(
+        categoryId: Int,
+        subCategoryId: Int
+    ): SubjectResponse =
         withContext(Dispatchers.IO) {
             // Get from Room DB
             return@withContext SubjectResponse(
-                subjects = subjectDao.getSubjectByCategorySubCategory(categoryId,subCategoryId),
+                subjects = subjectDao.getSubjectByCategorySubCategory(categoryId, subCategoryId),
                 message = "Subjects ByCategorySubCategory from RoomDb",
                 status = true,
                 status_code = 200
             )
         }
-
-
-
 
 
 }

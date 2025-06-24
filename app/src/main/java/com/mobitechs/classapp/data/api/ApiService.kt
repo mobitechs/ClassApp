@@ -59,7 +59,7 @@ interface ApiService {
     suspend fun getNoticeboard(): Response<NoticeBoardResponse>
 
 
-//Courses ---------------------------------------------------------------------------------------
+    //Courses ---------------------------------------------------------------------------------------
     @POST("courses-with-filters")
     suspend fun getCourses(@Body request: GetCourseByRequest): Response<CourseResponse>
 
@@ -73,7 +73,7 @@ interface ApiService {
     suspend fun getFreeContent(): Response<CourseContentResponse>
 
 
-//Courses Fav ---------------------------------------------------------------------------------------
+    //Courses Fav ---------------------------------------------------------------------------------------
     @POST("favourite-courses")
     suspend fun addToFavorite(@Body request: CommonCourseRequest): Response<CommonResponse>
 
@@ -87,7 +87,7 @@ interface ApiService {
         @Path("courseId") courseId: String
     ): Response<CommonResponse>
 
-//Courses wishlist---------------------------------------------------------------------------------------
+    //Courses wishlist---------------------------------------------------------------------------------------
     @POST("whishlist-courses")
     suspend fun addToWishlist(@Body request: CommonCourseRequest): Response<CommonResponse>
 
@@ -100,7 +100,7 @@ interface ApiService {
         @Path("courseId") courseId: String
     ): Response<CommonResponse>
 
-//Courses like---------------------------------------------------------------------------------------
+    //Courses like---------------------------------------------------------------------------------------
     @POST("like-courses")
     suspend fun likeCourse(@Body request: CommonCourseRequest): Response<CommonResponse>
 
@@ -110,7 +110,7 @@ interface ApiService {
         @Path("courseId") courseId: String
     ): Response<CommonResponse>
 
-//Category ---------------------------------------------------------------------------------------
+    //Category ---------------------------------------------------------------------------------------
     @GET("categories")
     suspend fun getCategories(): Response<CategoryResponse>
 
@@ -130,7 +130,7 @@ interface ApiService {
     suspend fun getSubjectsBySubcategory(@Path("subCategoryId") categoryId: Int): Response<SubjectResponse>
 
 
-//Batches endpoints  ---------------------------------------------------------------------------------------
+    //Batches endpoints  ---------------------------------------------------------------------------------------
     @GET("batches")
     suspend fun getUserBatches(): Response<List<Batch>>
 
@@ -146,7 +146,7 @@ interface ApiService {
     ): Response<List<StudyMaterial>>
 
 
-//payment ---------------------------------------------------------------------------------------
+    //payment ---------------------------------------------------------------------------------------
     @GET("initiatePayment/{paymentId}")
     suspend fun initiatePayment(@Path("paymentId") paymentId: String): Response<PaymentResponse>
 

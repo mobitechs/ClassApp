@@ -108,98 +108,109 @@ object ChatTestDataHelper {
         when (chatId) {
             "chat_1" -> {
                 // Private chat with John
-                messages.addAll(listOf(
-                    ChatMessage(
-                        messageId = UUID.randomUUID().toString(),
-                        chatId = chatId,
-                        senderId = "user_john",
-                        content = "Photo",
-                        timestamp = now - 3 * 60 * 1000,
-                        isRead = true,
-                        messageType = "IMAGE",
-                        mediaUrl = "https://picsum.photos/300/200" // Sample image URL
-                    ),
-                    ChatMessage(
-                        messageId = UUID.randomUUID().toString(),
-                        chatId = chatId,
-                        senderId = currentUserId,
-                        content = "I'm good! Just finished work. How about you?",
-                        timestamp = now - 4 * 60 * 1000,
-                        isRead = true
-                    ),
-                    ChatMessage(
-                        messageId = UUID.randomUUID().toString(),
-                        chatId = chatId,
-                        senderId = "user_john",
-                        content = "Same here. Want to grab coffee tomorrow?",
-                        timestamp = now - 3 * 60 * 1000,
-                        isRead = true
-                    ),
-                    ChatMessage(
-                        messageId = UUID.randomUUID().toString(),
-                        chatId = chatId,
-                        senderId = currentUserId,
-                        content = "Sure! What time works for you?",
-                        timestamp = now - 2 * 60 * 1000,
-                        isRead = true
-                    ),
-                    ChatMessage(
-                        messageId = UUID.randomUUID().toString(),
-                        chatId = chatId,
-                        senderId = "user_john",
-                        content = "How about 10 AM at the usual place?",
-                        timestamp = now - 1 * 60 * 1000,
-                        isRead = false
+                messages.addAll(
+                    listOf(
+                        ChatMessage(
+                            messageId = UUID.randomUUID().toString(),
+                            chatId = chatId,
+                            senderId = "user_john",
+                            content = "Photo",
+                            timestamp = now - 3 * 60 * 1000,
+                            isRead = true,
+                            messageType = "IMAGE",
+                            mediaUrl = "https://picsum.photos/300/200" // Sample image URL
+                        ),
+                        ChatMessage(
+                            messageId = UUID.randomUUID().toString(),
+                            chatId = chatId,
+                            senderId = currentUserId,
+                            content = "I'm good! Just finished work. How about you?",
+                            timestamp = now - 4 * 60 * 1000,
+                            isRead = true
+                        ),
+                        ChatMessage(
+                            messageId = UUID.randomUUID().toString(),
+                            chatId = chatId,
+                            senderId = "user_john",
+                            content = "Same here. Want to grab coffee tomorrow?",
+                            timestamp = now - 3 * 60 * 1000,
+                            isRead = true
+                        ),
+                        ChatMessage(
+                            messageId = UUID.randomUUID().toString(),
+                            chatId = chatId,
+                            senderId = currentUserId,
+                            content = "Sure! What time works for you?",
+                            timestamp = now - 2 * 60 * 1000,
+                            isRead = true
+                        ),
+                        ChatMessage(
+                            messageId = UUID.randomUUID().toString(),
+                            chatId = chatId,
+                            senderId = "user_john",
+                            content = "How about 10 AM at the usual place?",
+                            timestamp = now - 1 * 60 * 1000,
+                            isRead = false
+                        )
                     )
-                ))
+                )
             }
+
             "chat_2" -> {
                 // Group chat - Project Team
-                messages.addAll(listOf(
-                    ChatMessage(
-                        messageId = UUID.randomUUID().toString(),
-                        chatId = chatId,
-                        senderId = currentUserId,
-                        content = "Hi team, I've uploaded the presentation draft",
-                        timestamp = now - 2 * 60 * 60 * 1000
-                    ),
-                    ChatMessage(
-                        messageId = UUID.randomUUID().toString(),
-                        chatId = chatId,
-                        senderId = "user_jane",
-                        content = "Thanks! I'll review it now",
-                        timestamp = now - 90 * 60 * 1000
-                    ),
-                    ChatMessage(
-                        messageId = UUID.randomUUID().toString(),
-                        chatId = chatId,
-                        senderId = "user_mike",
-                        content = "Great work on the presentation!",
-                        timestamp = now - 30 * 60 * 1000
-                    ),
-                    ChatMessage(
-                        messageId = UUID.randomUUID().toString(),
-                        chatId = chatId,
-                        senderId = "user_jane",
-                        content = "I agree, looks really good 👍",
-                        timestamp = now - 25 * 60 * 1000
-                    ),
-                    ChatMessage(
-                        messageId = UUID.randomUUID().toString(),
-                        chatId = chatId,
-                        senderId = currentUserId,
-                        content = "Thanks everyone! Let's meet tomorrow to finalize",
-                        timestamp = now - 20 * 60 * 1000
+                messages.addAll(
+                    listOf(
+                        ChatMessage(
+                            messageId = UUID.randomUUID().toString(),
+                            chatId = chatId,
+                            senderId = currentUserId,
+                            content = "Hi team, I've uploaded the presentation draft",
+                            timestamp = now - 2 * 60 * 60 * 1000
+                        ),
+                        ChatMessage(
+                            messageId = UUID.randomUUID().toString(),
+                            chatId = chatId,
+                            senderId = "user_jane",
+                            content = "Thanks! I'll review it now",
+                            timestamp = now - 90 * 60 * 1000
+                        ),
+                        ChatMessage(
+                            messageId = UUID.randomUUID().toString(),
+                            chatId = chatId,
+                            senderId = "user_mike",
+                            content = "Great work on the presentation!",
+                            timestamp = now - 30 * 60 * 1000
+                        ),
+                        ChatMessage(
+                            messageId = UUID.randomUUID().toString(),
+                            chatId = chatId,
+                            senderId = "user_jane",
+                            content = "I agree, looks really good 👍",
+                            timestamp = now - 25 * 60 * 1000
+                        ),
+                        ChatMessage(
+                            messageId = UUID.randomUUID().toString(),
+                            chatId = chatId,
+                            senderId = currentUserId,
+                            content = "Thanks everyone! Let's meet tomorrow to finalize",
+                            timestamp = now - 20 * 60 * 1000
+                        )
                     )
-                ))
+                )
             }
+
             else -> {
                 // Generic messages for other chats
                 messages.add(
                     ChatMessage(
                         messageId = UUID.randomUUID().toString(),
                         chatId = chatId,
-                        senderId = if (Random.nextBoolean()) currentUserId else "user_${Random.nextInt(1, 5)}",
+                        senderId = if (Random.nextBoolean()) currentUserId else "user_${
+                            Random.nextInt(
+                                1,
+                                5
+                            )
+                        }",
                         content = "This is a test message",
                         timestamp = now - Random.nextLong(1, 60) * 60 * 1000
                     )
@@ -211,32 +222,40 @@ object ChatTestDataHelper {
     }
 
     // Create chat participants
-    fun createChatParticipants(chatId: String, currentUserId: String = "user123"): List<ChatParticipantEntity> {
+    fun createChatParticipants(
+        chatId: String,
+        currentUserId: String = "user123"
+    ): List<ChatParticipantEntity> {
         return when (chatId) {
             "chat_1" -> listOf(
                 ChatParticipantEntity(chatId, currentUserId),
                 ChatParticipantEntity(chatId, "user_john")
             )
+
             "chat_2" -> listOf(
                 ChatParticipantEntity(chatId, currentUserId, isAdmin = true),
                 ChatParticipantEntity(chatId, "user_jane"),
                 ChatParticipantEntity(chatId, "user_mike"),
                 ChatParticipantEntity(chatId, "user_sarah")
             )
+
             "chat_3" -> listOf(
                 ChatParticipantEntity(chatId, currentUserId),
                 ChatParticipantEntity(chatId, "user_jane")
             )
+
             "chat_4" -> listOf(
                 ChatParticipantEntity(chatId, currentUserId),
                 ChatParticipantEntity(chatId, "user_john"),
                 ChatParticipantEntity(chatId, "user_jane"),
                 ChatParticipantEntity(chatId, "user_mike")
             )
+
             "chat_5" -> listOf(
                 ChatParticipantEntity(chatId, currentUserId),
                 ChatParticipantEntity(chatId, "user_mike")
             )
+
             else -> listOf(
                 ChatParticipantEntity(chatId, currentUserId)
             )

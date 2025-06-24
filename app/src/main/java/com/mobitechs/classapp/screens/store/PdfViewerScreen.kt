@@ -6,11 +6,44 @@ import android.net.Uri
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +54,7 @@ import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
+import com.mobitechs.classapp.ui.theme.AppTheme
 import java.net.URLDecoder
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,7 +143,8 @@ fun PdfViewerScreen(
                             contentDescription = "Share"
                         )
                     }
-                }
+                },
+                colors = AppTheme.topAppBarColors,
             )
         }
     ) { paddingValues ->
@@ -135,6 +170,7 @@ fun PdfViewerScreen(
                         }
                     )
                 }
+
                 decodedUrl != null -> {
                     // WebView for PDF
                     AndroidView(
@@ -150,7 +186,11 @@ fun PdfViewerScreen(
                                 }
 
                                 webViewClient = object : WebViewClient() {
-                                    override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                                    override fun onPageStarted(
+                                        view: WebView?,
+                                        url: String?,
+                                        favicon: android.graphics.Bitmap?
+                                    ) {
                                         super.onPageStarted(view, url, favicon)
                                         isLoading = true
                                         hasError = false
@@ -167,7 +207,12 @@ fun PdfViewerScreen(
                                         description: String?,
                                         failingUrl: String?
                                     ) {
-                                        super.onReceivedError(view, errorCode, description, failingUrl)
+                                        super.onReceivedError(
+                                            view,
+                                            errorCode,
+                                            description,
+                                            failingUrl
+                                        )
                                         isLoading = false
                                         hasError = true
                                     }
@@ -181,7 +226,8 @@ fun PdfViewerScreen(
                                 }
 
                                 // Load PDF using Google Docs viewer
-                                val googleDocsUrl = "https://docs.google.com/gview?embedded=true&url=$decodedUrl"
+                                val googleDocsUrl =
+                                    "https://docs.google.com/gview?embedded=true&url=$decodedUrl"
                                 loadUrl(googleDocsUrl)
                             }
                         },
@@ -198,6 +244,7 @@ fun PdfViewerScreen(
                         }
                     }
                 }
+
                 else -> {
                     EmptyState()
                 }

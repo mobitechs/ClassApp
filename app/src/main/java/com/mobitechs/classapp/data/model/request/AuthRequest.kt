@@ -1,7 +1,6 @@
 package com.mobitechs.classapp.data.model.request
 
 
-
 data class RegisterRequest(
     val name: String,
     val email: String,

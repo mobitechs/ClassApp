@@ -7,8 +7,15 @@ import com.mobitechs.classapp.data.local.AppDatabase
 import com.mobitechs.classapp.data.model.response.Content
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.DownloadContent
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
@@ -219,7 +226,10 @@ class SecureDownloadManager(private val context: Context) {
             val tempDir = File(context.cacheDir, "temp_content")
             if (!tempDir.exists()) tempDir.mkdirs()
 
-            val tempFile = File(tempDir, "temp_${downloadedContent.id}.${getExtension(downloadedContent.content_type)}")
+            val tempFile = File(
+                tempDir,
+                "temp_${downloadedContent.id}.${getExtension(downloadedContent.content_type)}"
+            )
 
             decryptFile(encryptedFile, tempFile)
 
