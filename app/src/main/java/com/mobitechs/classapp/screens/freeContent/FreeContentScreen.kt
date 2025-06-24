@@ -196,9 +196,7 @@ private fun FreeContentHeader(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+        colors = AppTheme.cardColors,
     ) {
         Row(
             modifier = Modifier
@@ -267,7 +265,8 @@ private fun CourseWithContentCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = AppTheme.cardColors,
     ) {
         Column {
             // Course Header (Always visible)

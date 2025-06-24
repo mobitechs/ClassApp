@@ -537,7 +537,8 @@ fun SearchResultCard(
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = AppTheme.cardColors
     ) {
         Row(
             modifier = Modifier

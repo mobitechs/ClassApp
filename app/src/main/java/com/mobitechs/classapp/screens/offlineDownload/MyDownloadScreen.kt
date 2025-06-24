@@ -67,6 +67,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.mobitechs.classapp.Screen
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.DownloadContent
 import com.mobitechs.classapp.ui.theme.AppTheme
@@ -247,9 +248,7 @@ private fun DownloadStatsCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+        colors = AppTheme.cardColors
     ) {
         Row(
             modifier = Modifier
@@ -330,6 +329,7 @@ private fun CourseDownloadSection(
     viewModel: MyDownloadsViewModel
 ) {
     Card(
+        colors = AppTheme.cardColors,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
@@ -520,7 +520,7 @@ private fun EmptyDownloadsView(
 
             Button(
                 onClick = {
-                    navController.navigate("freeContentScreen")
+                    navController.navigate(Screen.FreeContentScreen.route)
                 }
             ) {
                 Icon(Icons.Default.VideoLibrary, contentDescription = null)

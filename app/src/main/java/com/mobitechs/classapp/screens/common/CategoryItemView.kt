@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mobitechs.classapp.data.model.response.CategoryItem
+import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.getIconFromFieldName
 import com.mobitechs.classapp.utils.toComposeColor
 
@@ -171,11 +172,7 @@ fun CategoryCardWithBgColorNIcon(
             .fillMaxWidth()
             .padding(5.dp), //
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = category.backgroundColor.toComposeColor(
-                default = MaterialTheme.colorScheme.primaryContainer
-            )
-        )
+        colors = AppTheme.cardColors
     ) {
         Row(
             modifier = Modifier

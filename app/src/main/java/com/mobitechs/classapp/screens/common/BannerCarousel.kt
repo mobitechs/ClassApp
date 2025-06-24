@@ -29,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.mobitechs.classapp.data.model.response.OfferBanner
+import com.mobitechs.classapp.ui.theme.AppTheme
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -58,7 +59,8 @@ fun BannerCarousel(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
+                elevation = CardDefaults.cardElevation(4.dp),
+                colors = AppTheme.cardColors,
             ) {
                 HorizontalPager(
                     state = pagerState,

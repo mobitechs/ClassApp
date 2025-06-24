@@ -178,8 +178,10 @@ fun NewChatScreen(
             ) {
                 Card(
                     modifier = Modifier.padding(32.dp),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    colors = AppTheme.cardColors,
                 ) {
+
                     Row(
                         modifier = Modifier.padding(24.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -203,9 +205,7 @@ private fun CreateGroupButton(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+        colors = AppTheme.cardColors,
     ) {
         Row(
             modifier = Modifier

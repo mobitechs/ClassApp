@@ -667,7 +667,8 @@ fun ContentTypeSection(
     onContentClick: (Content) -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        colors = AppTheme.cardColors
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

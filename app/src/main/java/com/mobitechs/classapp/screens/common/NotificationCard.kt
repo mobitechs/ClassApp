@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.mobitechs.classapp.data.model.response.NotificationItem
+import com.mobitechs.classapp.ui.theme.AppTheme
 
 @Composable
 fun NotificationCard(
@@ -56,7 +57,8 @@ fun NotificationCard(
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onNotificationClick(notification) },
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = AppTheme.cardColors
     ) {
         Row(
             modifier = Modifier

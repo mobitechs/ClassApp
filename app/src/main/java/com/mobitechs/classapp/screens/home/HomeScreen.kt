@@ -522,8 +522,9 @@ fun HomeContent(
                 .padding(horizontal = 16.dp)
                 .clickable(onClick = onReferralClick),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
+            colors = AppTheme.cardColors,
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 8.dp
             )
         ) {
             Row(
@@ -665,9 +666,7 @@ fun SectionErrorView(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
-        )
+        colors = AppTheme.cardColors,
     ) {
         Column(
             modifier = Modifier

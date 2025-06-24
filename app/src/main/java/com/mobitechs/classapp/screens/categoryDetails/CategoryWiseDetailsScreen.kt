@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.mobitechs.classapp.Screen
 import com.mobitechs.classapp.data.model.response.SubCategoryItem
 import com.mobitechs.classapp.data.model.response.SubjectItem
 import com.mobitechs.classapp.screens.common.CourseCardEmptyMessage
@@ -101,7 +102,7 @@ fun CategoryWiseDetailsScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = { navController.navigate("search") }
+                        onClick = { navController.navigate(Screen.SearchScreen.route) }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Search,

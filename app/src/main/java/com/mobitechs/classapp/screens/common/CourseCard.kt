@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.ui.theme.AppTheme
 
 
 @Composable
@@ -62,9 +63,7 @@ fun CourseCardPopularFeatured(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        colors = AppTheme.cardColors
     ) {
         Column {
             // Course image with favorite button overlay
@@ -247,7 +246,8 @@ fun CourseCardForStore(
             .fillMaxWidth()
             .clickable(onClick = onCourseClick),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = AppTheme.cardColors
     ) {
         Column {
             // Course image with overlay for rating and likes
@@ -471,7 +471,8 @@ fun CourseCardRectangular(
             .height(120.dp),
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = AppTheme.cardColors
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
             // Course image
@@ -657,7 +658,8 @@ fun CourseGridItem(
             .fillMaxWidth()
             .height(280.dp),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = AppTheme.cardColors
     ) {
         Column {
             // Course image with overlay buttons

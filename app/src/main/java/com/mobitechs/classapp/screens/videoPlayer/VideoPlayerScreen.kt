@@ -70,6 +70,7 @@ import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.model.response.Course
+import com.mobitechs.classapp.ui.theme.AppTheme
 import kotlinx.coroutines.delay
 import java.net.URLDecoder
 
@@ -360,9 +361,7 @@ private fun YouTubeStyleLayout(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                colors = AppTheme.cardColors
             ) {
                 Row(
                     modifier = Modifier
@@ -412,9 +411,7 @@ private fun YouTubeStyleLayout(
             // Instructor Info
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+                colors = AppTheme.cardColors
             ) {
                 Row(
                     modifier = Modifier

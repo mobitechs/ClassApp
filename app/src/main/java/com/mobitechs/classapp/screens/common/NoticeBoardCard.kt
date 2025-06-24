@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.mobitechs.classapp.data.model.response.Notice
+import com.mobitechs.classapp.ui.theme.AppTheme
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -94,9 +95,7 @@ fun ModernNoticeCard(
                 onClick()
             },
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
+        colors = AppTheme.cardColors,
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
         )
@@ -234,9 +233,7 @@ fun MinimalNoticeCard(
             .width(280.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
+        colors = AppTheme.cardColors,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(

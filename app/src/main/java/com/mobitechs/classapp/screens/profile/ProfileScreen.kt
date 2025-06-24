@@ -122,7 +122,8 @@ fun ProfileScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.cardElevation(4.dp)
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        colors = AppTheme.cardColors
                     ) {
                         Column(
                             modifier = Modifier.padding(vertical = 8.dp)
@@ -133,7 +134,7 @@ fun ProfileScreen(
                                     ProfileMenuItemData(
                                         title = "My Purchased Courses",
                                         icon = Icons.Default.School,
-                                        route = "purchased_courses"
+                                        route = Screen.ThemeSelectionScreen.route
                                     ),
                                     ProfileMenuItemData(
                                         title = "My Payment History",
@@ -178,7 +179,8 @@ fun ProfileScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.cardElevation(4.dp)
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        colors = AppTheme.cardColors
                     ) {
                         Column(
                             modifier = Modifier.padding(vertical = 8.dp)
@@ -286,10 +288,7 @@ fun ProfileHeader(
     onEditProfileClick: () -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
+        colors = AppTheme.cardColors,
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
