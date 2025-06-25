@@ -111,7 +111,7 @@ fun ProfileScreen(
                     // Profile header
                     ProfileHeader(
                         user = uiState.user,
-                        onEditProfileClick = { /* Show edit profile dialog */ }
+                        onEditProfileClick = { navController.navigate(Screen.EditProfileScreen.route)}
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))

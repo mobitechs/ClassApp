@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mobitechs.classapp.Screen.EditProfileScreen
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.auth.LoginScreen
 import com.mobitechs.classapp.screens.auth.RegisterScreen
@@ -47,6 +48,7 @@ import com.mobitechs.classapp.screens.profile.MyFavouriteScreen
 import com.mobitechs.classapp.screens.profile.MyWishListViewModel
 import com.mobitechs.classapp.screens.profile.MyWishlistScreen
 import com.mobitechs.classapp.screens.profile.ProfileScreen
+import com.mobitechs.classapp.screens.profile.EditProfileScreen
 import com.mobitechs.classapp.screens.profile.ProfileViewModel
 import com.mobitechs.classapp.screens.search.SearchScreen
 import com.mobitechs.classapp.screens.search.SearchViewModel
@@ -68,6 +70,7 @@ import com.mobitechs.classapp.ui.theme.ThemeState
 import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
 import com.mobitechs.classapp.viewModel.chat.ChatViewModel
 import com.mobitechs.classapp.viewModel.chat.NewChatViewModel
+import com.mobitechs.classapp.viewModel.profile.EditProfileViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -113,7 +116,8 @@ class MainActivity : ComponentActivity() {
             app.chatUserRepository,
             app.chatRepository,
             app.messageRepository,
-            app.themeRepository
+            app.themeRepository,
+            app.profileRepository
         )
 
         setContent {
@@ -480,10 +484,19 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
+            composable(Screen.EditProfileScreen.route) {
+                val viewModel: EditProfileViewModel = viewModel(factory = viewModelFactory)
+                EditProfileScreen(
+                    viewModel = viewModel,
+                    navController = navController
+                )
+            }
+
 
         }
     }
 }
+
 
 
 // Define navigation destinations
@@ -516,6 +529,7 @@ sealed class Screen(val route: String) {
     object PrivacyPolicyScreen : Screen("privacyPolicyScreen")
     object TermConditionScreen : Screen("termConditionScreen")
     object FeedbackScreen : Screen("feedbackScreen")
+    object EditProfileScreen : Screen("editProfileScreen")
 
     object VideoPlayerScreen : Screen("videoPlayerScreen")
 

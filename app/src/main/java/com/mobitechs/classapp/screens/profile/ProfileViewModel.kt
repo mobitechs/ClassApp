@@ -9,6 +9,7 @@ import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.data.repository.AuthRepository
 import com.mobitechs.classapp.data.repository.CourseRepository
 import com.mobitechs.classapp.data.repository.UserRepository
+import com.mobitechs.classapp.utils.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +32,7 @@ class ProfileViewModel(
     private val userRepository: UserRepository,
     private val authRepository: AuthRepository,
     private val courseRepository: CourseRepository
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState(isLoading = true))
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()

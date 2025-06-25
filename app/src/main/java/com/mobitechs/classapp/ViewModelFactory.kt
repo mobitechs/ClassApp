@@ -13,6 +13,7 @@ import com.mobitechs.classapp.data.repository.MyDownloadsRepository
 import com.mobitechs.classapp.data.repository.NotificationRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
+import com.mobitechs.classapp.data.repository.ProfileRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.data.repository.ThemeRepository
 import com.mobitechs.classapp.data.repository.UserRepository
@@ -40,6 +41,7 @@ import com.mobitechs.classapp.screens.videoPlayer.VideoPlayerViewModel
 import com.mobitechs.classapp.viewModel.chat.ChatListViewModel
 import com.mobitechs.classapp.viewModel.chat.ChatViewModel
 import com.mobitechs.classapp.viewModel.chat.NewChatViewModel
+import com.mobitechs.classapp.viewModel.profile.EditProfileViewModel
 
 /**
  * Factory class for creating ViewModels without dependency injection
@@ -61,7 +63,8 @@ class ViewModelFactory(
     private val chatUserRepository: ChatUserRepository,
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
-    private val themeRepository: ThemeRepository
+    private val themeRepository: ThemeRepository,
+    private val profileRepository: ProfileRepository,
 ) : ViewModelProvider.Factory {
 
 
@@ -160,6 +163,9 @@ class ViewModelFactory(
 
             modelClass.isAssignableFrom(ThemeSelectionViewModel::class.java) -> {
                 ThemeSelectionViewModel(themeRepository) as T
+            }
+            modelClass.isAssignableFrom(EditProfileViewModel::class.java) -> {
+                EditProfileViewModel(profileRepository) as T
             }
 
 

@@ -18,6 +18,7 @@ import com.mobitechs.classapp.data.repository.MyDownloadsRepository
 import com.mobitechs.classapp.data.repository.NotificationRepository
 import com.mobitechs.classapp.data.repository.PaymentRepository
 import com.mobitechs.classapp.data.repository.PolicyTermConditionRepository
+import com.mobitechs.classapp.data.repository.ProfileRepository
 import com.mobitechs.classapp.data.repository.SearchRepository
 import com.mobitechs.classapp.data.repository.ThemeRepository
 import com.mobitechs.classapp.data.repository.UserRepository
@@ -91,6 +92,7 @@ class ClassConnectApp : Application() {
     val chatUserRepository by lazy { ChatUserRepository(database.chatUserDao()) }
     val chatRepository by lazy { ChatRepository(database.chatDao()) }
     val messageRepository by lazy { MessageRepository(database.messageDao()) }
+    val profileRepository by lazy { ProfileRepository(apiService, sharedPrefsManager) }
 
     override fun onCreate() {
         super.onCreate()
