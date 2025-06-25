@@ -117,14 +117,7 @@ fun StoreScreen(
                         )
                     )
                 },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
+
                 actions = {
                     IconButton(onClick = { navController.navigate(Screen.SearchScreen.route) }) {
                         Icon(

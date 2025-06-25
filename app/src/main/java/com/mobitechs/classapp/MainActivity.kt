@@ -134,6 +134,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
     val showBottomBar = currentRoute in listOf(
         Screen.HomeScreen.route,
         Screen.BatchesScreen.route,
+        Screen.ChatListScreen.route,
         Screen.StoreScreen.route,
         Screen.ProfileScreen.route
     )
@@ -231,26 +232,6 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                 )
             }
 
-
-//
-//
-//            composable(
-//                "course_detail?courseJson={courseJson}",
-//                arguments = listOf(
-//                    navArgument("courseJson") {
-//                        type = NavType.StringType
-//                        defaultValue = ""
-//                    }
-//                )
-//            ) {
-//                val courseDetailViewModel: CourseDetailViewModel = viewModel(factory = viewModelFactory)
-//                val courseJson = it.arguments?.getString("courseJson")
-//                CourseDetailScreen(
-//                    courseJson = courseJson,
-//                    navController = navController,
-//                    viewModel = courseDetailViewModel
-//                )
-//            }
 
             composable(
                 "course_detail?courseJson={courseJson}",
@@ -513,6 +494,9 @@ sealed class Screen(val route: String) {
     object HomeScreen : Screen("homeScreen")
     object BatchesScreen : Screen("batchesScreen")
 
+    object ChatListScreen : Screen("chatListScreen")
+    object NewChatScreen : Screen("newChatScreen")
+
     object StoreScreen : Screen("storeScreen")
     object CategoryScreen : Screen("categoryScreen")
     object SeeAllCoursesScreen : Screen("seeAllCoursesScreen")
@@ -534,7 +518,5 @@ sealed class Screen(val route: String) {
     object FeedbackScreen : Screen("feedbackScreen")
 
     object VideoPlayerScreen : Screen("videoPlayerScreen")
-    object ChatListScreen : Screen("chatListScreen")
-    object NewChatScreen : Screen("newChatScreen")
 
 }
