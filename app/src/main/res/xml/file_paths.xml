@@ -19,4 +19,10 @@
     <external-cache-path
         name="external_cache_images"
         path="." />
+
+
+    <files-path name="images" path="." />
+    <cache-path name="cache" path="." />
+    <external-files-path name="external_files" path="." />
+
 </paths>

@@ -32,6 +32,7 @@ data class EditProfileUiState(
     val panNo: String = "",
     val panNoError: String = "",
     val profileImageUrl: String = "",
+    val profileImagePath: String = "",  // For storing actual file path
     val isProfileUpdated: Boolean = false,
     val currentUser: Student? = null
 )
@@ -57,7 +58,7 @@ class EditProfileViewModel(
                 email = student.email ?: "",
                 phone = student.phone ?: "",
                 gender = student.gender ?: "",
-                bloodGroup = student.bloodGroup ?: "",  // Handle null with empty string
+                bloodGroup = student.bloodGroup ?: "",
                 address = student.address ?: "",
                 city = student.city ?: "",
                 pincode = student.pincode ?: "",
@@ -112,8 +113,11 @@ class EditProfileViewModel(
         _uiState.value = _uiState.value.copy(panNo = panNo, panNoError = "")
     }
 
-    fun showImagePicker() {
-        showToast("Image picker not implemented yet")
+    fun updateProfileImage(imagePath: String) {
+        _uiState.value = _uiState.value.copy(
+            profileImageUrl = imagePath,
+            profileImagePath = imagePath  // Store for API upload
+        )
     }
 
     fun saveProfile() {
@@ -136,7 +140,11 @@ class EditProfileViewModel(
                     pincode = _uiState.value.pincode,
                     adharNo = _uiState.value.adharNo,
                     panNo = _uiState.value.panNo,
-                    photo = _uiState.value.profileImageUrl,
+                    photo = if (_uiState.value.profileImagePath.isNotEmpty()) {
+                        _uiState.value.profileImagePath
+                    } else {
+                        currentUser?.photo ?: ""
+                    },
                     password = currentUser?.password ?: "",
                     added_by = currentUser?.added_by ?: "",
                     adharImage = currentUser?.adharImage ?: "",
@@ -176,7 +184,7 @@ class EditProfileViewModel(
                     email = student.email ?: "",
                     phone = student.phone ?: "",
                     gender = student.gender ?: "",
-                    bloodGroup = student.bloodGroup ?: "",  // Handle null
+                    bloodGroup = student.bloodGroup ?: "",
                     address = student.address ?: "",
                     city = student.city ?: "",
                     pincode = student.pincode ?: "",

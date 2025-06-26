@@ -1,6 +1,7 @@
 package com.mobitechs.classapp.screens.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -25,9 +26,11 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.gson.Gson
 import com.mobitechs.classapp.data.local.SharedPrefsManager
+import com.mobitechs.classapp.screens.common.ImagePickerDialog
 import com.mobitechs.classapp.screens.common.PrimaryButton
 import com.mobitechs.classapp.ui.theme.AppTheme
 import com.mobitechs.classapp.utils.ToastObserver
+import com.mobitechs.classapp.utils.rememberImagePickerWithOptions
 import com.mobitechs.classapp.viewModel.profile.EditProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,9 +43,20 @@ fun EditProfileScreen(
     val gson = Gson()
     val sharedPrefsManager = SharedPrefsManager(context, gson)
 
-
-
     val uiState by viewModel.uiState.collectAsState()
+
+    // State for showing image picker dialog
+    var showImagePickerDialog by remember { mutableStateOf(false) }
+
+    // Image picker launcher
+    val imagePicker = rememberImagePickerWithOptions(
+        onImageSelected = { imagePath ->
+            viewModel.updateProfileImage(imagePath)
+        },
+        onError = { error ->
+            viewModel.showToast(error)
+        }
+    )
 
     ToastObserver(viewModel)
 
@@ -79,12 +93,13 @@ fun EditProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Profile Picture Section
+
                 Box(
                     modifier = Modifier
                         .size(120.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primaryContainer)
-                        .clickable { viewModel.showImagePicker() },
+                        .clickable { showImagePickerDialog = true },
                     contentAlignment = Alignment.Center
                 ) {
                     if (uiState.profileImageUrl.isNotEmpty()) {
@@ -103,23 +118,70 @@ fun EditProfileScreen(
                         )
                     }
 
-                    // Camera icon overlay
+                    // Camera icon overlay - Fixed positioning
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .size(36.dp)
+                            .offset(x = (-8).dp, y = (-8).dp) // Adjust position to prevent cropping
+                            .size(32.dp) // Slightly smaller size
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary),
+                            .background(MaterialTheme.colorScheme.primary)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.surface,
+                                shape = CircleShape
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.CameraAlt,
                             contentDescription = "Change Photo",
                             tint = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(18.dp) // Smaller icon
                         )
                     }
                 }
+//                Box(
+//                    modifier = Modifier
+//                        .size(120.dp)
+//                        .clip(CircleShape)
+//                        .background(MaterialTheme.colorScheme.primaryContainer)
+//                        .clickable { showImagePickerDialog = true },
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    if (uiState.profileImageUrl.isNotEmpty()) {
+//                        AsyncImage(
+//                            model = uiState.profileImageUrl,
+//                            contentDescription = "Profile Picture",
+//                            modifier = Modifier.fillMaxSize(),
+//                            contentScale = ContentScale.Crop
+//                        )
+//                    } else {
+//                        Icon(
+//                            imageVector = Icons.Default.Person,
+//                            contentDescription = null,
+//                            modifier = Modifier.size(60.dp),
+//                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+//                        )
+//                    }
+//
+//                    // Camera icon overlay
+//                    Box(
+//                        modifier = Modifier
+//                            .align(Alignment.BottomEnd)
+//                            .size(36.dp)
+//                            .clip(CircleShape)
+//                            .background(MaterialTheme.colorScheme.primary),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.CameraAlt,
+//                            contentDescription = "Change Photo",
+//                            tint = MaterialTheme.colorScheme.onPrimary,
+//                            modifier = Modifier.size(20.dp)
+//                        )
+//                    }
+//                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -314,6 +376,15 @@ fun EditProfileScreen(
                     CircularProgressIndicator()
                 }
             }
+        }
+
+        // Image Picker Dialog
+        if (showImagePickerDialog) {
+            ImagePickerDialog(
+                onDismiss = { showImagePickerDialog = false },
+                onGalleryClick = { imagePicker.openGallery() },
+                onCameraClick = { imagePicker.openCamera() }
+            )
         }
     }
 }
