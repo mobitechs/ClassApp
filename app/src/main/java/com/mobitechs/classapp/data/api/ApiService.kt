@@ -1,7 +1,6 @@
 package com.mobitechs.classapp.data.api
 
 import com.mobitechs.classapp.data.model.Batch
-import com.mobitechs.classapp.data.model.PaymentResponse
 import com.mobitechs.classapp.data.model.StudyMaterial
 import com.mobitechs.classapp.data.model.request.CommonCourseRequest
 import com.mobitechs.classapp.data.model.request.GetCourseByRequest
@@ -17,6 +16,8 @@ import com.mobitechs.classapp.data.model.response.LoginResponse
 import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
 import com.mobitechs.classapp.data.model.response.NotificationsResponse
 import com.mobitechs.classapp.data.model.response.OfferBannerResponse
+import com.mobitechs.classapp.data.model.response.PaymentListResponse
+import com.mobitechs.classapp.data.model.response.PaymentStatusResponse
 import com.mobitechs.classapp.data.model.response.RefreshTokenResponse
 import com.mobitechs.classapp.data.model.response.Student
 import com.mobitechs.classapp.data.model.response.SubCategoryResponse
@@ -147,15 +148,17 @@ interface ApiService {
 
 
     //payment ---------------------------------------------------------------------------------------
-    @GET("initiatePayment/{paymentId}")
-    suspend fun initiatePayment(@Path("paymentId") paymentId: String): Response<PaymentResponse>
 
-    @GET("verifyPayment/{paymentId}")
-    suspend fun verifyPayment(
+
+    @GET("check-payment/{paymentId}/{courseId}")
+    suspend fun updatePurchaseStatus(
         @Path("paymentId") paymentId: String,
-        @Path("orderId") orderId: String,
-        @Path("signature") signature: String
-    ): Response<PaymentResponse>
+        @Path("courseId") courseId: String
+    ): Response<PaymentStatusResponse>
+
+
+    @GET("get-all-payments")
+    suspend fun getAllPaymentList(): Response<PaymentListResponse>
 
 
 }

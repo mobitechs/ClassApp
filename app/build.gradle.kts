@@ -43,10 +43,11 @@ android {
     buildFeatures {
         compose = true
     }
+
 }
 
 dependencies {
-
+    implementation(platform("androidx.compose:compose-bom:2024.02.00"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -137,6 +138,16 @@ dependencies {
 
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.10.1")
+
+    // CameraX core
+    implementation ("androidx.camera:camera-core:1.4.2")
+    implementation ("androidx.camera:camera-lifecycle:1.4.2")
+    implementation ("androidx.camera:camera-camera2:1.4.2")
+    implementation ("androidx.camera:camera-view:1.4.2")
+
+
+    // Coroutines
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
 
 }

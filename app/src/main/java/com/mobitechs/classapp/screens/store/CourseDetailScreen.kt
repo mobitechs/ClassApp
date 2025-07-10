@@ -131,31 +131,7 @@ fun CourseDetailScreen(
         }
     }
 
-    // Handle payment initialization
-    LaunchedEffect(uiState.paymentData) {
-        uiState.paymentData?.let { paymentData ->
-            try {
-                val checkout = Checkout()
-                checkout.setKeyID(Constants.RAZORPAY_KEY_ID)
 
-                val options = JSONObject()
-                options.put("name", "Class Connect")
-                options.put("description", "Payment for ${uiState.course?.course_name}")
-                options.put("order_id", paymentData.orderId)
-                options.put("currency", paymentData.currency)
-                options.put("amount", (paymentData.amount.toInt() * 100).toInt())
-
-                val prefill = JSONObject()
-                prefill.put("email", "")
-                prefill.put("contact", "")
-                options.put("prefill", prefill)
-
-                checkout.open(context as Activity, options)
-            } catch (e: Exception) {
-                // Handle payment initialization error
-            }
-        }
-    }
 
     Scaffold(
         topBar = {

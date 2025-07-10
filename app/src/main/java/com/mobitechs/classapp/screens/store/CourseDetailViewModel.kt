@@ -1,7 +1,6 @@
 package com.mobitechs.classapp.screens.store
 
 import androidx.lifecycle.viewModelScope
-import com.mobitechs.classapp.data.model.PaymentData
 import com.mobitechs.classapp.data.model.response.Content
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.repository.CourseRepository
@@ -18,8 +17,7 @@ data class CourseDetailUiState(
     val isLoading: Boolean = false,
     val isContentLoading: Boolean = false,
     val error: String = "",
-    val isProcessingPayment: Boolean = false,
-    val paymentData: PaymentData? = null
+    val isProcessingPayment: Boolean = false
 )
 
 
@@ -84,91 +82,9 @@ class CourseDetailViewModel(
         }
     }
 
-    fun initiatePayment() {
-        val course = uiState.value.course ?: return
 
-        _uiState.update { it.copy(isProcessingPayment = true) }
 
-        viewModelScope.launch {
-            try {
-                val paymentData = paymentRepository.initiatePayment(course.id.toString())
-//                _uiState.update {
-//                    it.copy(
-//                        paymentData = paymentData,
-//                        isProcessingPayment = false
-//                    )
-//                }
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        isProcessingPayment = false,
-                        error = e.message ?: "Payment initialization failed"
-                    )
-                }
-            }
-        }
-    }
 
-    fun updatePurchaseStatus(
-        courseId: String,
-        paymentId: String,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
-    ) {
-        viewModelScope.launch {
-            try {
-                // Make API call to your backend
-                // val result = apiService.updatePurchaseStatus(courseId, paymentId)
-
-                // Update local state
-                _uiState.update { currentState ->
-                    val updatedCourse = currentState.course?.copy(is_purchased = true)
-                    currentState.copy(
-                        course = updatedCourse,
-                        isProcessingPayment = false
-                    )
-                }
-                onSuccess()
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        error = "Failed to update purchase: ${e.message}",
-                        isProcessingPayment = false
-                    )
-                }
-                onError(e.message ?: "Unknown error")
-            }
-        }
-    }
-
-    fun verifyPayment(paymentId: String, orderId: String, signature: String) {
-        _uiState.update { it.copy(isProcessingPayment = true, error = "") }
-
-        viewModelScope.launch {
-            try {
-                val result = paymentRepository.verifyPayment(paymentId, orderId, signature)
-
-                if (result.status == "success") {
-                    // Update the course as purchased
-                    //loadCourseDetails()
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            isProcessingPayment = false,
-                            error = result.message ?: "Payment verification failed"
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        isProcessingPayment = false,
-                        error = e.message ?: "Failed to verify payment"
-                    )
-                }
-            }
-        }
-    }
 
     override fun updateCourseInState(
         courseId: Int,

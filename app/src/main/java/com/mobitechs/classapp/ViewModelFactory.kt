@@ -27,7 +27,7 @@ import com.mobitechs.classapp.screens.freeContent.FreeContentViewModel
 import com.mobitechs.classapp.screens.home.HomeViewModel
 import com.mobitechs.classapp.screens.notification.NotificationViewModel
 import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsViewModel
-import com.mobitechs.classapp.screens.payment.PaymentHistoryViewModel
+import com.mobitechs.classapp.screens.payment.PaymentViewModel
 import com.mobitechs.classapp.screens.policyTermCondition.PolicyTermConditionViewModel
 import com.mobitechs.classapp.screens.profile.FavouriteViewModel
 import com.mobitechs.classapp.screens.profile.MyWishListViewModel
@@ -121,8 +121,8 @@ class ViewModelFactory(
                 ) as T
             }
 
-            modelClass.isAssignableFrom(PaymentHistoryViewModel::class.java) -> {
-                PaymentHistoryViewModel(paymentRepository) as T
+            modelClass.isAssignableFrom(PaymentViewModel::class.java) -> {
+                PaymentViewModel(paymentRepository) as T
             }
 
             modelClass.isAssignableFrom(MyDownloadsViewModel::class.java) -> {

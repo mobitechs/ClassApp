@@ -16,7 +16,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.mobitechs.classapp.Screen.EditProfileScreen
 import com.mobitechs.classapp.screens.auth.AuthViewModel
 import com.mobitechs.classapp.screens.auth.LoginScreen
 import com.mobitechs.classapp.screens.auth.RegisterScreen
@@ -38,7 +37,7 @@ import com.mobitechs.classapp.screens.notification.NotificationViewModel
 import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsScreen
 import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsViewModel
 import com.mobitechs.classapp.screens.payment.PaymentHistoryScreen
-import com.mobitechs.classapp.screens.payment.PaymentHistoryViewModel
+import com.mobitechs.classapp.screens.payment.PaymentViewModel
 import com.mobitechs.classapp.screens.policyTermCondition.FeedbackScreen
 import com.mobitechs.classapp.screens.policyTermCondition.PolicyTermConditionViewModel
 import com.mobitechs.classapp.screens.policyTermCondition.PrivacyPolicyScreen
@@ -308,7 +307,7 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
             }
 
             composable(Screen.PaymentHistoryScreen.route) {
-                val viewModel: PaymentHistoryViewModel = viewModel(factory = viewModelFactory)
+                val viewModel: PaymentViewModel = viewModel(factory = viewModelFactory)
                 PaymentHistoryScreen(
                     viewModel = viewModel,
                     navController = navController
@@ -532,5 +531,10 @@ sealed class Screen(val route: String) {
     object EditProfileScreen : Screen("editProfileScreen")
 
     object VideoPlayerScreen : Screen("videoPlayerScreen")
+
+
+    object LiveHomeScreen : Screen("liveHomeScreen")
+    object WatchingScreen : Screen("watchingScreen")
+    object StreamingScreen : Screen("streamingScreen")
 
 }
