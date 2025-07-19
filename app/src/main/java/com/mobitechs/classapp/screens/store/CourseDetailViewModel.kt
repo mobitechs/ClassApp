@@ -1,6 +1,7 @@
 package com.mobitechs.classapp.screens.store
 
 import androidx.lifecycle.viewModelScope
+import com.mobitechs.classapp.data.model.request.GetCourseByRequest
 import com.mobitechs.classapp.data.model.response.Content
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.repository.CourseRepository
@@ -59,6 +60,27 @@ class CourseDetailViewModel(
         }
     }
 
+
+    fun loadCourseById(courseId: Int) {
+        _uiState.update { it.copy(isContentLoading = true) }
+
+        viewModelScope.launch {
+            try {
+                var reqObj = GetCourseByRequest(courseId = courseId)
+                val response = courseRepository.loadCourseById(reqObj)
+
+                _uiState.update { it.copy(course = response.courses.get(0)) }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isContentLoading = false,
+                        error = e.message ?: "Failed to load course details"
+                    )
+                }
+            }
+        }
+    }
+
     fun loadCourseContent(courseId: Int) {
         _uiState.update { it.copy(isContentLoading = true) }
 
@@ -81,9 +103,6 @@ class CourseDetailViewModel(
             }
         }
     }
-
-
-
 
 
     override fun updateCourseInState(

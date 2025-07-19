@@ -48,6 +48,8 @@ import com.mobitechs.classapp.screens.profile.MyWishListViewModel
 import com.mobitechs.classapp.screens.profile.MyWishlistScreen
 import com.mobitechs.classapp.screens.profile.ProfileScreen
 import com.mobitechs.classapp.screens.profile.EditProfileScreen
+import com.mobitechs.classapp.screens.profile.MyPurchasedCourseScreen
+import com.mobitechs.classapp.screens.profile.MyPurchasedCourseViewModel
 import com.mobitechs.classapp.screens.profile.ProfileViewModel
 import com.mobitechs.classapp.screens.search.SearchScreen
 import com.mobitechs.classapp.screens.search.SearchViewModel
@@ -237,19 +239,29 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
 
 
             composable(
-                "course_detail?courseJson={courseJson}",
+                "course_detail?courseJson={courseJson}&courseId={courseId}",
                 arguments = listOf(
                     navArgument("courseJson") {
                         type = NavType.StringType
-                        defaultValue = "null"
+                        defaultValue = "empty"
+                    },
+                    navArgument("courseId") {
+                        type = NavType.IntType
+                        defaultValue = 0
                     }
                 )
             ) { backStackEntry ->
                 val courseJson = backStackEntry.arguments?.getString("courseJson")
+                val courseId = backStackEntry.arguments?.getInt("courseId") ?: 0
                 val viewModel: CourseDetailViewModel = viewModel(factory = viewModelFactory)
-                CourseDetailScreen(courseJson, navController, viewModel)
-            }
 
+                CourseDetailScreen(
+                    courseJson = courseJson,
+                    courseId = courseId,
+                    navController = navController,
+                    viewModel = viewModel
+                )
+            }
             composable(
                 "video_player?courseJson={courseJson}/videoUrl={videoUrl}",
                 arguments = listOf(
@@ -490,6 +502,13 @@ fun AppNavigation(viewModelFactory: ViewModelFactory) {
                     navController = navController
                 )
             }
+            composable(Screen.MyPurchasedCourseScreen.route) {
+                val viewModel: MyPurchasedCourseViewModel = viewModel(factory = viewModelFactory)
+                MyPurchasedCourseScreen(
+                    viewModel = viewModel,
+                    navController = navController
+                )
+            }
 
 
         }
@@ -521,6 +540,7 @@ sealed class Screen(val route: String) {
     object MyDownloadsScreen : Screen("myDownloadScreen")
     object MyFavouriteScreen : Screen("MyFavouriteScreen")
     object MyWishlistScreen : Screen("myWishlistScreen")
+    object MyPurchasedCourseScreen : Screen("myPurchasedCourseScreen")
 
     object PaymentHistoryScreen : Screen("paymentHistoryScreen")
 

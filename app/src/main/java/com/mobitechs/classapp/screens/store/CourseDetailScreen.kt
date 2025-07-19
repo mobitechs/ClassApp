@@ -103,6 +103,7 @@ import org.json.JSONObject
 @Composable
 fun CourseDetailScreen(
     courseJson: String?,
+    courseId: Int,
     navController: NavController,
     viewModel: CourseDetailViewModel
 ) {
@@ -112,7 +113,7 @@ fun CourseDetailScreen(
     val context = LocalContext.current
     var showPreview by remember { mutableStateOf(false) }
 
-    // Use rememberSaveable to persist tab selection across navigation
+    // Use remember Savable to persist tab selection across navigation
     var selectedTab by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("Details", "Content")
 
@@ -120,16 +121,28 @@ fun CourseDetailScreen(
     val sharedPrefsManager by lazy { SharedPrefsManager(context, gson) }
     val user = sharedPrefsManager.getUser()
 
-    val courseObject = remember {
-        courseJson?.let { Gson().fromJson(it, Course::class.java) }
-    }
 
-    LaunchedEffect(courseObject) {
-        courseObject?.let {
-            viewModel.setCourse(it)
-            viewModel.loadCourseContent(it.id)
+    val courseObject = remember {
+        courseJson?.takeIf { it != "null" }?.let {
+            try {
+                Gson().fromJson(it, Course::class.java)
+            } catch (e: Exception) {
+                null
+            }
         }
     }
+
+    LaunchedEffect(courseObject, courseId) {
+        if (courseObject != null) {
+            // If we have course object, use it
+            viewModel.setCourse(courseObject)
+            viewModel.loadCourseContent(courseObject.id)
+        } else if (courseId > 0) {
+            // If we don't have course object but have courseId, load course by ID
+            viewModel.loadCourseById(courseId)
+        }
+    }
+
 
 
 
@@ -257,43 +270,47 @@ fun CourseDetailScreen(
                     }
                 }
 
-                // Floating Buy Now button
-                Button(
-                    onClick = {
-                        courseObject?.let { course ->
-                            user?.let { userDetails ->
-                                val intent = Intent(context, PaymentActivity::class.java).apply {
-                                    putExtra("COURSE_DATA", gson.toJson(course))
-                                    putExtra("USER_DATA", gson.toJson(userDetails))
+                if(uiState.course?.is_purchased != true){
+                    // Floating Buy Now button
+                    Button(
+                        onClick = {
+                            courseObject?.let { course ->
+                                user?.let { userDetails ->
+                                    val intent = Intent(context, PaymentActivity::class.java).apply {
+                                        putExtra("COURSE_DATA", gson.toJson(course))
+                                        putExtra("USER_DATA", gson.toJson(userDetails))
+                                    }
+                                    context.startActivity(intent)
                                 }
-                                context.startActivity(intent)
                             }
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = ButtonDefaults.elevatedButtonElevation(
+                            defaultElevation = 6.dp,
+                            pressedElevation = 8.dp
+                        ),
+                        enabled = !uiState.isProcessingPayment
+                    ) {
+                        if (uiState.isProcessingPayment) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
                         }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = ButtonDefaults.elevatedButtonElevation(
-                        defaultElevation = 6.dp,
-                        pressedElevation = 8.dp
-                    ),
-                    enabled = !uiState.isProcessingPayment
-                ) {
-                    if (uiState.isProcessingPayment) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary
+                        Text(
+                            text = if (uiState.course?.is_purchased == true) "Go to Course" else "Buy Now",
+                            modifier = Modifier.padding(vertical = 8.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
                     }
-                    Text(
-                        text = if (uiState.course?.is_purchased == true) "Go to Course" else "Buy Now",
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
                 }
+
+
             }
 
             // Error snackbar
@@ -507,57 +524,61 @@ fun CourseDetailsTab(navController: NavController, course: Course?) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Price section
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Show discounted price if available
-                    if (course.course_discounted_price != null) {
-                        Text(
-                            text = "₹${course.course_price}",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            textDecoration = TextDecoration.LineThrough
-                        )
 
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Text(
-                            text = "₹${course.course_discounted_price}",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        // Discount percentage
-                        val discountPercentage =
-                            ((course.course_price.toDouble() - course.course_discounted_price.toDouble()) / course.course_price.toDouble() * 100).toInt()
-
-                        Surface(
-                            color = MaterialTheme.colorScheme.errorContainer,
-                            shape = RoundedCornerShape(4.dp)
-                        ) {
+                if(course.is_purchased != true){
+                    // Price section
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Show discounted price if available
+                        if (course.course_discounted_price != null) {
                             Text(
-                                text = "$discountPercentage% OFF",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onErrorContainer,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                text = "₹${course.course_price}",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                textDecoration = TextDecoration.LineThrough
+                            )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Text(
+                                text = "₹${course.course_discounted_price}",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            // Discount percentage
+                            val discountPercentage =
+                                ((course.course_price.toDouble() - course.course_discounted_price.toDouble()) / course.course_price.toDouble() * 100).toInt()
+
+                            Surface(
+                                color = MaterialTheme.colorScheme.errorContainer,
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    text = "$discountPercentage% OFF",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
+                            }
+                        } else {
+                            // Regular price if no discount
+                            Text(
+                                text = "₹${course.course_price}",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
-                    } else {
-                        // Regular price if no discount
-                        Text(
-                            text = "₹${course.course_price}",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
                     }
+
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
 
                 // Description section
                 Text(

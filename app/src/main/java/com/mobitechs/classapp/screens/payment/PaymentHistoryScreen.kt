@@ -27,6 +27,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.mobitechs.classapp.data.model.response.Payment
 import com.mobitechs.classapp.ui.theme.AppTheme
+import com.mobitechs.classapp.utils.openCourseDetailsScreen
+import com.mobitechs.classapp.utils.openCourseDetailsScreenById
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -106,8 +108,10 @@ fun PaymentHistoryScreen(
                     PaymentHistoryList(
                         payments = uiState.paymentListResponse, // This is now List<Payment>
                         onPaymentClick = { payment ->
-                            // Handle payment item click if needed
-                            // You can navigate to payment details screen
+                            openCourseDetailsScreenById(
+                                navController,
+                                payment.course_id
+                            )
                         }
                     )
                 }
@@ -374,7 +378,7 @@ private fun PaymentHistoryItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = payment.course_name ?: "Course ID: ${payment.course_id}", // This now works correctly
+                    text = payment.name ?: "Course ID: ${payment.course_id}", // This now works correctly
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,

@@ -134,7 +134,7 @@ fun ProfileScreen(
                                     ProfileMenuItemData(
                                         title = "My Purchased Courses",
                                         icon = Icons.Default.School,
-                                        route = Screen.PaymentHistoryScreen.route
+                                        route = Screen.MyPurchasedCourseScreen.route
                                     ),
                                     ProfileMenuItemData(
                                         title = "My Payment History",

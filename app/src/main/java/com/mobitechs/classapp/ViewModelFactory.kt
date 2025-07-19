@@ -30,6 +30,7 @@ import com.mobitechs.classapp.screens.offlineDownload.MyDownloadsViewModel
 import com.mobitechs.classapp.screens.payment.PaymentViewModel
 import com.mobitechs.classapp.screens.policyTermCondition.PolicyTermConditionViewModel
 import com.mobitechs.classapp.screens.profile.FavouriteViewModel
+import com.mobitechs.classapp.screens.profile.MyPurchasedCourseViewModel
 import com.mobitechs.classapp.screens.profile.MyWishListViewModel
 import com.mobitechs.classapp.screens.profile.ProfileViewModel
 import com.mobitechs.classapp.screens.search.SearchViewModel
@@ -166,6 +167,9 @@ class ViewModelFactory(
             }
             modelClass.isAssignableFrom(EditProfileViewModel::class.java) -> {
                 EditProfileViewModel(profileRepository) as T
+            }
+            modelClass.isAssignableFrom(MyPurchasedCourseViewModel::class.java) -> {
+                MyPurchasedCourseViewModel(courseRepository) as T
             }
 
 

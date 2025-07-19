@@ -75,8 +75,25 @@ fun getFirstName(fullName: String): String {
 }
 
 
-fun openCourseDetailsScreen(navController: NavController, course: Course) {
-    navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")
+//fun openCourseDetailsScreen(navController: NavController, course: Course) {
+//    navController.navigate("course_detail?courseJson=${Gson().toJson(course)}")
+//}
+//
+//fun openCourseDetailsScreenById(navController: NavController, courseId: Int) {
+//    navController.navigate("course_detail?courseJson=null&courseId=$courseId")
+//}
+
+fun openCourseDetailsScreen(navController: NavController, course: Course? = null, courseId: Int? = null) {
+    val courseJson = course?.let {
+        Uri.encode(Gson().toJson(it))
+    } ?: "empty"
+    val id = courseId ?: course?.id ?: 0
+    navController.navigate("course_detail?courseJson=$courseJson&courseId=$id")
+}
+
+// Alternative function for when you only have courseId
+fun openCourseDetailsScreenById(navController: NavController, courseId: Int) {
+    navController.navigate("course_detail?courseJson=empty&courseId=$courseId")
 }
 
 

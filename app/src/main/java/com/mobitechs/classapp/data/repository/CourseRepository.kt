@@ -101,6 +101,24 @@ class CourseRepository(
         }
     }
 
+    suspend fun getAllPurchasedCourses(reqObj: GetCourseByRequest): CourseResponse = withContext(Dispatchers.IO) {
+        val response = apiService.getCourses(reqObj)
+        if (response.isSuccessful) {
+            return@withContext response.body() ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Failed to get purchased courses: ${response.message()}")
+        }
+    }
+
+    suspend fun loadCourseById(reqObj: GetCourseByRequest): CourseResponse = withContext(Dispatchers.IO) {
+        val response = apiService.getCourses(reqObj)
+        if (response.isSuccessful) {
+            return@withContext response.body() ?: throw Exception("Empty response body")
+        } else {
+            throw Exception("Failed to get id by course details: ${response.message()}")
+        }
+    }
+
     suspend fun addToFavorite(courseId: Int): CommonResponse =
         withContext(Dispatchers.IO) {
             val userId = sharedPrefsManager.getUser()?.id.toString()

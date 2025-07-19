@@ -74,6 +74,10 @@ interface ApiService {
     suspend fun getFreeContent(): Response<CourseContentResponse>
 
 
+//    @POST("courses-with-filters")
+//    suspend fun getAllPurchasedCourses(@Body request: GetCourseByRequest): Response<CourseResponse>
+
+
     //Courses Fav ---------------------------------------------------------------------------------------
     @POST("favourite-courses")
     suspend fun addToFavorite(@Body request: CommonCourseRequest): Response<CommonResponse>

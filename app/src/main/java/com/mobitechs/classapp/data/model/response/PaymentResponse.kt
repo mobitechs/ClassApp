@@ -61,11 +61,10 @@ data class Payment(
     val amount: Int,
     val course_id: Int,
     val id: Int,
-    val name: Any,
     val razorpay_payment_id: String,
     val status: String,
     val student_id: Int,
     val created_at: String?,
-    val course_name: String?, // Fixed: was Any, should be String?
+    val name: String?, // Fixed: was Any, should be String?
     val course_image: String?, // Added missing field
 )
