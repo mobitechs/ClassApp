@@ -1,10 +1,5 @@
 package com.mobitechs.classapp.data.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.mobitechs.classapp.data.model.response.OfferBanner
-import java.util.Date
-
 
 data class MyBatchResponse(
     val message: String,

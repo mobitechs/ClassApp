@@ -10,6 +10,7 @@ import com.mobitechs.classapp.data.model.response.CommonResponse
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.CourseContentResponse
 import com.mobitechs.classapp.data.model.response.CourseResponse
+import com.mobitechs.classapp.data.model.response.CourseWiseContentResponse
 import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
 import com.mobitechs.classapp.data.model.response.OfferBannerResponse
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +43,7 @@ class CourseRepository(
             }
         }
 
-    suspend fun getCourseContent(courseId: Int): CourseContentResponse =
+    suspend fun getCourseContent(courseId: Int): CourseWiseContentResponse =
         withContext(Dispatchers.IO) {
             val response = apiService.getCourseContent(courseId)
             if (response.isSuccessful) {

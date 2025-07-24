@@ -13,6 +13,7 @@ import com.mobitechs.classapp.data.model.response.CommonResponse
 import com.mobitechs.classapp.data.model.response.Course
 import com.mobitechs.classapp.data.model.response.CourseContentResponse
 import com.mobitechs.classapp.data.model.response.CourseResponse
+import com.mobitechs.classapp.data.model.response.CourseWiseContentResponse
 import com.mobitechs.classapp.data.model.response.LoginResponse
 import com.mobitechs.classapp.data.model.response.NoticeBoardResponse
 import com.mobitechs.classapp.data.model.response.NotificationsResponse
@@ -69,7 +70,7 @@ interface ApiService {
     suspend fun getCourseDetails(@Path("id") courseId: Int): Response<Course>
 
     @GET("content/{id}")
-    suspend fun getCourseContent(@Path("id") courseId: Int): Response<CourseContentResponse>
+    suspend fun getCourseContent(@Path("id") courseId: Int): Response<CourseWiseContentResponse>
 
     @GET("free-content")
     suspend fun getFreeContent(): Response<CourseContentResponse>

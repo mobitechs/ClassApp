@@ -23,8 +23,8 @@ data class FreeContentUiState(
     val searchQuery: String = "",
     val selectedContentType: String? = null,
     val expandedCourseIds: Set<Int> = emptySet(),
-    val downloadProgress: Map<Int, Int> = emptyMap(), // contentId to progress percentage
-    val downloadingContent: Set<Int> = emptySet() // content IDs currently downloading
+    val downloadProgress: Map<Int, Int> = emptyMap(),
+    val downloadingContent: Set<Int> = emptySet()
 )
 
 class FreeContentViewModel(
@@ -40,36 +40,8 @@ class FreeContentViewModel(
         setupDownloadCallbacks()
     }
 
-    //    private fun setupDownloadCallbacks() {
-//        val secureDownloadManager = (downloadRepository as? MyDownloadsRepository)?.let {
-//            // Access the secure download manager through reflection or make it public
-//            // For now, we'll assume you have access to it
-//            it.secureDownloadManager
-//        }
-//
-//        secureDownloadManager?.apply {
-//            onProgressUpdate = { contentId, progress ->
-//                _uiState.update { state ->
-//                    state.copy(
-//                        downloadProgress = state.downloadProgress + (contentId to progress)
-//                    )
-//                }
-//            }
-//
-//            onDownloadComplete = { contentId, success ->
-//                _uiState.update { state ->
-//                    state.copy(
-//                        downloadingContent = state.downloadingContent - contentId,
-//                        downloadProgress = state.downloadProgress - contentId
-//                    )
-//                }
-//            }
-//        }
-//    }
     private fun setupDownloadCallbacks() {
         val secureDownloadManager = (downloadRepository as? MyDownloadsRepository)?.let {
-            // Access the secure download manager through reflection or make it public
-            // For now, we'll assume you have access to it
             it.secureDownloadManager
         }
 
@@ -86,10 +58,8 @@ class FreeContentViewModel(
                 _uiState.update { state ->
                     val newDownloadingContent = state.downloadingContent - contentId
                     val newDownloadProgress = if (success) {
-                        // Keep progress at 100 briefly to trigger UI update
                         state.downloadProgress + (contentId to 100)
                     } else {
-                        // Remove progress on failure
                         state.downloadProgress - contentId
                     }
 
@@ -99,9 +69,8 @@ class FreeContentViewModel(
                     )
                 }
 
-                // Clean up progress after a delay
                 viewModelScope.launch {
-                    delay(1000) // Give UI time to react
+                    delay(1000)
                     _uiState.update { state ->
                         state.copy(
                             downloadProgress = state.downloadProgress - contentId
@@ -128,27 +97,24 @@ class FreeContentViewModel(
 
         viewModelScope.launch {
             try {
-                // Get free content from API
                 val response = courseRepository.getFreeContent()
-                val freeContent = response.content?.filter {
-                    it.is_free == "Yes"
-                } ?: emptyList()
+                val courses = response.content ?: emptyList()
 
-                // Group content by course ID first
-                val contentByCourseId = freeContent.groupBy { it.course_id }
-
-                // Create course objects (either from content or dummy)
                 val groupedContent = mutableMapOf<Course, List<Content>>()
+                val allFreeContent = mutableListOf<Content>()
 
-                contentByCourseId.forEach { (courseId, contents) ->
-                    // Check if any content has course object
-                    val courseFromContent = contents.firstOrNull { it.course != null }?.course
+                courses.forEach { course ->
+                    // Assuming Course now has contents field
+                    val freeContent = course.contents?.filter { content ->
+                        content.is_free?.equals("Yes", ignoreCase = true) == true
+                    } ?: emptyList()
 
-                    val course = courseFromContent ?: createDummyCourse(courseId, contents.size)
-                    groupedContent[course] = contents
+                    if (freeContent.isNotEmpty()) {
+                        groupedContent[course] = freeContent
+                        allFreeContent.addAll(freeContent)
+                    }
                 }
 
-                // Sort by course likes (descending) or by course ID
                 val sortedGroupedContent = groupedContent.toList()
                     .sortedByDescending { it.first.course_like }
                     .toMap()
@@ -156,7 +122,7 @@ class FreeContentViewModel(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        allContent = freeContent,
+                        allContent = allFreeContent,
                         groupedContent = sortedGroupedContent,
                         error = ""
                     )
@@ -172,40 +138,6 @@ class FreeContentViewModel(
         }
     }
 
-    private fun createDummyCourse(courseId: Int, contentCount: Int): Course {
-        return Course(
-            id = courseId,
-            course_name = "Course ID: $courseId",
-            course_description = null,
-            course_price = "0",
-            course_discounted_price = "0",
-            course_like = 0,
-            course_tags = null,
-            category_id = null,
-            category_name = null,
-            sub_category_id = null,
-            sub_category_name = null,
-            subject_id = null,
-            subject_name = null,
-            image = null,
-            instructor = null,
-            course_duration = null,
-            course_expiry_date = null,
-            offer_code = null,
-            is_favourited = false,
-            is_purchased = false,
-            is_in_wishlist = false,
-            is_liked = false,
-            is_active = "Active",
-            created_at = null,
-            updated_at = null,
-            deleted_at = null,
-            added_by = null,
-            lastSyncedAt = System.currentTimeMillis()
-        )
-    }
-
-    // Download content using repository
     fun downloadContent(content: Content, course: Course) {
         viewModelScope.launch {
             _uiState.update { state ->
@@ -218,7 +150,6 @@ class FreeContentViewModel(
         }
     }
 
-    // Cancel download
     fun cancelDownload(contentId: Int) {
         viewModelScope.launch {
             downloadRepository.cancelDownload(contentId)
@@ -231,7 +162,6 @@ class FreeContentViewModel(
         }
     }
 
-    // Delete downloaded content
     fun deleteDownload(contentId: Int) {
         viewModelScope.launch {
             val downloadedContent = downloadRepository.getDownloadByContentId(contentId)
@@ -241,12 +171,10 @@ class FreeContentViewModel(
         }
     }
 
-    // Check if content is downloaded using repository
     suspend fun isContentDownloaded(contentId: Int): Boolean {
         return downloadRepository.isContentDownloaded(contentId)
     }
 
-    // Get downloaded content details
     suspend fun getDownloadedContent(contentId: Int): DownloadContent? {
         return downloadRepository.getDownloadByContentId(contentId)
     }

@@ -32,8 +32,6 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.ThumbUp
@@ -60,7 +58,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -156,7 +153,6 @@ fun FreeContentScreen(
                         contentPadding = PaddingValues(vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        // Header with total count
                         item {
                             FreeContentHeader(
                                 totalCourses = uiState.groupedContent.size,
@@ -164,7 +160,6 @@ fun FreeContentScreen(
                             )
                         }
 
-                        // Course items with expandable content
                         items(
                             items = uiState.groupedContent.toList(),
                             key = { it.first.id }
@@ -208,18 +203,20 @@ private fun FreeContentHeader(
                 Icon(
                     imageVector = Icons.Default.School,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "$totalCourses",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = "Courses",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -227,25 +224,27 @@ private fun FreeContentHeader(
                 modifier = Modifier
                     .height(60.dp)
                     .width(1.dp),
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f)
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
             )
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     imageVector = Icons.Default.VideoLibrary,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(24.dp)
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "$totalContent",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 Text(
                     text = "Free Content",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -265,11 +264,10 @@ private fun CourseWithContentCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = AppTheme.cardColors,
     ) {
         Column {
-            // Course Header (Always visible)
             CourseHeader(
                 course = course,
                 contentCount = contentList.size,
@@ -278,7 +276,6 @@ private fun CourseWithContentCard(
                 navController = navController
             )
 
-            // Expandable Content List
             AnimatedVisibility(
                 visible = isExpanded,
                 enter = expandVertically() + fadeIn(),
@@ -289,12 +286,11 @@ private fun CourseWithContentCard(
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                 ) {
-                    // Group content by type
                     val groupedByType = contentList.groupBy { it.content_type }
 
                     groupedByType.forEach { (type, contents) ->
                         ContentTypeSection(
-                            type = type,
+                            type = type ?: "Unknown",
                             contentList = contents,
                             course = course,
                             navController = navController,
@@ -317,229 +313,196 @@ private fun CourseHeader(
 ) {
     val context = LocalContext.current
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onToggleExpanded() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Course Thumbnail - only show if image exists
-        if (course.image != null) {
-            AsyncImage(
-                model = course.image,
-                contentDescription = course.course_name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-        } else {
-            // Show placeholder icon instead of image
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.size(80.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.School,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(40.dp)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        // Course Info
-        Column(
-            modifier = Modifier.weight(1f)
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onToggleExpanded() }
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = course.course_name ?: "Course ${course.id}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Course metadata - only show if data exists
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // Likes - only show if greater than 0
-                if (course.course_like > 0) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.ThumbUp,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "${course.course_like}",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
-
-                // Content count
+            if (!course.image.isNullOrEmpty()) {
+                AsyncImage(
+                    model = course.image,
+                    contentDescription = course.course_name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                )
+            } else {
                 Surface(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    shape = RoundedCornerShape(12.dp)
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.size(80.dp)
                 ) {
-                    Text(
-                        text = "$contentCount Free Items",
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                }
-            }
-
-            // Tags if available
-            if (!course.course_tags.isNullOrEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    course.course_tags.split(",").take(2).forEach { tag ->
-                        if (tag.isNotBlank()) {
-                            Surface(
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(4.dp)
-                            ) {
-                                Text(
-                                    text = tag.trim(),
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.School,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(40.dp)
+                        )
                     }
                 }
             }
-        }
 
-        // Expand/Collapse Icon
-        IconButton(onClick = onToggleExpanded) {
-            Icon(
-                imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                contentDescription = if (isExpanded) "Collapse" else "Expand"
-            )
-        }
-    }
+            Spacer(modifier = Modifier.width(16.dp))
 
-    // Show additional course info when expanded
-    if (isExpanded) {
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            Divider()
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = course.course_name ?: "Course ${course.id}",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
 
-            // Only show course info that exists
-            val hasAdditionalInfo = !course.course_description.isNullOrEmpty() ||
-                    !course.instructor.isNullOrEmpty()
-
-            if (hasAdditionalInfo) {
-                // Course description
                 if (!course.course_description.isNullOrEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = course.course_description,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                // Additional course metadata
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Instructor
-                    if (!course.instructor.isNullOrEmpty()) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f, fill = false)
+                    if (course.course_like > 0) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = RoundedCornerShape(16.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ThumbUp,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp),
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "${course.course_like}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                            }
+                        }
+                    }
+
+                    Surface(
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text(
+                            text = "$contentCount Free Items",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+
+                if (!course.course_price.isNullOrEmpty() && course.course_price != "0") {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (!course.course_discounted_price.isNullOrEmpty() &&
+                            course.course_discounted_price != course.course_price) {
                             Text(
-                                text = course.instructor,
+                                text = "₹${course.course_discounted_price}",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = "₹${course.course_price}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                            )
+                        } else {
+                            Text(
+                                text = "₹${course.course_price}",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
                 }
             }
 
-            // Always show Course ID
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(vertical = 8.dp)
-            ) {
+            IconButton(onClick = onToggleExpanded) {
                 Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "Course ID: ${course.id}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = if (isExpanded) "Collapse" else "Expand",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
+        }
 
-            // Only show View Full Course button if course has actual data
-            if (course.course_description != null || course.instructor != null ||
-                course.course_tags != null || course.image != null
+        if (isExpanded && !course.course_tags.isNullOrEmpty()) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                TextButton(
-                    onClick = {
-                        try {
-                            // Navigate to course detail
-                            val courseJson = com.google.gson.Gson().toJson(course)
-                            navController.navigate("courseDetailScreen/$courseJson")
-                        } catch (e: Exception) {
-                            showToast(context, "Unable to view course details")
+                course.course_tags.split(",").take(3).forEach { tag ->
+                    if (tag.isNotBlank()) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                            shape = RoundedCornerShape(6.dp)
+                        ) {
+                            Text(
+                                text = tag.trim(),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    Text("View Full Course Details")
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    }
                 }
+            }
+        }
+
+        if (isExpanded) {
+            TextButton(
+                onClick = {
+                    try {
+                        val courseJson = com.google.gson.Gson().toJson(course)
+                        navController.navigate("courseDetailScreen/$courseJson")
+                    } catch (e: Exception) {
+                        showToast(context, "Unable to view course details")
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text("View Full Course Details")
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
             }
         }
     }
@@ -553,10 +516,7 @@ private fun ContentTypeSection(
     navController: NavController,
     viewModel: FreeContentViewModel
 ) {
-    Column(
-        modifier = Modifier.padding(16.dp)
-    ) {
-        // Section Header
+    Column(modifier = Modifier.padding(16.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -587,9 +547,8 @@ private fun ContentTypeSection(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // Content Items
         contentList.forEachIndexed { index, content ->
             FreeContentItem(
                 content = content,
@@ -601,220 +560,13 @@ private fun ContentTypeSection(
 
             if (index < contentList.size - 1) {
                 Divider(
-                    modifier = Modifier.padding(vertical = 4.dp),
+                    modifier = Modifier.padding(vertical = 8.dp),
                     color = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
         }
     }
 }
-//
-//@Composable
-//private fun FreeContentItem(
-//    content: Content,
-//    course: Course,
-//    index: Int,
-//    navController: NavController,
-//    viewModel: FreeContentViewModel
-//) {
-//    val context = LocalContext.current
-//    val scope = rememberCoroutineScope()
-//    var isDownloaded by remember { mutableStateOf(false) }
-//    var showDeleteDialog by remember { mutableStateOf(false) }
-//
-//    val isDownloading = viewModel.isDownloading(content.id)
-//    val downloadProgress = viewModel.getDownloadProgress(content.id)
-//
-//    // Check if content is downloaded
-//    LaunchedEffect(content.id) {
-//        isDownloaded = viewModel.isContentDownloaded(content.id)
-//    }
-//
-//    // Refresh download status periodically when downloading
-//    LaunchedEffect(isDownloading) {
-//        if (isDownloading) {
-//            while (isDownloading) {
-//                kotlinx.coroutines.delay(1000)
-//                isDownloaded = viewModel.isContentDownloaded(content.id)
-//            }
-//        }
-//    }
-//
-//    Row(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .clickable(enabled = !isDownloading) {
-//                if (isDownloaded) {
-//                    handleContentClick(
-//                        content = content,
-//                        course = course,
-//                        navController = navController,
-//                        context = context,
-//                        viewModel = viewModel
-//                    )
-//                } else {
-//                    showToast(context, "Please download the content first")
-//                }
-//            }
-//            .padding(vertical = 8.dp),
-//        verticalAlignment = Alignment.CenterVertically
-//    ) {
-//        // Index circle
-//        Surface(
-//            color = MaterialTheme.colorScheme.tertiaryContainer,
-//            shape = CircleShape,
-//            modifier = Modifier.size(28.dp)
-//        ) {
-//            Box(
-//                contentAlignment = Alignment.Center,
-//                modifier = Modifier.fillMaxSize()
-//            ) {
-//                Text(
-//                    text = index.toString(),
-//                    style = MaterialTheme.typography.labelSmall,
-//                    fontWeight = FontWeight.Bold
-//                )
-//            }
-//        }
-//
-//        Spacer(modifier = Modifier.width(12.dp))
-//
-//        // Content info
-//        Column(
-//            modifier = Modifier.weight(1f)
-//        ) {
-//            Text(
-//                text = "Lesson $index",
-//                style = MaterialTheme.typography.bodyMedium,
-//                fontWeight = FontWeight.Medium
-//            )
-//
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.spacedBy(8.dp)
-//            ) {
-//                Surface(
-//                    color = MaterialTheme.colorScheme.tertiaryContainer,
-//                    shape = RoundedCornerShape(4.dp)
-//                ) {
-//                    Text(
-//                        text = "FREE",
-//                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-//                        style = MaterialTheme.typography.labelSmall,
-//                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-//                        fontWeight = FontWeight.Bold
-//                    )
-//                }
-//
-//                // Show downloaded indicator
-//                if (isDownloaded && !isDownloading) {
-//                    Icon(
-//                        imageVector = Icons.Outlined.DownloadDone,
-//                        contentDescription = "Downloaded",
-//                        modifier = Modifier.size(16.dp),
-//                        tint = MaterialTheme.colorScheme.primary
-//                    )
-//                }
-//            }
-//
-//            // Show progress bar when downloading
-//            if (isDownloading) {
-//                Spacer(modifier = Modifier.height(4.dp))
-//                LinearProgressIndicator(
-//                    progress = downloadProgress / 100f,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(4.dp),
-//                    color = MaterialTheme.colorScheme.primary,
-//                    trackColor = MaterialTheme.colorScheme.surfaceVariant
-//                )
-//                Text(
-//                    text = "$downloadProgress%",
-//                    style = MaterialTheme.typography.labelSmall,
-//                    color = MaterialTheme.colorScheme.onSurfaceVariant
-//                )
-//            }
-//        }
-//
-//        // Action buttons
-//        when {
-//            isDownloading -> {
-//                // Cancel button
-//                IconButton(
-//                    onClick = {
-//                        viewModel.cancelDownload(content.id)
-//                        showToast(context, "Download cancelled")
-//                    }
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Default.Cancel,
-//                        contentDescription = "Cancel Download",
-//                        tint = MaterialTheme.colorScheme.error
-//                    )
-//                }
-//            }
-//
-//            isDownloaded -> {
-//                // Delete button
-//                IconButton(
-//                    onClick = {
-//                        showDeleteDialog = true
-//                    }
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Default.Delete,
-//                        contentDescription = "Delete Download",
-//                        tint = MaterialTheme.colorScheme.error
-//                    )
-//                }
-//            }
-//
-//            else -> {
-//                // Download button
-//                IconButton(
-//                    onClick = {
-//                        viewModel.downloadContent(content, course)
-//                        showToast(context, "Download started")
-//                    }
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Default.Download,
-//                        contentDescription = "Download",
-//                        tint = MaterialTheme.colorScheme.primary
-//                    )
-//                }
-//            }
-//        }
-//    }
-//
-//    // Delete confirmation dialog
-//    if (showDeleteDialog) {
-//        AlertDialog(
-//            onDismissRequest = { showDeleteDialog = false },
-//            title = { Text("Delete Download") },
-//            text = { Text("Are you sure you want to delete this downloaded content?") },
-//            confirmButton = {
-//                TextButton(
-//                    onClick = {
-//                        scope.launch {
-//                            viewModel.deleteDownload(content.id)
-//                            isDownloaded = false
-//                            showDeleteDialog = false
-//                            showToast(context, "Download deleted")
-//                        }
-//                    }
-//                ) {
-//                    Text("Delete")
-//                }
-//            },
-//            dismissButton = {
-//                TextButton(onClick = { showDeleteDialog = false }) {
-//                    Text("Cancel")
-//                }
-//            }
-//        )
-//    }
-//}
 
 @Composable
 private fun FreeContentItem(
@@ -832,27 +584,21 @@ private fun FreeContentItem(
     val isDownloading = viewModel.isDownloading(content.id)
     val downloadProgress = viewModel.getDownloadProgress(content.id)
 
-    // Check if content is downloaded initially
     LaunchedEffect(content.id) {
         isDownloaded = viewModel.isContentDownloaded(content.id)
     }
 
-    // IMPORTANT: Monitor download completion
     LaunchedEffect(isDownloading, downloadProgress) {
-        // When download completes (progress reaches 100% and isDownloading becomes false)
         if (!isDownloading && downloadProgress == 100) {
-            // Small delay to ensure download is fully completed
             kotlinx.coroutines.delay(500)
             isDownloaded = viewModel.isContentDownloaded(content.id)
         }
     }
 
-    // Also check download status when isDownloading changes from true to false
     LaunchedEffect(isDownloading) {
         if (!isDownloading) {
-            // Check if download was completed (not cancelled)
             scope.launch {
-                kotlinx.coroutines.delay(300) // Small delay for state to settle
+                kotlinx.coroutines.delay(300)
                 isDownloaded = viewModel.isContentDownloaded(content.id)
             }
         }
@@ -863,13 +609,7 @@ private fun FreeContentItem(
             .fillMaxWidth()
             .clickable(enabled = !isDownloading) {
                 if (isDownloaded) {
-                    handleContentClick(
-                        content = content,
-                        course = course,
-                        navController = navController,
-                        context = context,
-                        viewModel = viewModel
-                    )
+                    handleContentClick(content, course, navController, context, viewModel)
                 } else {
                     showToast(context, "Please download the content first")
                 }
@@ -877,54 +617,53 @@ private fun FreeContentItem(
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Index circle
         Surface(
             color = MaterialTheme.colorScheme.tertiaryContainer,
             shape = CircleShape,
-            modifier = Modifier.size(28.dp)
+            modifier = Modifier.size(32.dp)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                Text(
-                    text = index.toString(),
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold
+                Icon(
+                    imageVector = getContentTypeIcon(content.content_type),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onTertiaryContainer
                 )
             }
         }
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Content info
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Lesson $index",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
+                text = content.title ?: "Lesson $index",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(top = 4.dp)
             ) {
-//                Surface(
-//                    color = MaterialTheme.colorScheme.tertiaryContainer,
-//                    shape = RoundedCornerShape(4.dp)
-//                ) {
-//                    Text(
-//                        text = "FREE",
-//                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-//                        style = MaterialTheme.typography.labelSmall,
-//                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-//                        fontWeight = FontWeight.Bold
-//                    )
-//                }
+                Surface(
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        text = "FREE",
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
-                // Show downloaded indicator
                 if (isDownloaded && !isDownloading) {
                     Icon(
                         imageVector = Icons.Outlined.DownloadDone,
@@ -935,7 +674,6 @@ private fun FreeContentItem(
                 }
             }
 
-            // Show progress bar when downloading
             if (isDownloading) {
                 Spacer(modifier = Modifier.height(4.dp))
                 LinearProgressIndicator(
@@ -954,10 +692,8 @@ private fun FreeContentItem(
             }
         }
 
-        // Action buttons
         when {
             isDownloading -> {
-                // Cancel button
                 IconButton(
                     onClick = {
                         viewModel.cancelDownload(content.id)
@@ -973,12 +709,7 @@ private fun FreeContentItem(
             }
 
             isDownloaded -> {
-                // Delete button
-                IconButton(
-                    onClick = {
-                        showDeleteDialog = true
-                    }
-                ) {
+                IconButton(onClick = { showDeleteDialog = true }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete Download",
@@ -988,7 +719,6 @@ private fun FreeContentItem(
             }
 
             else -> {
-                // Download button
                 IconButton(
                     onClick = {
                         viewModel.downloadContent(content, course)
@@ -1005,7 +735,6 @@ private fun FreeContentItem(
         }
     }
 
-    // Delete confirmation dialog
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -1042,36 +771,29 @@ private fun handleContentClick(
     viewModel: FreeContentViewModel
 ) {
     try {
-        // Check if content is downloaded
         viewModel.viewModelScope.launch {
             val isDownloaded = viewModel.isContentDownloaded(content.id)
 
             if (isDownloaded) {
-                // Content is downloaded, play from secure storage
                 val downloadedContent = viewModel.getDownloadedContent(content.id)
                 if (downloadedContent != null) {
-
                     when (content.content_type?.uppercase()) {
                         "VIDEO" -> {
                             content.content_url?.let { url ->
                                 openVideoPlayer(navController, course, url)
                             } ?: showToast(context, "Video URL not available")
                         }
-
                         "AUDIO" -> {
                             content.content_url?.let { url ->
                                 openVideoPlayer(navController, course, url)
                             } ?: showToast(context, "Audio URL not available")
                         }
-
                         "PDF" -> {
                             content.content_url?.let { url ->
                                 openPDFReader(navController, course, url)
                             } ?: showToast(context, "PDF URL not available")
                         }
-
                         else -> {
-                            // Open in browser or default viewer
                             showToast(context, "Opening ${content.content_type ?: "content"}...")
                         }
                     }
@@ -1079,8 +801,6 @@ private fun handleContentClick(
                     showToast(context, "Error loading downloaded content")
                 }
             } else {
-                // Content not downloaded, stream from URL (if allowed)
-                // Or prompt user to download first
                 showToast(context, "Please download the content first to play offline")
             }
         }
@@ -1165,7 +885,6 @@ private fun ErrorView(
     }
 }
 
-// Helper functions
 private fun getContentTypeIcon(type: String?): ImageVector {
     return when (type?.uppercase()) {
         "VIDEO" -> Icons.Outlined.VideoLibrary

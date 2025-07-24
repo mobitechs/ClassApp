@@ -3,7 +3,14 @@ package com.mobitechs.classapp.data.model.response
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
 data class CourseContentResponse(
+    val content: List<Course>,
+    val message: String,
+    val status: Boolean,
+    val status_code: Int
+)
+data class CourseWiseContentResponse(
     val content: List<Content>,
     val message: String,
     val status: Boolean,
@@ -15,6 +22,7 @@ data class Content(
     val id: Int,
     val content_type: String,
     val content_url: String,
+    val title: String?,
     val course_id: Int,
     var is_free: String?,
     var is_offline_available: String?,

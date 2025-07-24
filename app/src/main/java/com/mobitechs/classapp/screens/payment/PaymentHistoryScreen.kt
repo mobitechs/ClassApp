@@ -293,7 +293,8 @@ private fun PaymentSummaryCard(payments: List<Payment>) { // Fixed: Changed para
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
                     Text(
-                        text = "₹${String.format("%.2f", totalAmount / 100.0)}",
+                        text = "₹$totalAmount",
+//                        text = "₹${String.format("%.2f", totalAmount / 100.0)}",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -423,7 +424,8 @@ private fun PaymentHistoryItem(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = "₹${String.format("%.2f", payment.amount / 100.0)}", // This now works correctly
+//                    text = "₹${String.format("%.2f", payment.amount / 100.0)}", // This now works correctly
+                    text = "₹${payment.amount}", // This now works correctly
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

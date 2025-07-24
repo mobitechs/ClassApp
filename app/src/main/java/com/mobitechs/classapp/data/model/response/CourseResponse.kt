@@ -1,6 +1,7 @@
 package com.mobitechs.classapp.data.model.response
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 data class CourseResponse(
@@ -43,5 +44,8 @@ data class Course(
     val updated_at: String?,
     val deleted_at: String?,
     val added_by: String?,
-    val lastSyncedAt: Long = System.currentTimeMillis()
-)
+    val lastSyncedAt: Long = System.currentTimeMillis(),
+){
+    @Ignore
+    var contents: List<Content> = emptyList()
+}
