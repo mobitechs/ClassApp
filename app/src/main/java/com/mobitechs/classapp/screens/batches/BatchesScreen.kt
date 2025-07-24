@@ -67,7 +67,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.mobitechs.classapp.data.model.Batch
+import com.mobitechs.classapp.data.model.BatchItem
 import com.mobitechs.classapp.data.model.StudyMaterial
 import com.mobitechs.classapp.screens.home.ErrorView
 import com.mobitechs.classapp.ui.theme.AppTheme
@@ -188,8 +188,8 @@ fun BatchesScreen(
                         items(uiState.batches) { batch ->
                             BatchItem(
                                 batch = batch,
-                                isSelected = batch.id == uiState.selectedBatchId,
-                                onClick = { viewModel.selectBatch(batch.id) }
+                                isSelected = batch.batche_id == uiState.selectedBatchId,
+                                onClick = { viewModel.selectBatch(batch.batche_id) }
                             )
                         }
                     }
@@ -386,7 +386,7 @@ fun NoBatchesView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BatchItem(
-    batch: Batch,
+    batch: BatchItem,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -412,7 +412,7 @@ fun BatchItem(
             if (batch.coverImage != null) {
                 AsyncImage(
                     model = batch.coverImage,
-                    contentDescription = batch.name,
+                    contentDescription = batch.batche_name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(64.dp)
@@ -431,7 +431,7 @@ fun BatchItem(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = batch.name.first().toString(),
+                        text = batch.batche_name.first().toString(),
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
@@ -442,7 +442,7 @@ fun BatchItem(
 
             // Batch name
             Text(
-                text = batch.name,
+                text = batch.batche_name,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,

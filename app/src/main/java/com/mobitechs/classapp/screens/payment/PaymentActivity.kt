@@ -246,18 +246,6 @@ class PaymentActivity : ComponentActivity(), PaymentResultListener {
 
     private fun updateCourseStatus(paymentId: String) {
 
-//        viewModel.updatePurchaseStatus(
-//            courseId = course.id.toString(),
-//            paymentId = paymentId,
-//            onSuccess = {
-//                // Handle success if needed
-//            },
-//            onError = { errorMessage ->
-//                // Handle error if needed
-//                // Note: Don't show error here as payment was successful
-//            }
-//        )
-
         viewModel.updatePurchaseStatus(
             courseId = course.id.toString(),
             paymentId = paymentId,

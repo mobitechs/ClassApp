@@ -3,7 +3,7 @@ package com.mobitechs.classapp.screens.batches
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mobitechs.classapp.data.model.Batch
+import com.mobitechs.classapp.data.model.BatchItem
 import com.mobitechs.classapp.data.model.StudyMaterial
 import com.mobitechs.classapp.data.repository.BatchRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 data class BatchesUiState(
     val isLoading: Boolean = false,
     val error: String = "",
-    val batches: List<Batch> = emptyList(),
+    val batches: List<BatchItem> = emptyList(),
     val selectedBatchId: String = "",
     val selectedBatchName: String = "",
     val studyMaterials: List<StudyMaterial> = emptyList(),
@@ -43,20 +43,20 @@ class BatchViewModel(
 
         viewModelScope.launch {
             try {
-                val batches = batchRepository.getUserBatches()
+                val batches = batchRepository.getUserBatches().batches
 
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         batches = batches,
-                        selectedBatchId = batches.firstOrNull()?.id ?: "",
-                        selectedBatchName = batches.firstOrNull()?.name ?: ""
+                        selectedBatchId = batches.firstOrNull()?.batche_id ?: "",
+                        selectedBatchName = batches.firstOrNull()?.batche_name ?: ""
                     )
                 }
 
                 // Load study materials for the selected batch
                 if (batches.isNotEmpty()) {
-                    loadStudyMaterials(batches.first().id)
+                    loadStudyMaterials(batches.first().batche_id)
                 }
             } catch (e: Exception) {
                 _uiState.update {
@@ -70,12 +70,12 @@ class BatchViewModel(
     }
 
     fun selectBatch(batchId: String) {
-        val batch = uiState.value.batches.find { it.id == batchId }
+        val batch = uiState.value.batches.find { it.batche_id == batchId }
         if (batch != null) {
             _uiState.update {
                 it.copy(
                     selectedBatchId = batchId,
-                    selectedBatchName = batch.name
+                    selectedBatchName = batch.batche_name
                 )
             }
             loadStudyMaterials(batchId)
@@ -186,13 +186,13 @@ class BatchViewModel(
                         isJoiningBatch = false,
                         batches = updatedBatches,
                         batchCode = "",
-                        selectedBatchId = batch.id,
-                        selectedBatchName = batch.name
+                        selectedBatchId = batch.batche_id,
+                        selectedBatchName = batch.batche_name
                     )
                 }
 
                 // Load study materials for the new batch
-                loadStudyMaterials(batch.id)
+                loadStudyMaterials(batch.batche_id)
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(

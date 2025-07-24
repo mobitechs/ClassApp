@@ -1,6 +1,7 @@
 package com.mobitechs.classapp.data.api
 
-import com.mobitechs.classapp.data.model.Batch
+import com.mobitechs.classapp.data.model.BatchItem
+import com.mobitechs.classapp.data.model.MyBatchResponse
 import com.mobitechs.classapp.data.model.StudyMaterial
 import com.mobitechs.classapp.data.model.request.CommonCourseRequest
 import com.mobitechs.classapp.data.model.request.GetCourseByRequest
@@ -136,11 +137,11 @@ interface ApiService {
 
 
     //Batches endpoints  ---------------------------------------------------------------------------------------
-    @GET("batches")
-    suspend fun getUserBatches(): Response<List<Batch>>
+    @GET("my-batches")
+    suspend fun getUserBatches(): Response<MyBatchResponse>
 
     @POST("batches/join")
-    suspend fun joinBatchByCode(@Query("code") batchCode: String): Response<Batch>
+    suspend fun joinBatchByCode(@Query("code") batchCode: String): Response<BatchItem>
 
     @GET("batches/{id}/materials")
     suspend fun getBatchMaterials(
