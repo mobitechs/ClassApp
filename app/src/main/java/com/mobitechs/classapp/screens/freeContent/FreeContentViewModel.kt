@@ -98,7 +98,7 @@ class FreeContentViewModel(
         viewModelScope.launch {
             try {
                 val response = courseRepository.getFreeContent()
-                val courses = response.content ?: emptyList()
+                val courses = response.courses ?: emptyList()
 
                 val groupedContent = mutableMapOf<Course, List<Content>>()
                 val allFreeContent = mutableListOf<Content>()

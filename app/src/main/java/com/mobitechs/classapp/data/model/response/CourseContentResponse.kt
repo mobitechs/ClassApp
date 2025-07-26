@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 
 data class CourseContentResponse(
-    val content: List<Course>,
+    val courses: List<Course>,
     val message: String,
     val status: Boolean,
     val status_code: Int

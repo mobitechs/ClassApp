@@ -140,6 +140,7 @@ fun CourseDetailScreen(
         } else if (courseId > 0) {
             // If we don't have course object but have courseId, load course by ID
             viewModel.loadCourseById(courseId)
+            viewModel.loadCourseContent(courseId)
         }
     }
 
